@@ -12,9 +12,9 @@ static char *_search_word(char *buffer, unsigned int *length)
    if (!*buffer) return NULL;
    char *tmp = buffer;
    char c = *tmp;
-   while (((*tmp & 0xDF) > 'A' && (*tmp & 0xDF) <= 'Z') ||
-         (*tmp > '0' && *tmp <= '9') ||
-         (*tmp == '_')) tmp++;
+   while (((c & 0xDF) > 'A' && (c & 0xDF) <= 'Z') ||
+         (c > '0' && c <= '9') ||
+         (c == '_')) { tmp++; c = *tmp; }
    if (length) *length = (tmp-buffer);
    return buffer;
 }
@@ -22,20 +22,21 @@ static char *_search_word(char *buffer, unsigned int *length)
 static unsigned int
 _class_parse(char *buffer)
 {
-   int len = 0;
+   unsigned int len = 0;
    char *class_name = _search_word(buffer, &len);
    if (class_name)
      {
         buffer = class_name + len;
         while (*buffer && *buffer != ' ') buffer++;
      }
+   return 0; // FIXME: have to return a real value
 }
 
 Eina_Bool eolian_eo_file_parse(char *filename)
 {
    if (!ecore_file_exists(filename)) return EINA_FALSE;
 
-   long long sz = ecore_file_size(filename);
+   unsigned int sz = ecore_file_size(filename);
    char *buffer = malloc(sz * sizeof(char) + 1); // \0 at the end
 
    FILE* fd = fopen(filename, "r");
@@ -50,7 +51,7 @@ Eina_Bool eolian_eo_file_parse(char *filename)
    char *tmp = buffer;
    while (tmp)
      {
-        if (_class_parse(tmp)
+//        if (_class_parse(tmp)
      }
    return EINA_TRUE;
 }
