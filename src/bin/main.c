@@ -3,6 +3,7 @@
 
 int main(int argc, char **argv)
 {
+   eina_init();
    int i;
    Eina_Bool help = EINA_FALSE, show = EINA_FALSE;
    char *input_file = NULL; // FIXME: for the moment, only one
@@ -27,10 +28,17 @@ int main(int argc, char **argv)
         return 0;
      }
 
+   eolian_database_init();
    if (!eolian_eo_file_parse(input_file))
      {
         printf("Error during parsing of file %s\n", input_file);
         return 1;
      }
+
+   if (show)
+     {
+        eolian_show();
+     }
+   eina_shutdown();
    return 0;
 }

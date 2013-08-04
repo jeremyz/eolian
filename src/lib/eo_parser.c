@@ -3,97 +3,165 @@
 #include <string.h>
 
 #include "Eolian.h"
+#include "lexer.h"
+#include "database.h"
 
-typedef enum
+static char *
+_comment_parse(char *buffer, char **comment)
 {
-   STOP = 0,
-   SKIP_SPACES_TOKEN,
-   KWORD_TOKEN,
-   UWORD_TOKEN,
-   KCHAR_TOKEN,
-   UCHAR_TOKEN
-} TokenEnum;
-
-#define SPACES    SKIP_SPACES_TOKEN
-#define KWORD(w)  KWORD_TOKEN, w
-#define UWORD(w)  UWORD_TOKEN, w
-#define KCHAR(c)  KCHAR_TOKEN, c
-#define UCHAR(c)  UCHAR_TOKEN, c
-
-#define LEX(buf,...) _lexer(buf, __VA_ARGS__, STOP)
-
-static Eina_Bool
-_lexer(char *buffer, ...)
-{
-   va_list list;
-   va_start(list, buffer);
-   TokenEnum token = va_arg(list, TokenEnum);
-   while (token)
+   char *new_buffer = LEX(buffer, KWORD("/*"), STRING("*/", comment));
+   if (new_buffer)
      {
-        switch(token)
-          {
-           case STOP:
-              return EINA_TRUE;
-           case SKIP_SPACES_TOKEN:
-                {
-                   while (*buffer && (*buffer == ' ' || *buffer == '\n')) buffer++;
-                   break;
-                }
-           case KWORD_TOKEN:
-                {
-                   char *word = va_arg(list, char *);
-                   if (strncmp(buffer, word, strlen(word))) return EINA_FALSE;
-                   buffer += strlen(word);
-                   break;
-                }
-           case UWORD_TOKEN:
-                {
-                   char **pWord = va_arg(list, char **);
-                   char *begin = buffer;
-                   char c = *buffer;
-                   while (((c & 0xDF) >= 'A' && (c & 0xDF) <= 'Z') ||
-                         (c >= '0' && c <= '9') ||
-                         (c == '_')) c = *(buffer++);
-                   if (begin == buffer) return EINA_FALSE; // no word found
-                   if (pWord) *pWord = strndup(begin, buffer - begin - 1);
-                   break;
-                }
-           case KCHAR_TOKEN:
-                {
-                   char c = va_arg(list, int);
-                   if (*buffer && *buffer == c) buffer++;
-                   else return EINA_FALSE;
-                   break;
-                }
-           case UCHAR_TOKEN:
-                {
-                   char *c = va_arg(list, char *);
-                   if (*buffer)
-                     {
-                        if (c) *c = *buffer;
-                        buffer++;
-                     }
-                   else return EINA_FALSE;
-                   break;
-                }
-          }
-        token = va_arg(list, TokenEnum);
+        char *end = LEX_REVERSE(*comment, strlen(*comment), SKIP_SPACES_TOKEN);
+        *(end+1) = '\0';
      }
-   return EINA_TRUE;
+   return new_buffer;
 }
 
-static unsigned int
+static Function_Id
+_function_parse(char *buffer, char **new_buffer)
+{
+   Function_Id foo_id = NULL;
+   *new_buffer = NULL;
+   /*
+    * COMMENT = STRING
+    * TYPE = STRING
+    * TYPES = | TYPE | TYPE TYPES
+    * PARAM = TYPE PARAM_NAME COMMENT | TYPE PARAM_NAME
+    * PARAMS = | PARAM | PARAM PARAMS
+    * PROTOTYPE = TYPES FUNC_NAME ( PARAMS )
+    * FUNCTION = COMMENT PROTOTYPE | PROTOTYPE
+    */
+
+   // COMMENT
+   char *comment = NULL;
+   char *tmp_buffer = _comment_parse(buffer, &comment);
+   if (tmp_buffer) buffer = tmp_buffer;
+
+   // PROTOTYPE
+   char *types_function = NULL; // types and function, no params
+   tmp_buffer = LEX(buffer, STRING("(", &types_function));
+   if (!types_function) goto end;
+
+   // FUNC_NAME
+   char *function = NULL;
+   LEX_REVERSE(types_function, strlen(types_function), UWORD(&function));
+   foo_id = database_function_new(function);
+   if (comment)
+      database_function_description_set(foo_id, comment);
+
+   // Return TYPES
+   types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
+   Eina_List *types_list = NULL, *itr;
+   char *type_as_string;
+   LEX(types_function, STRINGS_LIST(",", &types_list));
+   EINA_LIST_FOREACH(types_list, itr, type_as_string)
+      database_function_parameter_add(foo_id, EINA_FALSE, type_as_string, NULL, NULL);
+
+   // PARAMS. tmp_buffer points to them
+   char *params = NULL;
+   Eina_List *params_list = NULL;
+   *new_buffer = LEX(tmp_buffer, STRING(");", &params));
+   LEX(params, STRINGS_LIST(",", &params_list));
+   EINA_LIST_FOREACH(params_list, itr, type_as_string)
+     {
+        char *type_comment = strstr(type_as_string, "/*");
+        char *type_comment2 = NULL;
+        if (type_comment)
+          {
+             _comment_parse(type_comment, &type_comment2);
+             type_as_string[strlen(type_as_string) - strlen(type_comment)] = '\0';
+          }
+        char *name = NULL;
+        LEX_REVERSE(type_as_string, strlen(type_as_string), UWORD(&name)); // extract the param name
+        char *tmp = strstr(type_as_string, name);
+        *tmp = '\0';
+        database_function_parameter_add(foo_id, EINA_TRUE, type_as_string, name, type_comment2);
+     }
+
+end:
+   if (comment)
+      free(comment);
+   if (types_function)
+      free(types_function);
+   if (function)
+      free(function);
+   EINA_LIST_FREE(types_list, type_as_string)
+      free(type_as_string);
+
+   return foo_id;
+}
+
+static char *
 _class_parse(char *buffer)
 {
    char *class_name = NULL;
-   Eina_Bool ret = LEX(buffer, UWORD(&class_name), SPACES, KCHAR('='));
-   if (ret)
+   char *new_buffer = LEX(buffer, UWORD(&class_name), KCHAR('='), KCHAR('{'));
+   if (new_buffer)
      {
-        if (class_name) printf("Class %s\n", class_name);
-//        buffer = class_name + len;
-//        while (*buffer && *buffer != ' ') buffer++;
+        database_class_add(class_name);
+        while(new_buffer)
+          {
+             buffer = new_buffer;
+             new_buffer = NULL;
+             char *token = NULL;
+             LEX(buffer, UWORD(&token));
+             if (!token) return NULL;
+             if (!strcmp(token, "inherit"))
+               {
+                  Eina_List *inherits_list = NULL;
+                  new_buffer = LEX(buffer, KWORD("inherit"), KCHAR('{'),
+                        UWORDS_LIST(",", &inherits_list), KCHAR(';'), KCHAR('}'));
+                  if (!new_buffer) return NULL;
+                  database_class_inherits_list_add(class_name, inherits_list);
+               }
+             if(!strcmp(token, "constructor"))
+               {
+                  new_buffer = LEX(buffer, KWORD("constructor"),
+                        KCHAR('('), KCHAR(')'), KCHAR(';'));
+               }
+             if(!strcmp(token, "destructor"))
+               {
+                  new_buffer = LEX(buffer, KWORD("destructor"),
+                        KCHAR('('), KCHAR(')'), KCHAR(';'));
+               }
+             if(!strcmp(token, "properties"))
+               {
+                  new_buffer = LEX(buffer, KWORD("properties"), KCHAR('{'));
+                  Eina_Bool loop = EINA_TRUE;
+                  while (new_buffer && loop)
+                    {
+                       buffer = new_buffer;
+                       Function_Id foo_id = _function_parse(buffer, &new_buffer);
+                       if (foo_id)
+                          database_class_property_add(class_name, foo_id);
+                       if (LEX(new_buffer, KCHAR('}')))
+                         {
+                            new_buffer = LEX(new_buffer, KCHAR('}'));
+                            loop = EINA_FALSE;
+                         }
+                    }
+               }
+             if(!strcmp(token, "methods"))
+               {
+                  new_buffer = LEX(buffer, KWORD("methods"), KCHAR('{'));
+                  Eina_Bool loop = EINA_TRUE;
+                  while (new_buffer && loop)
+                    {
+                       buffer = new_buffer;
+                       Function_Id foo_id = _function_parse(buffer, &new_buffer);
+                       if (foo_id)
+                          database_class_property_add(class_name, foo_id);
+                       if (LEX(new_buffer, KCHAR('}')))
+                         {
+                            new_buffer = LEX(new_buffer, KCHAR('}'));
+                            loop = EINA_FALSE;
+                         }
+                    }
+               }
+          }
      }
-   return 0; // FIXME: have to return a real value
+   return new_buffer;
 }
 
 Eina_Bool eolian_eo_file_parse(char *filename)
