@@ -151,7 +151,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _function_parse(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_property_add(class_name, foo_id);
+                          database_class_method_add(class_name, foo_id);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));

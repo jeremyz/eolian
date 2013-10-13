@@ -9,6 +9,7 @@ typedef struct
    char *name;
    Eina_List *inherits;
    Eina_Hash *properties;
+   Eina_Hash *methods;
 } Class_desc;
 
 typedef struct
@@ -40,6 +41,7 @@ Eina_Bool database_class_add(char *classname)
         Class_desc *desc = calloc(1, sizeof(*desc));
         desc->name = strdup(classname);
         desc->properties = eina_hash_string_superfast_new(NULL);
+        desc->methods = eina_hash_string_superfast_new(NULL);
         eina_hash_add(_classes, classname, desc);
      }
    return EINA_TRUE;
@@ -88,6 +90,11 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    printf("  properties:\n");
    eina_hash_foreach(desc->properties, _function_print, (void *)4); // fdata = spaces to shift the prints
    printf("\n");
+
+   // Methods
+   printf("  methods:\n");
+   eina_hash_foreach(desc->methods, _function_print, (void *)4); // fdata = spaces to shift the prints
+   printf("\n");
    return EINA_TRUE;
 }
 
@@ -104,6 +111,14 @@ Eina_Bool database_class_property_add(char *classname, Function_Id foo_id)
    _Function_Id *fid = (_Function_Id *)foo_id;
    Class_desc *desc = eina_hash_find(_classes, classname);
    if (desc) eina_hash_add(desc->properties, fid->name, foo_id);
+   return !!desc;
+}
+
+Eina_Bool database_class_method_add(char *classname, Function_Id foo_id)
+{
+   _Function_Id *fid = (_Function_Id *)foo_id;
+   Class_desc *desc = eina_hash_find(_classes, classname);
+   if (desc) eina_hash_add(desc->methods, fid->name, foo_id);
    return !!desc;
 }
 
