@@ -8,24 +8,24 @@ typedef struct
 {
    char *name;
    Eina_List *inherits;
-   Eina_Hash *properties;
-   Eina_Hash *methods;
+   Eina_Hash *properties; /* Hash prop_name -> _Function_Id */
+   Eina_Hash *methods; /* Hash meth_name -> _Function_Id */
 } Class_desc;
 
 typedef struct
 {
    char *name;
    char *description;
-   Eina_List *params;
+   Eina_List *params; /* list of Parameter_Desc */
 } _Function_Id;
 
 typedef struct
 {
-   Eina_Bool param_in;
    char *name;
    char *type;
    char *description;
-} Parameter_Desc;
+   Eina_Bool param_in;
+} _Parameter_Desc;
 
 Eina_Bool eolian_database_init()
 {
