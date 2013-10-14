@@ -51,7 +51,8 @@ Parameter_Desc database_function_parameter_add(Function_Id foo_id, Eina_Bool par
 const Eina_List *database_parameters_list_get(Function_Id foo_id);
 
 /* Get parameter information */
-database_parameter_information_get(Parameter_Desc, Eina_Bool *param_in, char **type, char **name, char **description);
+void
+database_parameter_information_get(Parameter_Desc param, Eina_Bool *param_in, char **type, char **name, char **description);
 
 /* Need to add API for callbacks and implements */
 

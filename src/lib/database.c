@@ -16,7 +16,7 @@ typedef struct
 {
    char *name;
    char *description;
-   Eina_List *params; /* list of Parameter_Desc */
+   Eina_List *params; /* list of _Parameter_Desc */
 } _Function_Id;
 
 typedef struct
@@ -60,7 +60,7 @@ static Eina_Bool _function_print(const Eina_Hash *hash EINA_UNUSED, const void *
    _Function_Id *fid = data;
    printf("%*s%s <%s>\n", nb_spaces, "", fid->name, (fid->description?fid->description:""));
    Eina_List *itr;
-   Parameter_Desc *param;
+   _Parameter_Desc *param;
    EINA_LIST_FOREACH(fid->params, itr, param)
      {
       if (param->param_in)
@@ -129,19 +129,21 @@ database_function_description_set(Function_Id foo_id, char *description)
    fid->description = strdup(description);
 }
 
-void
+Parameter_Desc
 database_function_parameter_add(Function_Id foo_id, Eina_Bool param_in, char *type, char *name, char *description)
 {
+   _Parameter_Desc *param = NULL;
    _Function_Id *fid = (_Function_Id *)foo_id;
    if (fid)
      {
-        Parameter_Desc *param = calloc(1, sizeof(*param));
+        param = calloc(1, sizeof(*param));
         param->param_in = param_in;
         if (name) param->name = strdup(name);
         if (type) param->type = strdup(type);
         if (description) param->description = strdup(description);
         fid->params = eina_list_append(fid->params, param);
      }
+   return (Parameter_Desc) param;
 }
 
 Eina_Bool eolian_show()
