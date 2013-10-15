@@ -64,9 +64,9 @@ static Eina_Bool _function_print(const Eina_Hash *hash EINA_UNUSED, const void *
    EINA_LIST_FOREACH(fid->params, itr, param)
      {
       if (param->param_in)
-         printf("%*sIN %s: %s <%s>\n", nb_spaces+2, "", param->name, param->type, (param->description?param->description:""));
+         printf("%*sIN <%s> <%s> <%s>\n", nb_spaces+2, "", param->name, param->type, (param->description?param->description:""));
       else
-         printf("%*sOUT %s: <%s>\n", nb_spaces+2, "", param->type, (param->description?param->description:""));
+         printf("%*sOUT <%s> <%s> <%s>\n", nb_spaces+2, "", param->name, param->type, (param->description?param->description:""));
      }
    return EINA_TRUE;
 }
