@@ -22,6 +22,8 @@ static Function_Id
 _function_parse(char *buffer, char **new_buffer)
 {
    Function_Id foo_id = NULL;
+   char *function = NULL;
+   Eina_List *types_list = NULL, *itr;
    *new_buffer = NULL;
    /*
     * COMMENT = STRING
@@ -44,7 +46,6 @@ _function_parse(char *buffer, char **new_buffer)
    if (!types_function) goto end;
 
    // FUNC_NAME
-   char *function = NULL;
    LEX_REVERSE(types_function, strlen(types_function), UWORD(&function));
    foo_id = database_function_new(function);
    if (comment)
@@ -52,7 +53,6 @@ _function_parse(char *buffer, char **new_buffer)
 
    // Return TYPES
    types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
-   Eina_List *types_list = NULL, *itr;
    char *type_as_string;
    LEX(types_function, STRINGS_LIST(",", &types_list));
    EINA_LIST_FOREACH(types_list, itr, type_as_string)
@@ -110,6 +110,8 @@ static Function_Id
 _function_parse2(char *buffer, char **new_buffer)
 {
    Function_Id foo_id = NULL;
+   Eina_List *types_list = NULL, *itr;
+   char *function = NULL;
    *new_buffer = NULL;
    /*
     * COMMENT = STRING
@@ -132,7 +134,6 @@ _function_parse2(char *buffer, char **new_buffer)
    if (!types_function) goto end;
 
    // FUNC_NAME
-   char *function = NULL;
    LEX_REVERSE(types_function, strlen(types_function), UWORD(&function));
    foo_id = database_function_new(function);
    if (comment)
@@ -140,7 +141,6 @@ _function_parse2(char *buffer, char **new_buffer)
 
    // Return TYPES
    types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
-   Eina_List *types_list = NULL, *itr;
    char *type_as_string;
    LEX(types_function, STRINGS_LIST(",", &types_list));
    EINA_LIST_FOREACH(types_list, itr, type_as_string)
