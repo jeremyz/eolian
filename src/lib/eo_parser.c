@@ -24,7 +24,6 @@ _function_parse(char *buffer, char **new_buffer)
    Function_Id foo_id = NULL;
    char *function = NULL;
    Eina_List *types_list = NULL, *itr;
-   *new_buffer = NULL;
    /*
     * COMMENT = STRING
     * TYPE = STRING
@@ -112,7 +111,6 @@ _function_parse2(char *buffer, char **new_buffer)
    Function_Id foo_id = NULL;
    Eina_List *types_list = NULL, *itr;
    char *function = NULL;
-   *new_buffer = NULL;
    /*
     * COMMENT = STRING
     * TYPE = STRING
