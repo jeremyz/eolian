@@ -3,7 +3,6 @@
 
 int main(int argc, char **argv)
 {
-   eina_init();
    int i;
    Eina_Bool help = EINA_FALSE, show = EINA_FALSE;
    char *input_file = NULL; // FIXME: for the moment, only one
@@ -39,6 +38,6 @@ int main(int argc, char **argv)
      {
         eolian_show();
      }
-   eina_shutdown();
+   eolian_database_shutdown();
    return 0;
 }

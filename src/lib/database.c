@@ -30,8 +30,17 @@ typedef struct
 Eina_Bool
 eolian_database_init()
 {
+   eina_init();
    if (!_classes)
       _classes = eina_hash_string_superfast_new(NULL);
+   return EINA_TRUE;
+}
+
+Eina_Bool
+eolian_database_shutdown()
+{
+   eina_hash_free(_classes);
+   eina_shutdown();
    return EINA_TRUE;
 }
 
