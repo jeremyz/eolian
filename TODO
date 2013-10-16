@@ -9,4 +9,9 @@ To think about:
 - add support for parameters (in:out:in,out)
 
 
+Fix in parsing
+  - when splitting parameters, comma can be in comment!!!
+  - space in class name when parsing *.eo
+
+
 
