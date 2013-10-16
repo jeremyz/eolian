@@ -192,7 +192,10 @@ static char *
 _class_parse(char *buffer)
 {
    char *class_name = NULL;
-   char *new_buffer = LEX(buffer, UWORD(&class_name), KCHAR('='), KCHAR('{'));
+   char *new_buffer = LEX(buffer, STRING("=", &class_name), KCHAR('{'));
+   char *class_name_tmp = _strip(class_name);
+   if (class_name) free(class_name);
+   class_name = class_name_tmp;
    if (new_buffer)
      {
         database_class_add(class_name);
@@ -206,9 +209,15 @@ _class_parse(char *buffer)
              if (!strcmp(token, "inherit"))
                {
                   Eina_List *inherits_list = NULL;
+                  char *inherits_str = NULL;
                   char *inherit;
-                  new_buffer = LEX(buffer, KWORD("inherit"), KCHAR('{'),
-                        UWORDS_LIST(",", &inherits_list), KCHAR(';'), KCHAR('}'));
+                  new_buffer = LEX(buffer, KWORD("inherit"), KCHAR('{'));
+
+                  new_buffer = LEX(new_buffer, STRING(";", &inherits_str), KCHAR('}'));
+
+                  LEX(inherits_str, STRINGS_LIST(",", &inherits_list));
+                  free(inherits_str);
+                  inherits_str = NULL;
                   if (!new_buffer) return NULL;
                   EINA_LIST_FREE(inherits_list, inherit)
                      database_class_inherit_add(class_name, inherit);
@@ -227,7 +236,6 @@ _class_parse(char *buffer)
                {
                   new_buffer = LEX(buffer, KWORD("properties"), KCHAR('{'));
                   Eina_Bool loop = EINA_TRUE;
-                  printf("prop\n");
                   while (new_buffer && loop)
                     {
                        buffer = new_buffer;
@@ -245,7 +253,6 @@ _class_parse(char *buffer)
                {
                   new_buffer = LEX(buffer, KWORD("properties_set"), KCHAR('{'));
                   Eina_Bool loop = EINA_TRUE;
-                  printf("prop_set\n");
                   while (new_buffer && loop)
                     {
                        buffer = new_buffer;
@@ -295,6 +302,7 @@ _class_parse(char *buffer)
                }
           }
      }
+   if (class_name) free(class_name);
    return new_buffer;
 }
 

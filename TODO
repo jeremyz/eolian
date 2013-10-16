@@ -7,7 +7,7 @@ To think about:
 - set properties; get properties
 
 - add support for parameters (in:out:in,out)
-
+- determine uniqness of class names in Eo. Is it going to be unique? Spaces, underscores, capital leters?
 
 Fix in parsing
   - when splitting parameters, comma can be in comment!!!
