@@ -18,6 +18,20 @@ _comment_parse(char *buffer, char **comment)
    return new_buffer;
 }
 
+static char*
+_strip(char* str)
+{
+   char *beg, *end;
+   beg = str;
+   end = str + strlen(str) - 1;
+
+   while (*beg == ' ')
+     beg++;
+   while (*end == ' ')
+     end--;
+   return strndup(beg, end - beg + 1);
+}
+
 static Function_Id
 _function_parse(char *buffer, char **new_buffer)
 {
@@ -66,6 +80,7 @@ _function_parse(char *buffer, char **new_buffer)
      {
         char *type_comment = strstr(type_as_string, "/*");
         char *type_comment2 = NULL;
+        char *type = NULL;
         if (type_comment)
           {
              _comment_parse(type_comment, &type_comment2);
@@ -75,7 +90,9 @@ _function_parse(char *buffer, char **new_buffer)
         LEX_REVERSE(type_as_string, strlen(type_as_string), UWORD(&name)); // extract the param name
         char *tmp = strstr(type_as_string, name);
         *tmp = '\0';
-        database_function_parameter_add(foo_id, EINA_TRUE, type_as_string, name, type_comment2);
+        type = _strip(type_as_string);
+        database_function_parameter_add(foo_id, EINA_TRUE, type, name, type_comment2);
+        if (type) free(type);
      }
 
 end:
@@ -89,20 +106,6 @@ end:
       free(type_as_string);
 
    return foo_id;
-}
-
-static char*
-_strip(char* str)
-{
-   char *beg, *end;
-   beg = str;
-   end = str + strlen(str) - 1;
-
-   while (*beg == ' ')
-     beg++;
-   while (*end == ' ')
-     end--;
-   return strndup(beg, end - beg + 1);
 }
 
 static Function_Id
@@ -222,6 +225,7 @@ _class_parse(char *buffer)
                {
                   new_buffer = LEX(buffer, KWORD("properties"), KCHAR('{'));
                   Eina_Bool loop = EINA_TRUE;
+                  printf("prop\n");
                   while (new_buffer && loop)
                     {
                        buffer = new_buffer;
@@ -239,6 +243,7 @@ _class_parse(char *buffer)
                {
                   new_buffer = LEX(buffer, KWORD("properties_set"), KCHAR('{'));
                   Eina_Bool loop = EINA_TRUE;
+                  printf("prop_set\n");
                   while (new_buffer && loop)
                     {
                        buffer = new_buffer;
