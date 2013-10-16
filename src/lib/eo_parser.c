@@ -306,6 +306,17 @@ _class_parse(char *buffer)
    return new_buffer;
 }
 
+Eina_Bool eolian_eo_class_desc_parse(char *class_desc)
+{
+   char *tmp = class_desc;
+   while (tmp)
+     {
+        _class_parse(tmp);
+        tmp = NULL;
+     }
+   return EINA_TRUE;
+}
+
 Eina_Bool eolian_eo_file_parse(char *filename)
 {
    if (!ecore_file_exists(filename)) return EINA_FALSE;
@@ -322,12 +333,7 @@ Eina_Bool eolian_eo_file_parse(char *filename)
         printf("%s: Read size %d different from file size %d. Continue.\n", __FUNCTION__, read_sz, sz);
      }
 
-   char *tmp = buffer;
-   while (tmp)
-     {
-        _class_parse(tmp);
-        tmp = NULL;
-     }
+   eolian_eo_class_desc_parse(buffer);
    return EINA_TRUE;
 }
 
