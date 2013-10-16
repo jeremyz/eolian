@@ -24,7 +24,7 @@ typedef struct
    char *name;
    char *type;
    char *description;
-   Eina_Bool param_in;
+   Parameter_Dir param_dir;
 } _Parameter_Desc;
 
 Eina_Bool
@@ -154,14 +154,14 @@ database_function_description_get(Function_Id function_id)
 }
 
 Parameter_Desc
-database_function_parameter_add(Function_Id foo_id, Eina_Bool param_in, char *type, char *name, char *description)
+database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, char *type, char *name, char *description)
 {
    _Parameter_Desc *param = NULL;
    _Function_Id *fid = (_Function_Id *)foo_id;
    if (fid)
      {
         param = calloc(1, sizeof(*param));
-        param->param_in = param_in;
+        param->param_dir = param_dir;
         if (name) param->name = strdup(name);
         if (type) param->type = strdup(type);
         if (description) param->description = strdup(description);
@@ -179,11 +179,11 @@ database_parameters_list_get(Function_Id foo_id)
 
 /* Get parameter information */
 void
-database_parameter_information_get(Parameter_Desc param_desc, Eina_Bool *param_in, char **type, char **name, char **description)
+database_parameter_information_get(Parameter_Desc param_desc, Parameter_Dir *param_dir, char **type, char **name, char **description)
 {
    _Parameter_Desc *param = (_Parameter_Desc *)param_desc;
    if (!param) return;
-   if (param_in) *param_in = param->param_in;
+   if (param_dir) *param_dir = param->param_dir;
    if (type) *type = param->type;
    if (name) *name = param->name;
    if (description) *description = param->description;
@@ -196,10 +196,20 @@ static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
    _Parameter_Desc *param;
    EINA_LIST_FOREACH(fid->params, itr, param)
      {
-      if (param->param_in)
-         printf("%*sIN <%s> <%s> <%s>\n", nb_spaces+2, "", param->name, param->type, (param->description?param->description:""));
-      else
-         printf("%*sOUT <%s> <%s> <%s>\n", nb_spaces+2, "", param->name, param->type, (param->description?param->description:""));
+        char *param_dir = NULL;
+        switch (param->param_dir)
+          {
+           case IN_PARAM:
+              param_dir = "IN";
+              break;
+           case OUT_PARAM:
+              param_dir = "OUT";
+              break;
+           case INOUT_PARAM:
+              param_dir = "INOUT";
+              break;
+          }
+         printf("%*s%s <%s> <%s> <%s>\n", nb_spaces + 5, param_dir,"", param->name, param->type, (param->description?param->description:""));
      }
    return EINA_TRUE;
 }

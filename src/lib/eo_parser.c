@@ -64,12 +64,14 @@ _function_parse(char *buffer, char **new_buffer)
    if (comment)
       database_function_description_set(foo_id, comment);
 
-   // Return TYPES
-   types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
    char *type_as_string;
+   // Return TYPES
+#if 0
+   types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
    LEX(types_function, STRINGS_LIST(",", &types_list));
    EINA_LIST_FOREACH(types_list, itr, type_as_string)
       database_function_parameter_add(foo_id, EINA_FALSE, type_as_string, NULL, NULL);
+#endif
 
    // PARAMS. tmp_buffer points to them
    char *params = NULL;
@@ -108,6 +110,14 @@ end:
    return foo_id;
 }
 
+Parameter_Dir
+_get_param_dir(char *dir)
+{
+   if (!strcmp("in", dir)) return IN_PARAM;
+   if (!strcmp("out", dir)) return OUT_PARAM;
+   return INOUT_PARAM;
+}
+
 static Function_Id
 _function_parse2(char *buffer, char **new_buffer)
 {
@@ -140,12 +150,14 @@ _function_parse2(char *buffer, char **new_buffer)
    if (comment)
       database_function_description_set(foo_id, comment);
 
-   // Return TYPES
-   types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
    char *type_as_string;
+   // Return TYPES
+#if 0
+   types_function[strlen(types_function) - strlen(function)] = '\0'; // needed to parse the types
    LEX(types_function, STRINGS_LIST(",", &types_list));
    EINA_LIST_FOREACH(types_list, itr, type_as_string)
       database_function_parameter_add(foo_id, EINA_FALSE, type_as_string, NULL, NULL);
+#endif
 
    // PARAMS. tmp_buffer points to them
    char *params = NULL;
@@ -169,7 +181,7 @@ _function_parse2(char *buffer, char **new_buffer)
         char *tmp = strstr(type_as_string, name);
         *tmp = '\0';
         type = _strip(type_as_string + strlen(dir));
-        database_function_parameter_add(foo_id, !strcmp(dir, "in"), type, name, type_comment2);
+        database_function_parameter_add(foo_id, _get_param_dir(dir), type, name, type_comment2);
         if (name) free(name);
         if (dir) free(dir);
         if (type) free(type);
