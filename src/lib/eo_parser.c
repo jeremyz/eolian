@@ -206,10 +206,12 @@ _class_parse(char *buffer)
              if (!strcmp(token, "inherit"))
                {
                   Eina_List *inherits_list = NULL;
+                  char *inherit;
                   new_buffer = LEX(buffer, KWORD("inherit"), KCHAR('{'),
                         UWORDS_LIST(",", &inherits_list), KCHAR(';'), KCHAR('}'));
                   if (!new_buffer) return NULL;
-                  database_class_inherits_list_add(class_name, inherits_list);
+                  EINA_LIST_FREE(inherits_list, inherit)
+                     database_class_inherit_add(class_name, inherit);
                }
              if(!strcmp(token, "constructor"))
                {
@@ -231,7 +233,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _function_parse(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_property_add(class_name, foo_id);
+                          database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));
@@ -249,7 +251,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _function_parse(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_property_add(class_name, foo_id);
+                          database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));
@@ -266,7 +268,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _function_parse(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_property_add(class_name, foo_id);
+                          database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));
@@ -283,7 +285,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _function_parse2(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_method_add(class_name, foo_id);
+                          database_class_function_add(class_name, foo_id, METHOD_FUNC);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));

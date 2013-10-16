@@ -40,7 +40,7 @@ Eina_Bool database_class_function_add(char *classname, Function_Id foo_id, Funct
 /* Add a description to a function */
 void database_function_description_set(Function_Id function_id, char *description);
 
-/* Add a description to a function */
+/* Get a description of a function */
 const char *database_function_description_get(Function_Id function_id);
 
 
