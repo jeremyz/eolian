@@ -7,171 +7,161 @@ Evas_Object_Image =
      properties
      {
            /* Set the DPI resolution of an image object's source image. */
-          load_dpi(
+           rw load_dpi(
                double dpi /* in */
           );
            /* Apply the source object's clip to the proxy */
-          source_clip(
+           rw source_clip(
                Eina_Bool source_clip /* in */
           );
-           /* Set whether the image object's fill property should track the
-  object's size. */
-          filled(
+           /* Set whether the image object's fill property should track the object's size. */
+           rw filled(
                Eina_Bool filled /* in */
           );
            /* Set the content hint setting of a given image object of the canvas. */
-          content_hint(
+           rw content_hint(
                Evas_Image_Content_Hint hint /* in */
           );
-           /* Inform a given image object to load a selective region of its
-  source image. */
-          load_region(
+           /* Inform a given image object to load a selective region of its source image. */
+           rw load_region(
                int x /* in */,
                int y /* in */,
                int w /* in */,
                int h /* in */
           );
            /* Enable or disable alpha channel usage on the given image object. */
-          alpha(
+           rw alpha(
                Eina_Bool alpha /* in */
           );
-           /* Set the size of a given image object's source image, when loading
-  it. */
-          load_size(
+           /* Set the size of a given image object's source image, when loading it. */
+           rw load_size(
                int w /* in */,
                int h /* in */
           );
-           /* Set the dimensions for an image object's border, a region which   won't ever be scaled together with its center. */
-          border(
+           /* Set the dimensions for an image object's border, a region which won't ever be scaled together with its center. */
+           rw border(
                int l /* in */,
                int r /* in */,
                int t /* in */,
                int b /* in */
           );
-           /* Sets whether to use high-quality image scaling algorithm on the
-  given image object. */
-          smooth_scale(
+           /* Sets whether to use high-quality image scaling algorithm on the given image object. */
+           rw smooth_scale(
                Eina_Bool smooth_scale /* in */
           );
-           /* Sets the scaling factor (multiplier) for the borders of an image
-  object. */
-          border_scale(
+           /* Sets the scaling factor (multiplier) for the borders of an image object. */
+           rw border_scale(
                double scale /* in */
           );
            /* Mark whether the given image object is dirty (needs to be redrawn). */
-          pixels_dirty(
+           rw pixels_dirty(
                Eina_Bool dirty /* in */
           );
            /* Set the video surface linked to a given image of the canvas */
-          video_surface(
+           rw video_surface(
                Evas_Video_Surface* surf /* in */
           );
            /* Set the video surface capabilities to a given image of the canvas */
-          video_surface_caps(
+           rw video_surface_caps(
                unsigned int caps /* in */
           );
            /* Define if the orientation information in the image file should be honored. */
-          load_orientation(
+           rw load_orientation(
                Eina_Bool enable /* in */
           );
            /* Sets the tiling mode for the given evas image object's fill. */
-          fill_spread(
+           rw fill_spread(
                Evas_Fill_Spread spread /* in */
           );
-           /* Sets   borders) should be drawn when Evas is rendering it. */
-          border_center_fill(
+           /* Set the source file from where an image object must fetch the real image data (it may be an Eet file, besides pure image ones). */
+           rw file(
+               char* file /* The image file path */,
+               char* key /* The image key in @p file (if its an Eet one), or @c */
+          );
+           /* Sets borders) should be drawn when Evas is rendering it. */
+           rw border_center_fill(
                Evas_Border_Fill_Mode fill /* in */
           );
            /* Sets the size of the given image object. */
-          size(
+           rw size(
                int w /* in */,
                int h /* in */
           );
            /* Set the source object to be shown or hidden. */
-          source_visible(
+           rw source_visible(
                Eina_Bool visible /* in */
           );
-           /* Set how to fill an image object's drawing rectangle given the
-  (real) image bound to it. */
-          fill(
+           /* Set how to fill an image object's drawing rectangle given the (real) image bound to it. */
+           rw fill(
                Evas_Coord x /* in */,
                Evas_Coord y /* in */,
                Evas_Coord w /* in */,
                Evas_Coord h /* in */
           );
            /* Set the native surface of a given image of the canvas */
-          native_surface(
+           rw native_surface(
                Evas_Native_Surface* surf /* in */
           );
-           /* Set the scale down factor of a given image object's source image,
-  when loading it. */
-          load_scale_down(
+           /* Set the scale down factor of a given image object's source image, when loading it. */
+           rw load_scale_down(
                int scale_down /* in */
           );
            /* Set the scale hint of a given image of the canvas. */
-          scale_hint(
+           rw scale_hint(
                Evas_Image_Scale_Hint hint /* in */
           );
            /* Set events to be repeated to the source object. */
-          source_events(
+           rw source_events(
                Eina_Bool source /* in */
           );
            /* Set the colorspace of a given image of the canvas. */
-          colorspace(
+           rw colorspace(
                Evas_Colorspace cspace /* in */
           );
-     }
-     properties_set
-     {
            /* Set the callback function to get pixels from a canvas' image. */
-          pixels_get_callback_set(
+           wo pixels_get_callback_set(
                Evas_Object_Image_Pixels_Get_Cb func /* in */,
                void* data /* in */
           );
-           /* Set the source mmaped file from where an image object must fetch the real
-  image data (it may be any Eina_File). */
-          mmap_set(
+           /* Set the source mmaped file from where an image object must fetch the real image data (it may be any Eina_File). */
+           wo mmap_set(
                Eina_File* f /* in */,
                char* key /* in */
           );
            /* Replaces the raw image data of the given image object. */
-          data_copy_set(
+           wo data_copy_set(
                void* data /* in */
           );
            /* Set the frame to current frame of an image object */
-          animated_frame_set(
+           wo animated_frame_set(
                int frame_index /* in */
           );
-     }
-     properties_get
-     {
            /* Get the support state of a given image */
-          region_support_get(
+           ro region_support_get(
                Eina_Bool* region /* out */
           );
-           /* Retrieves a number representing any error that occurred during the
-  last loading of the given image object's source image. */
-          load_error_get(
+           /* Retrieves a number representing any error that occurred during the last loading of the given image object's source image. */
+           ro load_error_get(
                Evas_Load_Error* load_error /*  */
           );
            /* Get the total number of frames of the image object. */
-          animated_frame_count_get(
+           ro animated_frame_count_get(
                int* frame_count /* out */
           );
            /* Retrieves the row stride of the given image object. */
-          stride_get(
+           ro stride_get(
                int* stride /* out */
           );
            /* Check if an image object can be animated (have multiple frames) */
-          animated_get(
+           ro animated_get(
                Eina_Bool* animated /* out */
           );
            /* Get the kind of looping the image object does. */
-          animated_loop_type_get(
+           ro animated_loop_type_get(
                Evas_Image_Animated_Loop_Hint* hint /* out */
           );
            /* Get the number times the animation of the object loops. */
-          animated_loop_count_get(
+           ro animated_loop_count_get(
                int* loop_count /* out */
           );
      }
@@ -195,19 +185,6 @@ Evas_Object_Image =
                in int y /* in */,
                in int w /* in */,
                in int h /* in */
-          );
-           /* Set the source file from where an image object must fetch the real
-  image data (it may be an Eet file, besides pure image ones). */
-          file_set(
-               in char* file /* in */,
-               in char* key /* in */
-          );
-           /* This is the same as evas_object_image_file_set() but the file to be loaded
-  may exist at an address in memory (the data for the file, not the filename
-  itself). The   no   freed for you when no longer needed. The   in size, and must be greater than 0. A   invalid. Set the filename to   image file data freed from memory using evas_object_image_file_set(). */
-          file_get(
-               in char** file /* out */,
-               in char** key /* out */
           );
            /* Get the duration of a sequence of frames. */
           animated_frame_duration_get(
@@ -234,8 +211,7 @@ Evas_Object_Image =
            /* Cancel preloading an image object's image data in the background */
           preload_cancel(
           );
-           /* Converts the raw image data of the given image object to the
-  specified colorspace. */
+           /* Converts the raw image data of the given image object to the specified colorspace. */
           data_convert(
                in Evas_Colorspace to_cspace /* in */,
                out void** data /* out */

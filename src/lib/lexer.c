@@ -103,9 +103,16 @@ Lexer_operate(char *buffer, unsigned int max_length, Parse_Direction dir, ...)
                    char *delim = va_arg(list, char *);
                    Eina_List **strings_list = va_arg(list, Eina_List **);
                    char *new_buffer = buffer;
+                   char *p_to_comment;
                    while (new_buffer)
                      {
                         new_buffer = strstr(buffer, delim);
+                        p_to_comment = strstr(buffer, "/*");
+                        if ((p_to_comment) && (p_to_comment < new_buffer))
+                          {
+                             p_to_comment = strstr(buffer, "*/");
+                             new_buffer = strstr(p_to_comment, delim);
+                          }
                         if (new_buffer)
                           {
                              max_length -= (new_buffer - buffer);
