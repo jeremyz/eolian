@@ -266,40 +266,6 @@ _class_parse(char *buffer)
                          }
                     }
                }
-             if(!strcmp(token, "properties_set"))
-               {
-                  new_buffer = LEX(buffer, KWORD("properties_set"), KCHAR('{'));
-                  Eina_Bool loop = EINA_TRUE;
-                  while (new_buffer && loop)
-                    {
-                       buffer = new_buffer;
-                       Function_Id foo_id = _function_parse(buffer, &new_buffer);
-                       if (foo_id)
-                          database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
-                       if (LEX(new_buffer, KCHAR('}')))
-                         {
-                            new_buffer = LEX(new_buffer, KCHAR('}'));
-                            loop = EINA_FALSE;
-                         }
-                    }
-               }
-             if(!strcmp(token, "properties_get"))
-               {
-                  new_buffer = LEX(buffer, KWORD("properties_get"), KCHAR('{'));
-                  Eina_Bool loop = EINA_TRUE;
-                  while (new_buffer && loop)
-                    {
-                       buffer = new_buffer;
-                       Function_Id foo_id = _function_parse(buffer, &new_buffer);
-                       if (foo_id)
-                          database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
-                       if (LEX(new_buffer, KCHAR('}')))
-                         {
-                            new_buffer = LEX(new_buffer, KCHAR('}'));
-                            loop = EINA_FALSE;
-                         }
-                    }
-               }
              if(!strcmp(token, "methods"))
                {
                   new_buffer = LEX(buffer, KWORD("methods"), KCHAR('{'));
