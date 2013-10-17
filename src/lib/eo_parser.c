@@ -33,7 +33,7 @@ _strip(char* str)
 }
 
 static Function_Id
-_function_parse(char *buffer, char **new_buffer)
+_property_parse(char *buffer, char **new_buffer)
 {
    Function_Id foo_id = NULL;
    char *function = NULL;
@@ -119,7 +119,7 @@ _get_param_dir(char *dir)
 }
 
 static Function_Id
-_function_parse2(char *buffer, char **new_buffer)
+_method_parse(char *buffer, char **new_buffer)
 {
    Function_Id foo_id = NULL;
    Eina_List *types_list = NULL, *itr;
@@ -256,7 +256,7 @@ _class_parse(char *buffer)
                   while (new_buffer && loop)
                     {
                        buffer = new_buffer;
-                       Function_Id foo_id = _function_parse(buffer, &new_buffer);
+                       Function_Id foo_id = _property_parse(buffer, &new_buffer);
                        if (foo_id)
                           database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
                        if (LEX(new_buffer, KCHAR('}')))
@@ -307,7 +307,7 @@ _class_parse(char *buffer)
                   while (new_buffer && loop)
                     {
                        buffer = new_buffer;
-                       Function_Id foo_id = _function_parse2(buffer, &new_buffer);
+                       Function_Id foo_id = _method_parse(buffer, &new_buffer);
                        if (foo_id)
                           database_class_function_add(class_name, foo_id, METHOD_FUNC);
                        if (LEX(new_buffer, KCHAR('}')))
