@@ -17,6 +17,7 @@ typedef struct
    char *name;
    char *description;
    Eina_List *params; /* list of _Parameter_Desc */
+   Function_Type type;
 } _Function_Id;
 
 typedef struct
@@ -99,20 +100,24 @@ database_class_inherits_list_get(char *class_name)
 
 
 Function_Id
-database_function_new(char *function_name)
+database_function_new(char *function_name, Function_Type foo_type)
 {
    _Function_Id *fid = calloc(1, sizeof(*fid));
    fid->name = strdup(function_name);
+   fid->type = foo_type;
    return (Function_Id) fid;
 }
 
-Eina_Bool database_class_function_add(char *classname, Function_Id foo_id, Function_Type foo_type)
+Eina_Bool database_class_function_add(char *classname, Function_Id foo_id)
 {
    Class_desc *desc = eina_hash_find(_classes, classname);
    if (!foo_id || !desc) return EINA_FALSE;
-   switch (foo_type)
+   _Function_Id *fid = (_Function_Id *) foo_id;
+   switch (fid->type)
      {
       case PROPERTY_FUNC:
+      case SET:
+      case GET:
          desc->properties = eina_list_append(desc->properties, foo_id);
          break;
       case METHOD_FUNC:
@@ -137,6 +142,13 @@ database_class_functions_list_get(char *class_name, Function_Type foo_type)
          return desc->methods;
       default: return NULL;
      }
+}
+
+Function_Type
+database_function_type_get(Function_Id function_id)
+{
+   _Function_Id *fid = (_Function_Id *)function_id;
+   return fid->type;
 }
 
 void

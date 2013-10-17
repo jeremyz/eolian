@@ -32,6 +32,16 @@ _strip(char* str)
    return strndup(beg, end - beg + 1);
 }
 
+static Function_Type
+_get_func_type(char *type)
+{
+   if (!type) return METHOD_FUNC;
+   if (!strcmp("rw", type)) return PROPERTY_FUNC;
+   if (!strcmp("ro", type)) return GET;
+   if (!strcmp("wo", type)) return SET;
+   return METHOD_FUNC;
+}
+
 static Function_Id
 _property_parse(char *buffer, char **new_buffer)
 {
@@ -55,12 +65,18 @@ _property_parse(char *buffer, char **new_buffer)
 
    // PROTOTYPE
    char *types_function = NULL; // types and function, no params
+   char *prop_dir = NULL;
    tmp_buffer = LEX(buffer, STRING("(", &types_function));
    if (!types_function) goto end;
+   prop_dir = strstr(types_function, " ");
+   if (prop_dir)
+     {
+        prop_dir = strndup(types_function, prop_dir - types_function);
+     }
 
    // FUNC_NAME
    LEX_REVERSE(types_function, strlen(types_function), UWORD(&function));
-   foo_id = database_function_new(function);
+   foo_id = database_function_new(function, _get_func_type(prop_dir));
    if (comment)
       database_function_description_set(foo_id, comment);
 
@@ -93,7 +109,14 @@ _property_parse(char *buffer, char **new_buffer)
         char *tmp = strstr(type_as_string, name);
         *tmp = '\0';
         type = _strip(type_as_string);
-        database_function_parameter_add(foo_id, EINA_TRUE, type, name, type_comment2);
+
+        /* For properties:
+         *   -if property is "set/get" or "set" we save description of IN parameter t.e. of type int;
+         *   -if property is "get" we save description of OUT parameter t.e. of type int*. */
+        Parameter_Dir dir = IN_PARAM;
+        if (database_function_type_get(foo_id) == GET) dir = OUT_PARAM;
+
+        database_function_parameter_add(foo_id, dir, type, name, type_comment2);
         if (type) free(type);
      }
 
@@ -102,6 +125,8 @@ end:
       free(comment);
    if (types_function)
       free(types_function);
+   if (prop_dir)
+      free(prop_dir);
    if (function)
       free(function);
    EINA_LIST_FREE(types_list, type_as_string)
@@ -146,7 +171,7 @@ _method_parse(char *buffer, char **new_buffer)
 
    // FUNC_NAME
    LEX_REVERSE(types_function, strlen(types_function), UWORD(&function));
-   foo_id = database_function_new(function);
+   foo_id = database_function_new(function, METHOD_FUNC);
    if (comment)
       database_function_description_set(foo_id, comment);
 
@@ -258,7 +283,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _property_parse(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_function_add(class_name, foo_id, PROPERTY_FUNC);
+                          database_class_function_add(class_name, foo_id);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));
@@ -275,7 +300,7 @@ _class_parse(char *buffer)
                        buffer = new_buffer;
                        Function_Id foo_id = _method_parse(buffer, &new_buffer);
                        if (foo_id)
-                          database_class_function_add(class_name, foo_id, METHOD_FUNC);
+                          database_class_function_add(class_name, foo_id);
                        if (LEX(new_buffer, KCHAR('}')))
                          {
                             new_buffer = LEX(new_buffer, KCHAR('}'));

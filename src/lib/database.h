@@ -7,6 +7,8 @@ typedef struct _Parameter_Desc* Parameter_Desc;
 typedef enum
 {
    PROPERTY_FUNC,
+   SET,
+   GET,
    METHOD_FUNC,
    CONSTRUCTOR,
    DESTRUCTOR
@@ -34,15 +36,17 @@ Eina_Bool database_class_inherit_add(char *class_name, char *inherit_class_name)
 /* Returns the list of inherit class names of a certain class */
 const Eina_List *database_class_inherits_list_get(char *class_name);
 
-
 /* Returns a list of the function ids of a type in a class */
 const Eina_List *database_class_functions_list_get(char *class_name, Function_Type foo_type);
 
 /* Create a function */
-Function_Id database_function_new(char *function_name);
+Function_Id database_function_new(char *function_name, Function_Type foo_type);
+
+/* Get a type of a function */
+Function_Type database_function_type_get(Function_Id function_id);
 
 /* Add a function to a class */
-Eina_Bool database_class_function_add(char *classname, Function_Id foo_id, Function_Type foo_type);
+Eina_Bool database_class_function_add(char *classname, Function_Id foo_id);
 
 /* Add a description to a function */
 void database_function_description_set(Function_Id function_id, char *description);
