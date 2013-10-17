@@ -9,10 +9,11 @@
                        {\n         \
                          inherit\n   \
                          {\n\
-                             MyBaseClass;\n\
+                             MyBaseClass1  ,\n\
+                             MyBaseClass2  ;\n\
                          }\n\
                        }"
-START_TEST(first_test)
+START_TEST(class_name_test)
 {
    eolian_database_init();
    eolian_eo_class_desc_parse(EO_COMMENT);
@@ -21,6 +22,38 @@ START_TEST(first_test)
 }
 END_TEST
 
+START_TEST(inherits_test)
+{
+   Eina_List *compare = NULL, *itr1, *itr2;
+   Eina_List *inherits_list = NULL;
+   char *str1, *str2;
+   eina_init();
+   compare = eina_list_append(compare, "MyBaseClass1");
+   compare = eina_list_append(compare, "MyBaseClass2");
+
+   eolian_database_init();
+   eolian_eo_class_desc_parse(EO_COMMENT);
+   inherits_list = (Eina_List*) database_class_inherits_list_get("MyClassName");
+   fail_if(!inherits_list);
+   ck_assert_int_eq(eina_list_count(inherits_list), 2);
+   itr2 = compare;
+   EINA_LIST_FOREACH(inherits_list, itr1, str1)
+     {
+        str2 = eina_list_data_get(itr2);
+        ck_assert_str_eq(str1, str2);
+
+        itr2 = eina_list_next(itr2);
+     }
+
+   eina_list_free(compare);
+   eolian_database_shutdown();
+   eina_shutdown();
+}
+END_TEST
+
+
+const Eina_List *database_class_inherits_list_get(char *class_name);
+
 
 int main(void)
 {
@@ -28,7 +61,8 @@ int main(void)
 
    TCase *tc = tcase_create("test case");
 
-   tcase_add_test(tc, first_test);
+   tcase_add_test(tc, class_name_test);
+   tcase_add_test(tc, inherits_test);
    suite_add_tcase(s, tc);
 
    SRunner *sr = srunner_create(s);

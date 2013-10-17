@@ -209,7 +209,7 @@ static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
               param_dir = "INOUT";
               break;
           }
-         printf("%*s%s <%s> <%s> <%s>\n", nb_spaces + 5, param_dir,"", param->name, param->type, (param->description?param->description:""));
+         printf("%*s%s <%s> <%s> <descr: %s>\n", nb_spaces + 5, "", param_dir, param->name, param->type, (param->description?param->description:""));
      }
    return EINA_TRUE;
 }

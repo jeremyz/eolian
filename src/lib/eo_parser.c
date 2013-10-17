@@ -231,8 +231,13 @@ _class_parse(char *buffer)
                   free(inherits_str);
                   inherits_str = NULL;
                   if (!new_buffer) return NULL;
+                  /* */
                   EINA_LIST_FREE(inherits_list, inherit)
-                     database_class_inherit_add(class_name, inherit);
+                    {
+                       char *tmp = _strip(inherit);
+                       free(inherit);
+                       database_class_inherit_add(class_name, tmp);
+                    }
                }
              if(!strcmp(token, "constructor"))
                {
