@@ -76,7 +76,15 @@ Lexer_operate(char *buffer, unsigned int max_length, Parse_Direction dir, ...)
                    char *new_buffer = strstr(buffer, end);
                    if (new_buffer)
                      {
-                        if (ret) *ret = strndup(buffer, dir * (new_buffer - buffer)); // FIXME: check for RTL
+                        /* Read about how malloc(0) works. */
+                        if (new_buffer == buffer)
+                          {
+                             if (ret) *ret = NULL;
+                          }
+                        else
+                          {
+                             if (ret) *ret = strndup(buffer, dir * (new_buffer - buffer)); // FIXME: check for RTL
+                          }
                         max_length -= (new_buffer - buffer);
                         buffer = new_buffer + strlen(end);
                      }

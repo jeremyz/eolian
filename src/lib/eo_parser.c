@@ -10,7 +10,8 @@ static char *
 _comment_parse(char *buffer, char **comment)
 {
    char *new_buffer = LEX(buffer, KWORD("/*"), STRING("*/", comment));
-   if (new_buffer)
+   /* If comment is empty, NULL will be returned. */
+   if (new_buffer && (*comment))
      {
         char *end = LEX_REVERSE(*comment, strlen(*comment), SKIP_SPACES_TOKEN);
         *(end + 1) = '\0';
