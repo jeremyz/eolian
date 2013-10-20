@@ -24,6 +24,10 @@ typedef enum
 /* Add a class in the database */
 Eina_Bool database_class_add(char *class_name);
 
+/* Add a class from the database */
+Eina_Bool
+database_class_del(char *class_name);
+
 /* Returns the list of class names of the database */
 const Eina_List *database_class_names_list_get();
 

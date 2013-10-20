@@ -13,7 +13,7 @@ _comment_parse(char *buffer, char **comment)
    if (new_buffer)
      {
         char *end = LEX_REVERSE(*comment, strlen(*comment), SKIP_SPACES_TOKEN);
-        *(end+1) = '\0';
+        *(end + 1) = '\0';
      }
    return new_buffer;
 }
@@ -118,18 +118,23 @@ _property_parse(char *buffer, char **new_buffer)
 
         database_function_parameter_add(foo_id, dir, type, name, type_comment2);
         if (type) free(type);
+        if (name) free(name);
+        if (type_comment2) free(type_comment2);
      }
 
 end:
+   if (params) free(params);
    if (comment)
-      free(comment);
+     free(comment);
    if (types_function)
-      free(types_function);
+     free(types_function);
    if (prop_dir)
-      free(prop_dir);
+     free(prop_dir);
    if (function)
-      free(function);
+     free(function);
    EINA_LIST_FREE(types_list, type_as_string)
+      free(type_as_string);
+   EINA_LIST_FREE(params_list, type_as_string)
       free(type_as_string);
 
    return foo_id;
@@ -189,6 +194,8 @@ _method_parse(char *buffer, char **new_buffer)
    Eina_List *params_list = NULL;
    *new_buffer = LEX(tmp_buffer, STRING(");", &params));
    LEX(params, STRINGS_LIST(",", &params_list));
+   if (params) free(params);
+   params = NULL;
    EINA_LIST_FOREACH(params_list, itr, type_as_string)
      {
         char *type_comment = strstr(type_as_string, "/*");
@@ -210,6 +217,7 @@ _method_parse(char *buffer, char **new_buffer)
         if (name) free(name);
         if (dir) free(dir);
         if (type) free(type);
+        if (type_comment2) free(type_comment2);
      }
 
 end:
@@ -220,6 +228,8 @@ end:
    if (function)
       free(function);
    EINA_LIST_FREE(types_list, type_as_string)
+      free(type_as_string);
+   EINA_LIST_FREE(params_list, type_as_string)
       free(type_as_string);
 
    return foo_id;
@@ -242,7 +252,7 @@ _class_parse(char *buffer)
              new_buffer = NULL;
              char *token = NULL;
              LEX(buffer, UWORD(&token));
-             if (!token) return NULL;
+             if (!token) break;
              if (!strcmp(token, "inherit"))
                {
                   Eina_List *inherits_list = NULL;
@@ -308,6 +318,8 @@ _class_parse(char *buffer)
                          }
                     }
                }
+             free(token);
+             token = NULL;
           }
      }
    if (class_name) free(class_name);
@@ -342,6 +354,7 @@ Eina_Bool eolian_eo_file_parse(char *filename)
      }
 
    eolian_eo_class_desc_parse(buffer);
+   free(buffer);
    return EINA_TRUE;
 }
 

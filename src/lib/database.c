@@ -28,12 +28,57 @@ typedef struct
    Parameter_Dir param_dir;
 } _Parameter_Desc;
 
+
+static void
+_param_del(_Parameter_Desc *pdesc)
+{
+   free(pdesc->name);
+   free(pdesc->type);
+   free(pdesc->description);
+   free(pdesc);
+}
+
+static void
+_fid_del(_Function_Id *fid)
+{
+   _Parameter_Desc *param;
+   free(fid->name);
+   free(fid->description);
+   EINA_LIST_FREE(fid->params, param)
+      _param_del(param);
+   free(fid);
+}
+
+static void
+_class_del(Class_desc *class)
+{
+   Eina_List *inherits = class->inherits;
+   char *inherit_name;
+   EINA_LIST_FREE(inherits, inherit_name)
+      free(inherit_name);
+
+   _Function_Id *fid;
+   EINA_LIST_FREE(class->methods, fid)
+      _fid_del(fid);
+   EINA_LIST_FREE(class->properties, fid)
+      _fid_del(fid);
+
+   free(class->name);
+   free(class);
+}
+
+void _hash_free_cb(void *data)
+{
+   Class_desc *cl = data;
+   _class_del(cl);
+}
+
 Eina_Bool
 eolian_database_init()
 {
    eina_init();
    if (!_classes)
-      _classes = eina_hash_string_superfast_new(NULL);
+      _classes = eina_hash_string_superfast_new(_hash_free_cb);
    return EINA_TRUE;
 }
 
@@ -55,6 +100,20 @@ database_class_add(char *classname)
         eina_hash_set(_classes, classname, desc);
      }
    return EINA_TRUE;
+}
+
+Eina_Bool
+database_class_del(char *class_name)
+{
+   Class_desc *cl = eina_hash_find(_classes, class_name);
+   if (cl)
+     {
+        eina_hash_del(_classes, class_name, NULL);
+        _class_del(cl);
+           return EINA_TRUE;
+     }
+
+   return EINA_FALSE;
 }
 
 static Eina_Bool _class_name_get(const Eina_Hash *hash EINA_UNUSED, const void *key EINA_UNUSED, void *data, void *fdata)
