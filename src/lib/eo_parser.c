@@ -248,6 +248,12 @@ _class_parse(char *buffer)
    char *class_name_tmp = _strip(class_name);
    if (class_name) free(class_name);
    class_name = class_name_tmp;
+
+   if (database_class_exists(class_name))
+     {
+        printf("Class: \"%s\" already exists in database,\n", class_name);
+        goto end;
+     }
    if (new_buffer)
      {
         database_class_add(class_name);
@@ -330,6 +336,7 @@ _class_parse(char *buffer)
              token = NULL;
           }
      }
+end:
    if (class_name) free(class_name);
    return new_buffer;
 }

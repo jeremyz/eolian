@@ -1,7 +1,10 @@
 
 
+Improve:
+- when trying to add class name, which already in database, maybe should print
+  which is parsed right now.
+
 To think about:
-- determine uniqness of class names in Eo. Is it going to be unique? Spaces, underscores, capital leters?
 - virtual pure
 - add name of data structure into eo file
 
