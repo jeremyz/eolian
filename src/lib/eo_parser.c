@@ -194,6 +194,9 @@ _method_parse(char *buffer, char **new_buffer)
    char *params = NULL;
    Eina_List *params_list = NULL;
    *new_buffer = LEX(tmp_buffer, STRING(");", &params));
+   /* If there are no params, NULL will be written into params*/
+   if (!params) goto end;
+
    LEX(params, STRINGS_LIST(",", &params_list));
    if (params) free(params);
    params = NULL;
