@@ -266,9 +266,12 @@ _class_parse(char *buffer)
 
                   new_buffer = LEX(new_buffer, STRING(";", &inherits_str), KCHAR('}'));
 
-                  LEX(inherits_str, STRINGS_LIST(",", &inherits_list));
-                  free(inherits_str);
-                  inherits_str = NULL;
+                  if (inherits_str)
+                    {
+                       LEX(inherits_str, STRINGS_LIST(",", &inherits_list));
+                       free(inherits_str);
+                       inherits_str = NULL;
+                    }
                   if (!new_buffer) return NULL;
                   /* */
                   EINA_LIST_FREE(inherits_list, inherit)
