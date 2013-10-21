@@ -20,7 +20,7 @@ _comment_parse(char *buffer, char **comment)
 }
 
 static char*
-_strip(char* str)
+_strip(char *str)
 {
    char *beg, *end;
    beg = str;
@@ -106,8 +106,9 @@ _property_parse(char *buffer, char **new_buffer)
              type_as_string[strlen(type_as_string) - strlen(type_comment)] = '\0';
           }
         char *name = NULL;
-        LEX_REVERSE(type_as_string, strlen(type_as_string), UWORD(&name)); // extract the param name
-        char *tmp = strstr(type_as_string, name);
+        char *tmp;
+        // extract param name; tmp will be a "space" before par name;
+        tmp = LEX_REVERSE(type_as_string, strlen(type_as_string), UWORD(&name));
         *tmp = '\0';
         type = _strip(type_as_string);
 
@@ -213,8 +214,8 @@ _method_parse(char *buffer, char **new_buffer)
         char *dir = NULL;
         char *type = NULL;
         LEX(type_as_string, UWORD(&dir)); // extract the param name
-        LEX_REVERSE(type_as_string, strlen(type_as_string), UWORD(&name)); // extract the param name
-        char *tmp = strstr(type_as_string, name);
+        char *tmp;
+        tmp = LEX_REVERSE(type_as_string, strlen(type_as_string), UWORD(&name)); // extract the param name
         *tmp = '\0';
         type = _strip(type_as_string + strlen(dir));
         database_function_parameter_add(foo_id, _get_param_dir(dir), type, name, type_comment2);
