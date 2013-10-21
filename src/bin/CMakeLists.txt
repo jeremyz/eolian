@@ -14,3 +14,7 @@ target_link_libraries (eolian-bin
    eolian
 )
 
+add_executable(ch_test test_ch.c)
+target_link_libraries (ch_test
+   eolian
+)
