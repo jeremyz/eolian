@@ -41,8 +41,8 @@ Lexer_operate(char *buffer, unsigned int max_length, Parse_Direction dir, ...)
                          (c >= '0' && c <= '9') || (c == '_')))
                      {
                         buffer += dir;
-                        c = *buffer;
                         max_length--;
+                        if (max_length) c = *buffer;
                      }
                    if (begin == buffer) goto error; // no word found
 //                   buffer -= dir; // the buffer is one byte right because of the loop
