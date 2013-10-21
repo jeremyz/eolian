@@ -8,10 +8,13 @@ set_target_properties(eolian-bin PROPERTIES OUTPUT_NAME eolian)
 
 include_directories(
    ${EINA_INCLUDE_DIRS}
+   ${ECORE_FILE_INCLUDE_DIRS}
    )
 
 target_link_libraries (eolian-bin
    eolian
+   ${EINA_LIBRARIES}
+   ${ECORE_FILE_LIBRARIES}
 )
 
 add_executable(ch_test test_ch.c)
