@@ -22,7 +22,7 @@ typedef enum
 } Parameter_Dir;
 
 /* Add a class in the database */
-Eina_Bool database_class_add(char *class_name);
+Eina_Bool database_class_add(const char *class_name);
 
 /* Add a class from the database */
 Eina_Bool
@@ -35,7 +35,13 @@ const Eina_List *database_class_names_list_get();
 Eina_Bool database_class_exists(char *class_name);
 
 /* Add an inherit class name to a class */
-Eina_Bool database_class_inherit_add(char *class_name, char *inherit_class_name);
+Eina_Bool database_class_inherit_add(const char *class_name, char *inherit_class_name);
+
+/* Returns c-macro for current class like EVAS_OBJ_IMAGE_CLASS */
+const char* database_class_macro_get(const  char *class_name);
+
+void
+database_class_macro_set(const char *class_name, const char *macro);
 
 /* Returns the list of inherit class names of a certain class */
 const Eina_List *database_class_inherits_list_get(char *class_name);
@@ -44,23 +50,23 @@ const Eina_List *database_class_inherits_list_get(char *class_name);
 const Eina_List *database_class_functions_list_get(char *class_name, Function_Type foo_type);
 
 /* Create a function */
-Function_Id database_function_new(char *function_name, Function_Type foo_type);
+Function_Id database_function_new(const char *function_name, Function_Type foo_type);
 
 /* Get a type of a function */
 Function_Type database_function_type_get(Function_Id function_id);
 
 /* Add a function to a class */
-Eina_Bool database_class_function_add(char *classname, Function_Id foo_id);
+Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id);
 
 /* Add a description to a function */
-void database_function_description_set(Function_Id function_id, char *description);
+void database_function_description_set(Function_Id function_id, const char *description);
 
 /* Get a description of a function */
 const char *database_function_description_get(Function_Id function_id);
 
 
 /* Add a parameter to a function */
-Parameter_Desc database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, char *type, char *name, char *description);
+Parameter_Desc database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, const char *type, const char *name, const char *description);
 
 /* Returns the list of Parameter_Desc of a function */
 const Eina_List *database_parameters_list_get(Function_Id foo_id);

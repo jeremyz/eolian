@@ -7,6 +7,7 @@ static Eina_Hash *_classes = NULL;
 typedef struct
 {
    char *name;
+   char *macro;
    Eina_List *inherits;
    Eina_List *properties; /* Hash prop_name -> _Function_Id */
    Eina_List *methods; /* Hash meth_name -> _Function_Id */
@@ -91,7 +92,7 @@ eolian_database_shutdown()
 }
 
 Eina_Bool
-database_class_add(char *classname)
+database_class_add(const char *classname)
 {
    if (_classes)
      {
@@ -142,12 +143,26 @@ Eina_Bool database_class_exists(char *class_name)
 }
 
 Eina_Bool
-database_class_inherit_add(char *class_name, char *inherit_class_name)
+database_class_inherit_add(const char *class_name, char *inherit_class_name)
 {
    Class_desc *desc = eina_hash_find(_classes, class_name);
    if (!desc) return EINA_FALSE;
    desc->inherits = eina_list_append(desc->inherits, inherit_class_name);
    return EINA_TRUE;
+}
+
+const char*
+database_class_macro_get(const char *class_name)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   return (desc ? desc->macro : NULL);
+}
+
+void
+database_class_macro_set(const char *class_name, const char *macro)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   if (desc) desc->macro = strdup(macro);
 }
 
 const Eina_List *
@@ -157,9 +172,8 @@ database_class_inherits_list_get(char *class_name)
    return (desc?desc->inherits:NULL);
 }
 
-
 Function_Id
-database_function_new(char *function_name, Function_Type foo_type)
+database_function_new(const char *function_name, Function_Type foo_type)
 {
    _Function_Id *fid = calloc(1, sizeof(*fid));
    fid->name = strdup(function_name);
@@ -167,7 +181,7 @@ database_function_new(char *function_name, Function_Type foo_type)
    return (Function_Id) fid;
 }
 
-Eina_Bool database_class_function_add(char *classname, Function_Id foo_id)
+Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id)
 {
    Class_desc *desc = eina_hash_find(_classes, classname);
    if (!foo_id || !desc) return EINA_FALSE;
@@ -211,7 +225,7 @@ database_function_type_get(Function_Id function_id)
 }
 
 void
-database_function_description_set(Function_Id function_id, char *description)
+database_function_description_set(Function_Id function_id, const char *description)
 {
    _Function_Id *fid = (_Function_Id *)function_id;
    if (fid) fid->description = strdup(description);
@@ -225,7 +239,7 @@ database_function_description_get(Function_Id function_id)
 }
 
 Parameter_Desc
-database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, char *type, char *name, char *description)
+database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, const char *type, const char *name, const char *description)
 {
    _Parameter_Desc *param = NULL;
    _Function_Id *fid = (_Function_Id *)foo_id;
@@ -291,6 +305,7 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    _Function_Id *function;
    Class_desc *desc = data;
    printf("Class %s:\n", desc->name);
+   printf("  macro %s:\n", desc->macro);
 
    // Inherits
    printf("  inherits: ");

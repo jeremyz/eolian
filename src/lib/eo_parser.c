@@ -5,6 +5,13 @@
 #include "Eolian.h"
 #include "lexer.h"
 #include "database.h"
+#include "eina_json.h"
+
+#define NAME "name"
+#define MACRO "macro"
+#define INHERITS "inherits"
+#define PROPERTIES "properties"
+#define METHODS "methods"
 
 static char *
 _comment_parse(char *buffer, char **comment)
@@ -34,7 +41,7 @@ _strip(char *str)
 }
 
 static Function_Type
-_get_func_type(char *type)
+_get_func_type(const char *type)
 {
    if (!type) return METHOD_FUNC;
    if (!strcmp("rw", type)) return PROPERTY_FUNC;
@@ -143,7 +150,7 @@ end:
 }
 
 Parameter_Dir
-_get_param_dir(char *dir)
+_get_param_dir(const char *dir)
 {
    if (!strcmp("in", dir)) return IN_PARAM;
    if (!strcmp("out", dir)) return OUT_PARAM;
@@ -352,6 +359,179 @@ Eina_Bool eolian_eo_class_desc_parse(char *class_desc)
    return EINA_TRUE;
 }
 
+#define JSON_ARR_NTH_STRING_GET(arr, idx) eina_json_string_get(eina_json_array_nth_get((arr), (idx)))
+static void
+_class_parse_json(char *buffer)
+{
+   Eina_Json_Context *ctx = NULL;
+   Eina_Bool err;
+   Eina_Json_Type type;
+   Eina_Json_Value *tree = NULL, *jv = NULL;
+
+   ctx = eina_json_context_dom_new();
+   err = eina_json_context_parse(ctx, buffer);
+   if (!err)
+     {
+        Eina_Json_Error e = -1;
+        e = eina_json_context_error_get(ctx);
+        printf("json parsing error: %d\n", e);
+        goto end;
+     }
+   tree = eina_json_context_dom_tree_take(ctx);
+   type = eina_json_type_get(tree);
+   if (type != EINA_JSON_TYPE_OBJECT)
+     {
+        printf("Json Value is not oblect\n");
+        goto end;
+     }
+
+   const char *class_name = NULL;
+   /* Get "name" section. */
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, NAME);
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
+     {
+        class_name = eina_json_string_get(jv);
+        database_class_add(class_name);
+     }
+   /* Get "macro" section. */
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, MACRO);
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
+     {
+        const char *macro = eina_json_string_get(jv);
+        database_class_macro_set(class_name, macro);
+     }
+
+   /* Get "inhrits" section. */
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, INHERITS);
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
+     {
+        Eina_Json_Value *arr, *v;
+        Eina_Iterator *it = NULL;
+        arr = jv;
+        it = eina_json_array_iterator_new(arr);
+        EINA_ITERATOR_FOREACH(it, v)
+          {
+             const char *val = eina_json_string_get(v);
+             if (strlen(val))
+               database_class_inherit_add(class_name, strdup(val));
+          }
+        eina_iterator_free(it);
+     }
+   /* Get "properties" section. */
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, PROPERTIES);
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
+     {
+        Eina_Iterator *it = eina_json_object_iterator_new(jv);
+        Eina_Json_Value *itv, *v;
+        /* Iterate over properties. */
+        EINA_ITERATOR_FOREACH(it, itv)
+          {
+             const char *prop_type, *comment_set, *comment_get;
+             const char *func_name;
+             Eina_Json_Value *prop;
+             Function_Id foo_id;
+
+             func_name = eina_json_pair_name_get(itv);
+             prop = eina_json_pair_value_get(itv);
+
+             v = EINA_JSON_OBJECT_VALUE_GET(prop, "type");
+             prop_type = eina_json_string_get(v);
+             if (!strcmp(prop_type, "rw"))
+               {
+                  v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment_get");
+                  comment_get = eina_json_string_get(v);
+                  v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment_set");
+                  comment_set = eina_json_string_get(v);
+               }
+             else
+               {
+                  v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment");
+                  comment_set = eina_json_string_get(v);
+               }
+             foo_id = database_function_new(func_name, _get_func_type(prop_type));
+             if (foo_id)
+               {
+                  database_function_description_set(foo_id, comment_set);
+                  database_class_function_add(class_name, foo_id);
+                  Eina_Json_Value *param_arr, *param;
+                  param_arr = EINA_JSON_OBJECT_VALUE_GET(prop, "parameters");
+                  Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
+                  EINA_ITERATOR_FOREACH(param_it, param)
+                    {
+                       const char *par_type, *par_name, *par_comment;
+                       par_type = JSON_ARR_NTH_STRING_GET(param, 2);
+                       par_name = JSON_ARR_NTH_STRING_GET(param, 3);
+                       par_comment = JSON_ARR_NTH_STRING_GET(param, 4);
+
+                       Parameter_Dir dir = IN_PARAM;
+                       if (database_function_type_get(foo_id) == GET) dir = OUT_PARAM;
+
+                       database_function_parameter_add(foo_id, dir, par_type, par_name, par_comment);
+                    }
+                  eina_iterator_free(param_it);
+               }
+          }
+        eina_iterator_free(it);
+     }
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, METHODS);
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
+     {
+        Eina_Iterator *it = eina_json_object_iterator_new(jv);
+        Eina_Json_Value *itv, *v;
+        /* Iterate over properties. */
+        EINA_ITERATOR_FOREACH(it, itv)
+          {
+             const char *func_name, *comment;
+             Eina_Json_Value *prop;
+             Function_Id foo_id;
+
+             func_name = eina_json_pair_name_get(itv);
+             prop = eina_json_pair_value_get(itv);
+
+             v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment");
+             comment = eina_json_string_get(v);
+
+             foo_id = database_function_new(func_name, METHOD_FUNC);
+             if (foo_id)
+               {
+                  database_function_description_set(foo_id, comment);
+                  database_class_function_add(class_name, foo_id);
+                  Eina_Json_Value *param_arr, *param;
+                  param_arr = EINA_JSON_OBJECT_VALUE_GET(prop, "parameters");
+                  Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
+                  EINA_ITERATOR_FOREACH(param_it, param)
+                    {
+                       const char *param_dir, *par_type, *par_name, *par_comment;
+                       param_dir = JSON_ARR_NTH_STRING_GET(param, 0);
+                       par_type = JSON_ARR_NTH_STRING_GET(param, 2);
+                       par_name = JSON_ARR_NTH_STRING_GET(param, 3);
+                       par_comment = JSON_ARR_NTH_STRING_GET(param, 4);
+
+                       database_function_parameter_add(foo_id, _get_param_dir(param_dir), par_type, par_name, par_comment);
+                    }
+                  eina_iterator_free(param_it);
+               }
+          }
+        eina_iterator_free(it);
+     }
+
+end:
+   if (tree) eina_json_value_free(tree);
+   if (ctx) eina_json_context_free(ctx);
+}
+#undef JSON_ARR_NTH_STRING_GET
+
+Eina_Bool eolian_eo_class_desc_parse_json(char *class_desc)
+{
+   char *tmp = class_desc;
+   while (tmp)
+     {
+        _class_parse_json(tmp);
+        tmp = NULL;
+     }
+   return EINA_TRUE;
+}
+
 Eina_Bool eolian_eo_file_parse(char *filename)
 {
    if (!ecore_file_exists(filename)) return EINA_FALSE;
@@ -368,7 +548,7 @@ Eina_Bool eolian_eo_file_parse(char *filename)
         printf("%s: Read size %d different from file size %d. Continue.\n", __FUNCTION__, read_sz, sz);
      }
 
-   eolian_eo_class_desc_parse(buffer);
+   eolian_eo_class_desc_parse_json(buffer);
    free(buffer);
    return EINA_TRUE;
 }

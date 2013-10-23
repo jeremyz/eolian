@@ -13,11 +13,25 @@
                              MyBaseClass2  ;\n\
                          }\n\
                        }"
+
+#define EO_COMMENT_JSON "{                               \n\
+                          \"name\" : \"MyClassName\",    \n\
+                          \"macro\" : \"MY_CLASS_NAME\",  \n\
+                          \"inherits\" : [\"MyBaseClass1\", \"MyBaseClass2\", \"\"]\n\
+                         }"
+
+#define JSON
+
 START_TEST(class_name_test)
 {
    eolian_database_init();
+#ifndef JSON
    eolian_eo_class_desc_parse(EO_COMMENT);
+#else
+   eolian_eo_class_desc_parse_json(EO_COMMENT_JSON);
+#endif
    fail_if(!database_class_exists("MyClassName"));
+   ck_assert_str_eq(database_class_macro_get("MyClassName"), "MY_CLASS_NAME");
    eolian_database_shutdown();
 }
 END_TEST
@@ -32,7 +46,11 @@ START_TEST(inherits_test)
    compare = eina_list_append(compare, "MyBaseClass2");
 
    eolian_database_init();
+#ifndef JSON
    eolian_eo_class_desc_parse(EO_COMMENT);
+#else
+   eolian_eo_class_desc_parse_json(EO_COMMENT_JSON);
+#endif
    inherits_list = (Eina_List*) database_class_inherits_list_get("MyClassName");
    fail_if(!inherits_list);
    ck_assert_int_eq(eina_list_count(inherits_list), 2);
