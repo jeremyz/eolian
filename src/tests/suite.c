@@ -51,10 +51,6 @@ START_TEST(inherits_test)
 }
 END_TEST
 
-
-const Eina_List *database_class_inherits_list_get(char *class_name);
-
-
 int main(void)
 {
    Suite *s = suite_create("First");
