@@ -2,13 +2,18 @@
 
 Improve:
 - when trying to add class name, which already in database, maybe should print
-  which is parsed right now.
+  which file is parsed right now.
 
 To think about:
 - virtual pure
 - add name of data structure into eo file
 
+- Can we have multiple constructors in Eo2?
+  Do we need to write constructors in separate section ob JSON?
+  in Py, C++, constructor has the same name. in Eo - not, what's in Eo2?
+
 Fix in parsing
+   (doesn't matter in JSON)
   - when splitting parameters, comma can be in comment!!!
 
 
