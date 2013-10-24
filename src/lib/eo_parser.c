@@ -400,6 +400,13 @@ _class_parse_json(char *buffer)
         const char *macro = eina_json_string_get(jv);
         database_class_macro_set(class_name, macro);
      }
+   /* Get "comment" section. */
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "comment");
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
+     {
+        const char *comment = eina_json_string_get(jv);
+        database_class_description_set(class_name, comment);
+     }
 
    /* Get "inhrits" section. */
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, INHERITS);

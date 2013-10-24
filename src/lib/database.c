@@ -8,6 +8,7 @@ typedef struct
 {
    char *name;
    char *macro;
+   char *description;
    Eina_List *inherits;
    Eina_List *properties; /* Hash prop_name -> _Function_Id */
    Eina_List *methods; /* Hash meth_name -> _Function_Id */
@@ -53,8 +54,8 @@ _fid_del(_Function_Id *fid)
 static void
 _class_del(Class_desc *class)
 {
-   Eina_List *inherits = class->inherits;
    char *inherit_name;
+   Eina_List *inherits = class->inherits;
    EINA_LIST_FREE(inherits, inherit_name)
       free(inherit_name);
 
@@ -65,6 +66,7 @@ _class_del(Class_desc *class)
       _fid_del(fid);
 
    free(class->name);
+   free(class->description);
    free(class);
 }
 
@@ -163,6 +165,20 @@ database_class_macro_set(const char *class_name, const char *macro)
 {
    Class_desc *desc = eina_hash_find(_classes, class_name);
    if (desc) desc->macro = strdup(macro);
+}
+
+const char*
+database_class_description_get(const char *class_name)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   return (desc ? desc->description : NULL);
+}
+
+void
+database_class_description_set(const char *class_name, const char *description)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   if (desc) desc->description = strdup(description);
 }
 
 const Eina_List *
@@ -346,7 +362,8 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    _Function_Id *function;
    Class_desc *desc = data;
    printf("Class %s:\n", desc->name);
-   printf("  macro %s:\n", desc->macro);
+   printf("  macro: %s\n", desc->macro);
+   printf("  description: %s\n", desc->description);
 
    // Inherits
    printf("  inherits: ");
