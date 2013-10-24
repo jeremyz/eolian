@@ -16,9 +16,9 @@ typedef struct
 typedef struct
 {
    char *name;
-   char *description;
    Eina_List *params; /* list of _Parameter_Desc */
    Function_Type type;
+   Eina_Hash *data;
 } _Function_Id;
 
 typedef struct
@@ -44,7 +44,7 @@ _fid_del(_Function_Id *fid)
 {
    _Parameter_Desc *param;
    free(fid->name);
-   free(fid->description);
+   eina_hash_free(fid->data);
    EINA_LIST_FREE(fid->params, param)
       _param_del(param);
    free(fid);
@@ -178,6 +178,7 @@ database_function_new(const char *function_name, Function_Type foo_type)
    _Function_Id *fid = calloc(1, sizeof(*fid));
    fid->name = strdup(function_name);
    fid->type = foo_type;
+   fid->data  = eina_hash_string_superfast_new(free);
    return (Function_Id) fid;
 }
 
@@ -225,17 +226,26 @@ database_function_type_get(Function_Id function_id)
 }
 
 void
-database_function_description_set(Function_Id function_id, const char *description)
+database_function_description_set(Function_Id function_id, const char *key, const char *description)
 {
    _Function_Id *fid = (_Function_Id *)function_id;
-   if (fid) fid->description = strdup(description);
+   EINA_SAFETY_ON_NULL_RETURN(key);
+   if (description)
+     {
+        if (!eina_hash_find(fid->data, key))
+          eina_hash_set(fid->data, key, strdup(description));
+     }
+   else
+     {
+        eina_hash_del(fid->data, key, NULL);
+     }
 }
 
 const char *
-database_function_description_get(Function_Id function_id)
+database_function_description_get(Function_Id function_id, const char *key)
 {
    _Function_Id *fid = (_Function_Id *)function_id;
-   return (fid?fid->description:NULL);
+   return (fid ? eina_hash_find(fid->data, key) : NULL);
 }
 
 Parameter_Desc
@@ -276,7 +286,38 @@ database_parameter_information_get(Parameter_Desc param_desc, Parameter_Dir *par
 
 static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
 {
-   printf("%*s%s <%s>\n", nb_spaces, "", fid->name, (fid->description?fid->description:""));
+   printf("%*s%s ", nb_spaces, "", fid->name);
+   switch (fid->type)
+     {
+      case PROPERTY_FUNC:
+           {
+              const char *str = database_function_description_get((Function_Id)fid, "comment_set");
+              printf("\n%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              str = database_function_description_get((Function_Id)fid, "comment_get");
+              printf("%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              break;
+           }
+      case GET:
+           {
+              const char *str = database_function_description_get((Function_Id)fid, "comment_get");
+              printf("<%s>\n", (str ? str : ""));
+              break;
+           }
+      case SET:
+           {
+              const char *str = database_function_description_get((Function_Id)fid, "comment_set");
+              printf("<%s>\n", (str ? str : ""));
+              break;
+           }
+
+      case METHOD_FUNC:
+           {
+              //char *str = eina_hash_find(fid->data, "comment");
+              const char *str = database_function_description_get((Function_Id)fid, "comment");
+              printf("<%s>\n", (str ? str : ""));
+              break;
+           }
+     }
    Eina_List *itr;
    _Parameter_Desc *param;
    EINA_LIST_FOREACH(fid->params, itr, param)

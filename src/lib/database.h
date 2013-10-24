@@ -59,11 +59,10 @@ Function_Type database_function_type_get(Function_Id function_id);
 Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id);
 
 /* Add a description to a function */
-void database_function_description_set(Function_Id function_id, const char *description);
+void database_function_description_set(Function_Id function_id, const char *key, const char *description);
 
 /* Get a description of a function */
-const char *database_function_description_get(Function_Id function_id);
-
+const char *database_function_description_get(Function_Id function_id, const char *key);
 
 /* Add a parameter to a function */
 Parameter_Desc database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, const char *type, const char *name, const char *description);
