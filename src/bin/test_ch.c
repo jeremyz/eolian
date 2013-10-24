@@ -49,16 +49,16 @@ void _strbuf_uppercase_append(Eina_Strbuf *sbuff, const char *uppstr)
      eina_strbuf_append_char(sbuff, toupper(uppstr[i]));
 }
 
-char *_skipchars(char *str, char *chars)
+const char *_skipchars(const char *str, const char *chars)
 {
-   char *ret = str;
+   const char *ret = str;
    while (ret && strchr(chars, *ret)) ret++;
    return ret;
 }
 
-char *_nextline(char *str, unsigned int lines)
+const char *_nextline(const char *str, unsigned int lines)
 {
-   char *ret = str;
+   const char *ret = str;
    while ((lines--) && ret)
      {
         ret= strchr(ret, '\n');
@@ -110,7 +110,44 @@ char *ch_parser_eo_class_h_find(Eina_Strbuf *str, const char *classname)
 #define TEMPLOG(text)  { printf(text); }
 
 // API ?
-Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classname, Function_Id func);
+Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classname, Function_Id func)
+{
+   const char func_name[] = "my_func";
+   const char func_desc[] = "La Big Function";
+   
+   const char *txstr = eina_strbuf_string_get(text);
+   const char *pstr;
+   
+   Eina_Strbuf *cap_class_name = eina_strbuf_new();
+   _strbuf_uppercase_append(cap_class_name,classname);
+   Eina_Strbuf *cap_enum_name = eina_strbuf_new();
+   eina_strbuf_append_printf(cap_enum_name,"%s_SUB_ID_", eina_strbuf_string_get(cap_class_name));
+   _strbuf_uppercase_append(cap_enum_name, func_name);
+   Eina_Strbuf *cap_last_name = eina_strbuf_new();
+   eina_strbuf_append_printf(cap_last_name,"%s_SUB_ID_LAST", eina_strbuf_string_get(cap_class_name));
+   
+   pstr = ch_parser_block_find(txstr, "enum");
+   ch_parser_block_add(text, pstr - txstr, eina_strbuf_string_get(cap_enum_name), 
+                                           eina_strbuf_string_get(cap_last_name));
+   
+   //separeate fucn ?
+  //txstr = eina_strbuf_string_get(text);
+   //pstr = strchr(txstr, '\0');
+   //if (pstr > txstr) pstr--;
+   
+   
+   Eina_Strbuf *func_entry = eina_strbuf_new();
+   //Docs
+   eina_strbuf_append_printf(func_entry, "\n/**\n*@def %s_%s\n*\n%s\n*\n*/\n", classname, func_name, func_desc);
+   //Eo body def
+   eina_strbuf_append_printf(func_entry, "#define %s_%s(par) %s_ID(%s) Paramstruf(param)", classname, func_name, 
+                             eina_strbuf_string_get(cap_class_name),
+                             eina_strbuf_string_get(cap_enum_name));
+
+   eina_strbuf_append(text, eina_strbuf_string_get(func_entry));                         
+   return EINA_TRUE;
+   //Free strbuf
+}
 
 // API ?
 Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classname, Function_Id func)
@@ -209,7 +246,7 @@ int main(int argc,char **argv)
     printf ("\n\n\n%s\n\n\n", eina_strbuf_string_get(sbuff));
     printf ("After\n------------\n");
     
-    ch_parser_eo_class_c_method_add(sbuff, "elm_obj_button", NULL);
+    ch_parser_eo_class_h_method_add(sbuff, "elm_obj_button", NULL);
     
     printf ("\n\n\n%s\n\n\n", eina_strbuf_string_get(sbuff));
     /*
