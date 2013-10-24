@@ -12,6 +12,7 @@ typedef struct
    Eina_List *inherits;
    Eina_List *properties; /* Hash prop_name -> _Function_Id */
    Eina_List *methods; /* Hash meth_name -> _Function_Id */
+   Eina_List *constructors; /* Hash constructors_name -> _Function_Id */
 } Class_desc;
 
 typedef struct
@@ -213,6 +214,9 @@ Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id)
       case METHOD_FUNC:
          desc->methods = eina_list_append(desc->methods, foo_id);
          break;
+      case CONSTRUCTOR:
+         desc->constructors = eina_list_append(desc->constructors, foo_id);
+         break;
       default:
          return EINA_FALSE;
      }
@@ -327,6 +331,7 @@ static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
            }
 
       case METHOD_FUNC:
+      case CONSTRUCTOR:
            {
               //char *str = eina_hash_find(fid->data, "comment");
               const char *str = database_function_description_get((Function_Id)fid, "comment");
@@ -371,6 +376,14 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    EINA_LIST_FOREACH(desc->inherits, itr, word)
      {
         printf("%s ", word);
+     }
+   printf("\n");
+
+   // Constructors:
+   printf("  constructors:\n");
+   EINA_LIST_FOREACH(desc->constructors, itr, function)
+     {
+        _function_print(function, 4);
      }
    printf("\n");
 

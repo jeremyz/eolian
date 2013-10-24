@@ -6,6 +6,7 @@ typedef struct _Parameter_Desc* Parameter_Desc;
 
 typedef enum
 {
+   UNRESOLVED,
    PROPERTY_FUNC,
    SET,
    GET,

@@ -360,6 +360,98 @@ Eina_Bool eolian_eo_class_desc_parse(char *class_desc)
 }
 
 #define JSON_ARR_NTH_STRING_GET(arr, idx) eina_json_string_get(eina_json_array_nth_get((arr), (idx)))
+static Function_Id
+_func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_type)
+{
+   Eina_Iterator *it = eina_json_object_iterator_new(jv);
+   Eina_Json_Value *itv, *v;
+   Function_Id foo_id;
+   Function_Type f_type;
+   /* Iterate over properties. */
+   EINA_ITERATOR_FOREACH(it, itv)
+     {
+        const char *func_name, *comment = NULL;
+        Eina_Json_Value *func_body;
+
+        func_name = eina_json_pair_name_get(itv);
+        func_body = eina_json_pair_value_get(itv);
+
+        if (_f_type == UNRESOLVED)
+          {
+             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "type");
+             const char *prop_type = eina_json_string_get(v);
+             f_type = _get_func_type(prop_type);
+          }
+        else
+          f_type = _f_type;
+
+        foo_id = database_function_new(func_name, f_type);
+        if (!foo_id) return NULL;
+
+        /* Read "comment" parameter*/
+        v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment");
+        if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
+          comment = eina_json_string_get(v);
+
+        /* For properties need to determine which comment to save. */
+        if ((f_type == SET) || (f_type == GET) || (f_type == PROPERTY_FUNC))
+          {
+             const char *comment_set = NULL, *comment_get = NULL;
+             const char *tmp = NULL;
+
+             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment_get");
+             if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
+               comment_get = eina_json_string_get(v);
+             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment_set");
+             if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
+               comment_set = eina_json_string_get(v);
+
+             if (f_type == PROPERTY_FUNC)
+               {
+                  tmp = comment ? comment : comment_set;
+                  database_function_description_set(foo_id, "comment", tmp);
+                  database_function_description_set(foo_id, "comment_set", tmp);
+                  database_function_description_set(foo_id, "comment_get", comment_get);
+               }
+             else if (f_type == GET)
+               {
+                  tmp = comment ? comment : comment_get;
+                  database_function_description_set(foo_id, "comment", tmp);
+                  database_function_description_set(foo_id, "comment_get", tmp);
+               }
+             else if (f_type == SET)
+               {
+                  tmp = comment ? comment : comment_set;
+                  database_function_description_set(foo_id, "comment", tmp);
+                  database_function_description_set(foo_id, "comment_set", tmp);
+               }
+          }
+        else
+          {
+             database_function_description_set(foo_id, "comment", comment);
+          }
+
+        /* Read parameters. */
+        Eina_Json_Value *param_arr, *param;
+        param_arr = EINA_JSON_OBJECT_VALUE_GET(func_body, "parameters");
+        Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
+        EINA_ITERATOR_FOREACH(param_it, param)
+          {
+             const char *param_dir, *par_type, *par_name, *par_comment;
+             param_dir = JSON_ARR_NTH_STRING_GET(param, 0);
+             par_type = JSON_ARR_NTH_STRING_GET(param, 2);
+             par_name = JSON_ARR_NTH_STRING_GET(param, 3);
+             par_comment = JSON_ARR_NTH_STRING_GET(param, 4);
+
+             database_function_parameter_add(foo_id, _get_param_dir(param_dir), par_type, par_name, par_comment);
+          }
+        eina_iterator_free(param_it);
+        database_class_function_add(class_name, foo_id);
+     }
+   eina_iterator_free(it);
+   return foo_id;
+}
+
 static void
 _class_parse_json(char *buffer)
 {
@@ -428,122 +520,17 @@ _class_parse_json(char *buffer)
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, PROPERTIES);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
      {
-        Eina_Iterator *it = eina_json_object_iterator_new(jv);
-        Eina_Json_Value *itv, *v;
-        /* Iterate over properties. */
-        EINA_ITERATOR_FOREACH(it, itv)
-          {
-             const char *prop_type, *comment = NULL, *comment_set = NULL, *comment_get = NULL;
-             const char *func_name;
-             Eina_Json_Value *prop;
-             Function_Id foo_id;
-
-             func_name = eina_json_pair_name_get(itv);
-             prop = eina_json_pair_value_get(itv);
-
-             v = EINA_JSON_OBJECT_VALUE_GET(prop, "type");
-             prop_type = eina_json_string_get(v);
-
-             foo_id = database_function_new(func_name, _get_func_type(prop_type));
-             if (foo_id)
-               {
-                  v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment_get");
-                  if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
-                    comment_get = eina_json_string_get(v);
-                  v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment_set");
-                  if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
-                    comment_set = eina_json_string_get(v);
-                  v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment");
-                  if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
-                    comment = eina_json_string_get(v);
-
-                  switch(_get_func_type(prop_type))
-                    {
-                     case PROPERTY_FUNC:
-                          {
-                             const char *tmp = NULL;
-                             tmp = comment ? comment : comment_set;
-                             database_function_description_set(foo_id, "comment", tmp);
-                             database_function_description_set(foo_id, "comment_set", tmp);
-                             database_function_description_set(foo_id, "comment_get", comment_get);
-                          }
-                     case GET:
-                          {
-                             const char *tmp = NULL;
-                             tmp = comment ? comment : comment_get;
-                             database_function_description_set(foo_id, "comment", tmp);
-                             database_function_description_set(foo_id, "comment_get", tmp);
-                          }
-                     case SET:
-                          {
-                             const char *tmp = NULL;
-                             tmp = comment ? comment : comment_set;
-                             database_function_description_set(foo_id, "comment", tmp);
-                             database_function_description_set(foo_id, "comment_set", tmp);
-                          }
-                    }
-
-                  database_class_function_add(class_name, foo_id);
-                  Eina_Json_Value *param_arr, *param;
-                  param_arr = EINA_JSON_OBJECT_VALUE_GET(prop, "parameters");
-                  Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
-                  EINA_ITERATOR_FOREACH(param_it, param)
-                    {
-                       const char *par_type, *par_name, *par_comment;
-                       par_type = JSON_ARR_NTH_STRING_GET(param, 2);
-                       par_name = JSON_ARR_NTH_STRING_GET(param, 3);
-                       par_comment = JSON_ARR_NTH_STRING_GET(param, 4);
-
-                       Parameter_Dir dir = IN_PARAM;
-                       if (database_function_type_get(foo_id) == GET) dir = OUT_PARAM;
-
-                       database_function_parameter_add(foo_id, dir, par_type, par_name, par_comment);
-                    }
-                  eina_iterator_free(param_it);
-               }
-          }
-        eina_iterator_free(it);
+        _func_from_json(class_name, jv, UNRESOLVED);
      }
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, METHODS);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
      {
-        Eina_Iterator *it = eina_json_object_iterator_new(jv);
-        Eina_Json_Value *itv, *v;
-        /* Iterate over properties. */
-        EINA_ITERATOR_FOREACH(it, itv)
-          {
-             const char *func_name, *comment;
-             Eina_Json_Value *prop;
-             Function_Id foo_id;
-
-             func_name = eina_json_pair_name_get(itv);
-             prop = eina_json_pair_value_get(itv);
-
-             v = EINA_JSON_OBJECT_VALUE_GET(prop, "comment");
-             comment = eina_json_string_get(v);
-
-             foo_id = database_function_new(func_name, METHOD_FUNC);
-             if (foo_id)
-               {
-                  database_function_description_set(foo_id, "comment", comment);
-                  database_class_function_add(class_name, foo_id);
-                  Eina_Json_Value *param_arr, *param;
-                  param_arr = EINA_JSON_OBJECT_VALUE_GET(prop, "parameters");
-                  Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
-                  EINA_ITERATOR_FOREACH(param_it, param)
-                    {
-                       const char *param_dir, *par_type, *par_name, *par_comment;
-                       param_dir = JSON_ARR_NTH_STRING_GET(param, 0);
-                       par_type = JSON_ARR_NTH_STRING_GET(param, 2);
-                       par_name = JSON_ARR_NTH_STRING_GET(param, 3);
-                       par_comment = JSON_ARR_NTH_STRING_GET(param, 4);
-
-                       database_function_parameter_add(foo_id, _get_param_dir(param_dir), par_type, par_name, par_comment);
-                    }
-                  eina_iterator_free(param_it);
-               }
-          }
-        eina_iterator_free(it);
+        _func_from_json(class_name, jv, METHOD_FUNC);
+     }
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "constructors");
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
+     {
+        _func_from_json(class_name, jv, CONSTRUCTOR);
      }
 
 end:
