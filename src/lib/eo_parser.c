@@ -435,15 +435,35 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
         Eina_Json_Value *param_arr, *param;
         param_arr = EINA_JSON_OBJECT_VALUE_GET(func_body, "parameters");
         Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
+        /* Parameter's array: ["direction", "modificator", "type", "name", "comment"]"*/
         EINA_ITERATOR_FOREACH(param_it, param)
           {
-             const char *param_dir, *par_type, *par_name, *par_comment;
-             param_dir = JSON_ARR_NTH_STRING_GET(param, 0);
-             par_type = JSON_ARR_NTH_STRING_GET(param, 2);
-             par_name = JSON_ARR_NTH_STRING_GET(param, 3);
-             par_comment = JSON_ARR_NTH_STRING_GET(param, 4);
+             Parameter_Dir param_dir;
+             const char *par_type, *par_name, *par_comment;
+             unsigned int idx = 0;
+             if (f_type == METHOD_FUNC)
+               {
+                  /* Get direction. */
+                  const char *dir;
+                  dir = JSON_ARR_NTH_STRING_GET(param, idx);
+                  param_dir = _get_param_dir(dir);
+                  idx += 2;
+               }
+             else
+               {
+                  param_dir = (f_type == GET) ? OUT_PARAM : IN_PARAM;
+                  idx++;
+               }
+             /* Get type. */
+             par_type = JSON_ARR_NTH_STRING_GET(param, idx);
+             idx++;
+             /* Get name. */
+             par_name = JSON_ARR_NTH_STRING_GET(param, idx);
+             idx++;
+             /* Get comment */
+             par_comment = JSON_ARR_NTH_STRING_GET(param, idx);
 
-             database_function_parameter_add(foo_id, _get_param_dir(param_dir), par_type, par_name, par_comment);
+             database_function_parameter_add(foo_id, param_dir, par_type, par_name, par_comment);
           }
         eina_iterator_free(param_it);
         database_class_function_add(class_name, foo_id);
