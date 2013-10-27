@@ -376,11 +376,21 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
         func_name = eina_json_pair_name_get(itv);
         func_body = eina_json_pair_value_get(itv);
 
+        /* UNRESOLVED passed when iterating over properties.
+         * If field "type" is absent in JSON, t.e. type is PROPERTY. */
         if (_f_type == UNRESOLVED)
           {
              v = EINA_JSON_OBJECT_VALUE_GET(func_body, "type");
-             const char *prop_type = eina_json_string_get(v);
-             f_type = _get_func_type(prop_type);
+             if (v)
+               {
+                  const char *prop_type = eina_json_string_get(v);
+                  f_type = _get_func_type(prop_type);
+               }
+             else
+               {
+                  printf("%s\n", func_name);
+                  f_type = PROPERTY_FUNC;
+               }
           }
         else
           f_type = _f_type;
