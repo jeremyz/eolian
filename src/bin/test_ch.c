@@ -1,7 +1,12 @@
-#include<Eina.h>
+#include <Eina.h>
+#include <Ecore_File.h>
+#include "Eolian.h"
 #include "database.h"
 #include <ctype.h>
 #include <string.h>
+
+#define EO_SUFFIX ".eo"
+
 #define ERRME(x) { printf(x); return 1; }
 
 const char *ch_parser_block_find(const char *str, const char *blockname)
@@ -110,7 +115,7 @@ char *ch_parser_eo_class_h_find(Eina_Strbuf *str, const char *classname)
 #define TEMPLOG(text)  { printf(text); }
 
 // API ?
-Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classname, Function_Id func)
+Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classname, EINA_UNUSED Function_Id func)
 {
    const char func_name[] = "my_func";
    const char func_desc[] = "La Big Function";
@@ -150,7 +155,7 @@ Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classna
 }
 
 // API ?
-Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classname, Function_Id func)
+Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classname, EINA_UNUSED Function_Id func)
 {
    const char *txstr = eina_strbuf_string_get(text);
    const char *pstr;
@@ -213,9 +218,102 @@ Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classna
    return EINA_TRUE;
 }  
 
-Eina_Bool ch_parser_eo_class_h_add(Eina_Strbuf *str, const char *classname);
-Eina_Bool ch_parser_eo_class_c_add(Eina_Strbuf *str, const char *classname);
+char* ch_parser_eo_header_generate(char *classname);
+char* ch_parser_eo_source_generate(char *classname);
 
+int main(int argc, char **argv)
+{
+   eina_init();
+   int i;
+   Eina_Bool help = EINA_FALSE, show = EINA_FALSE;
+   Eina_List *files = NULL, *itr;
+   for(i = 1; i < argc; i++)
+     {
+        if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))
+          {
+             help = EINA_TRUE;
+             continue;
+          }
+        if (!strcmp(argv[i], "--show"))
+          {
+             show = EINA_TRUE;
+             continue;
+          }
+        /* Directory parameter found. */
+        if (!strcmp(argv[i], "-d") && (i < (argc-1)))
+          {
+             i++;
+             char *dir = ecore_file_realpath(argv[i]);
+             if (strlen(dir) != 0)
+               {
+                  if (ecore_file_is_dir(dir))
+                    {
+                       Eina_List *dir_files;
+                       char *file;
+                       /* Get all files from directory. Not recursively!!!*/
+                       dir_files = ecore_file_ls(dir);
+                       EINA_LIST_FREE(dir_files, file)
+                         {
+                            char *filepath = malloc(strlen(dir) + 1 + strlen(file) + 1);
+                            sprintf(filepath, "%s/%s", dir, file);
+                            if ((!ecore_file_is_dir(filepath)) && eina_str_has_suffix(filepath, EO_SUFFIX))
+                              {
+                                 /* Allocated string will be freed during deletion of "files" list. */
+                                 files = eina_list_append(files, strdup(filepath));
+                              }
+                            free(filepath);
+                            free(file);
+                         }
+                    }
+               }
+             free(dir);
+             continue;
+          }
+        if (!strcmp(argv[i], "-f") && (i < (argc-1)))
+          {
+             i++;
+             char *realpath = ecore_file_realpath(argv[i]);
+             if (strlen(realpath) != 0)
+               {
+                  if (!ecore_file_is_dir(realpath))
+                    {
+                       if (eina_str_has_suffix(realpath, EO_SUFFIX))
+                         files = eina_list_append(files, strdup(realpath));
+                    }
+               }
+             free(realpath);
+             continue;
+          }
+     }
+
+   if (!files || help)
+     {
+        printf("Usage: %s [-h/--help] [--show] input files\n", argv[0]);
+        return 0;
+     }
+
+   eolian_database_init();
+   char *filename;
+   EINA_LIST_FOREACH(files, itr, filename)
+     {
+        if (!eolian_eo_file_parse(filename))
+          {
+             printf("Error during parsing file %s\n", filename);
+          }
+     }
+
+   if (show)
+     {
+        eolian_show();
+     }
+   EINA_LIST_FREE(files, filename)
+      free(filename);
+   eolian_database_shutdown();
+   eina_shutdown();
+   return 0;
+}
+
+/*
 int main(int argc,char **argv)
 {
     char *teststr = NULL;
@@ -249,23 +347,24 @@ int main(int argc,char **argv)
     ch_parser_eo_class_h_method_add(sbuff, "elm_obj_button", NULL);
     
     printf ("\n\n\n%s\n\n\n", eina_strbuf_string_get(sbuff));
-    /*
-    const char *bl = ch_parser_block_find(eina_strbuf_string_get(sbuff), "enum");
-    if (bl)
-    {
-       size_t bpos = bl - eina_strbuf_string_get(sbuff);
-       ch_parser_block_add(sbuff, bpos, "Hehe", "ELM_OBJ_BUTTON_SUB_ID_LAST" );
-    }
+   
+    //const char *bl = ch_parser_block_find(eina_strbuf_string_get(sbuff), "enum");
+    //if (bl)
+    //{
+    //   size_t bpos = bl - eina_strbuf_string_get(sbuff);
+    //   ch_parser_block_add(sbuff, bpos, "Hehe", "ELM_OBJ_BUTTON_SUB_ID_LAST" );
+    //}
     
-    printf ("\n\n\n%s\n\n\n", eina_strbuf_string_get(sbuff));
+    //printf ("\n\n\n%s\n\n\n", eina_strbuf_string_get(sbuff));
     
-    bl = ch_parser_block_find(eina_strbuf_string_get(sbuff), "Duh");
-    printf ("Found %s - %s\n", "1", ch_parser_block_find_in(bl, "1") ? "Yes" : "No");
-    printf ("Found %s - %s\n", "4", ch_parser_block_find_in(bl, "4") ? "Yes" : "No");
-    printf ("Found %s - %s\n", "3", ch_parser_block_find_in(bl, "3") ? "Yes" : "No");
+    //bl = ch_parser_block_find(eina_strbuf_string_get(sbuff), "Duh");
+    //printf ("Found %s - %s\n", "1", ch_parser_block_find_in(bl, "1") ? "Yes" : "No");
+    //printf ("Found %s - %s\n", "4", ch_parser_block_find_in(bl, "4") ? "Yes" : "No");
+    //printf ("Found %s - %s\n", "3", ch_parser_block_find_in(bl, "3") ? "Yes" : "No");
+    //
+    //printf ("Found class h - %s\n",ch_parser_eo_class_h_find(sbuff, "elm_obj_button") ? "Yes" : "No");
+    //printf ("Found class c - %s\n",ch_parser_eo_class_c_find(sbuff, "elm_obj_button") ? "Yes" : "No");
     
-    printf ("Found class h - %s\n",ch_parser_eo_class_h_find(sbuff, "elm_obj_button") ? "Yes" : "No");
-    printf ("Found class c - %s\n",ch_parser_eo_class_c_find(sbuff, "elm_obj_button") ? "Yes" : "No");
-    */
     return 0;
 }
+*/
