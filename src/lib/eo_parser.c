@@ -360,13 +360,14 @@ Eina_Bool eolian_eo_class_desc_parse(char *class_desc)
 }
 
 #define JSON_ARR_NTH_STRING_GET(arr, idx) eina_json_string_get(eina_json_array_nth_get((arr), (idx)))
-static Function_Id
+static Eina_Bool
 _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_type)
 {
    Eina_Iterator *it = eina_json_object_iterator_new(jv);
    Eina_Json_Value *itv, *v;
    Function_Id foo_id;
    Function_Type f_type;
+   Eina_Bool ret;
    /* Iterate over properties. */
    EINA_ITERATOR_FOREACH(it, itv)
      {
@@ -375,6 +376,13 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
 
         func_name = eina_json_pair_name_get(itv);
         func_body = eina_json_pair_value_get(itv);
+
+        ret = database_class_function_exists(class_name, func_name);
+        if (ret)
+          {
+             printf("ERR: Function: \"%s\" already exists in class \"%s\"\n", func_name, class_name);
+             return EINA_FALSE;
+          }
 
         /* UNRESOLVED passed when iterating over properties.
          * If field "type" is absent in JSON, t.e. type is PROPERTY. */
@@ -395,7 +403,7 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
           f_type = _f_type;
 
         foo_id = database_function_new(func_name, f_type);
-        if (!foo_id) return NULL;
+        if (!foo_id) return EINA_FALSE;
 
         /* Read "comment" parameter*/
         v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment");
@@ -478,7 +486,7 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
         database_class_function_add(class_name, foo_id);
      }
    eina_iterator_free(it);
-   return foo_id;
+   return EINA_TRUE;
 }
 
 static Eina_Bool
@@ -496,7 +504,7 @@ _class_parse_json(char *buffer)
      {
         Eina_Json_Error e = -1;
         e = eina_json_context_error_get(ctx);
-        printf("json parsing error: %d\n", e);
+        printf("ERR: json parsing error: %d\n", e);
         ret = EINA_FALSE;
         goto end;
      }
@@ -504,7 +512,7 @@ _class_parse_json(char *buffer)
    type = eina_json_type_get(tree);
    if (type != EINA_JSON_TYPE_OBJECT)
      {
-        printf("Json Value is not oblect\n");
+        printf("ERR: Json Value is not oblect\n");
         ret = EINA_FALSE;
         goto end;
      }
@@ -517,7 +525,7 @@ _class_parse_json(char *buffer)
         class_name = eina_json_string_get(jv);
         if (database_class_exists(class_name))
           {
-             printf("Class: \"%s\" already exists in database,\n", class_name);
+             printf("ERR: Class: \"%s\" already exists in database,\n", class_name);
              ret = EINA_FALSE;
              goto end;
           }
@@ -570,6 +578,20 @@ _class_parse_json(char *buffer)
      {
         _func_from_json(class_name, jv, CONSTRUCTOR);
      }
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "implements");
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
+     {
+        Eina_Iterator *it = eina_json_array_iterator_new(jv);
+        Eina_Json_Value *param;
+        /* Parameter's array: ["direction", "modificator", "type", "name", "comment"]"*/
+        EINA_ITERATOR_FOREACH(it, param)
+          {
+             const char *cl, *f;
+             cl = JSON_ARR_NTH_STRING_GET(param, 0);
+             f = JSON_ARR_NTH_STRING_GET(param, 1);
+          }
+        eina_iterator_free(it);
+     }
 
 end:
    if (tree) eina_json_value_free(tree);
@@ -581,16 +603,18 @@ end:
 Eina_Bool eolian_eo_class_desc_parse_json(char *class_desc)
 {
    char *tmp = class_desc;
+   Eina_Bool ret;
    while (tmp)
      {
-        _class_parse_json(tmp);
+        ret = _class_parse_json(tmp);
         tmp = NULL;
      }
-   return EINA_TRUE;
+   return ret;
 }
 
 Eina_Bool eolian_eo_file_parse(char *filename)
 {
+   Eina_Bool ret;
    if (!ecore_file_exists(filename)) return EINA_FALSE;
 
    unsigned int sz = ecore_file_size(filename);
@@ -605,8 +629,8 @@ Eina_Bool eolian_eo_file_parse(char *filename)
         printf("%s: Read size %d different from file size %d. Continue.\n", __FUNCTION__, read_sz, sz);
      }
 
-   eolian_eo_class_desc_parse_json(buffer);
+   ret = eolian_eo_class_desc_parse_json(buffer);
    free(buffer);
-   return EINA_TRUE;
+   return ret;
 }
 

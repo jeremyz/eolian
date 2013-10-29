@@ -223,6 +223,34 @@ Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id)
    return EINA_TRUE;
 }
 
+Eina_Bool database_class_function_exists(const char *classname, const char *func_name)
+{
+   Eina_Bool ret = EINA_FALSE;
+   Eina_List *itr;
+   Function_Id foo_id;
+   Class_desc *desc = eina_hash_find(_classes, classname);
+
+   EINA_LIST_FOREACH(desc->methods, itr, foo_id)
+     {
+        _Function_Id *fid = (_Function_Id *) foo_id;
+        if (!strcmp(fid->name, func_name))
+          return EINA_TRUE;
+     }
+   EINA_LIST_FOREACH(desc->properties, itr, foo_id)
+     {
+        _Function_Id *fid = (_Function_Id *) foo_id;
+        if (!strcmp(fid->name, func_name))
+          return EINA_TRUE;
+     }
+   EINA_LIST_FOREACH(desc->constructors, itr, foo_id)
+     {
+        _Function_Id *fid = (_Function_Id *) foo_id;
+        if (!strcmp(fid->name, func_name))
+          return EINA_TRUE;
+     }
+   return ret;
+}
+
 const Eina_List *
 database_class_functions_list_get(char *class_name, Function_Type foo_type)
 {

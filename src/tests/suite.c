@@ -17,7 +17,13 @@
 #define EO_COMMENT_JSON "{                               \n\
                           \"name\" : \"MyClassName\",    \n\
                           \"macro\" : \"MY_CLASS_NAME\",  \n\
-                          \"inherits\" : [\"MyBaseClass1\", \"MyBaseClass2\", \"\"]\n\
+                          \"inherits\" : [\"MyBaseClass1\", \"MyBaseClass2\", \"\"],\n\
+                          \"methods\" : {\n\
+                            \"func_name\" : {\n\
+                             \"comment\" : \"Comment\",\n\
+                              \"parameters\" : [] \n\
+                          }\n\
+                          }\n\
                          }"
 
 #define EO_COMMENT_JSON2 "{                               \n\
@@ -31,17 +37,20 @@
 
 START_TEST(class_name_test)
 {
+   Eina_Bool ret;
    eolian_database_init();
 #ifndef JSON
    eolian_eo_class_desc_parse(EO_COMMENT);
 #else
-   eolian_eo_class_desc_parse_json(EO_COMMENT_JSON);
+   ret = eolian_eo_class_desc_parse_json(EO_COMMENT_JSON);
 #endif
+   fail_if(!ret);
    fail_if(!database_class_exists("MyClassName"));
    ck_assert_str_eq(database_class_macro_get("MyClassName"), "MY_CLASS_NAME");
+   fail_if(!database_class_function_exists("MyClassName", "func_name"));
 
-
-   eolian_eo_class_desc_parse_json(EO_COMMENT_JSON2);
+   ret = eolian_eo_class_desc_parse_json(EO_COMMENT_JSON2);
+   fail_if(ret);
 
    eolian_database_shutdown();
 }
