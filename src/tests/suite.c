@@ -20,6 +20,13 @@
                           \"inherits\" : [\"MyBaseClass1\", \"MyBaseClass2\", \"\"]\n\
                          }"
 
+#define EO_COMMENT_JSON2 "{                               \n\
+                          \"name\" : \"MyClassName\",    \n\
+                          \"macro\" : \"MY_CLASS_NAME\",  \n\
+                          \"inherits\" : [\"MyBaseClass1\", \"MyBaseClass2\", \"\"]\n\
+                         }"
+
+
 #define JSON
 
 START_TEST(class_name_test)
@@ -32,6 +39,10 @@ START_TEST(class_name_test)
 #endif
    fail_if(!database_class_exists("MyClassName"));
    ck_assert_str_eq(database_class_macro_get("MyClassName"), "MY_CLASS_NAME");
+
+
+   eolian_eo_class_desc_parse_json(EO_COMMENT_JSON2);
+
    eolian_database_shutdown();
 }
 END_TEST

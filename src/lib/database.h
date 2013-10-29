@@ -33,7 +33,7 @@ database_class_del(char *class_name);
 const Eina_List *database_class_names_list_get();
 
 /* Indicates if a class exists in the database */
-Eina_Bool database_class_exists(char *class_name);
+Eina_Bool database_class_exists(const char *class_name);
 
 /* Add an inherit class name to a class */
 Eina_Bool database_class_inherit_add(const char *class_name, char *inherit_class_name);

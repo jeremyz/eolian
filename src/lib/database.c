@@ -140,7 +140,7 @@ database_class_names_list_get()
    return list;
 }
 
-Eina_Bool database_class_exists(char *class_name)
+Eina_Bool database_class_exists(const char *class_name)
 {
    return !!eina_hash_find(_classes, class_name);
 }

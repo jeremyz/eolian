@@ -481,13 +481,14 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
    return foo_id;
 }
 
-static void
+static Eina_Bool
 _class_parse_json(char *buffer)
 {
    Eina_Json_Context *ctx = NULL;
    Eina_Bool err;
    Eina_Json_Type type;
    Eina_Json_Value *tree = NULL, *jv = NULL;
+   Eina_Bool ret = EINA_TRUE;
 
    ctx = eina_json_context_dom_new();
    err = eina_json_context_parse(ctx, buffer);
@@ -496,6 +497,7 @@ _class_parse_json(char *buffer)
         Eina_Json_Error e = -1;
         e = eina_json_context_error_get(ctx);
         printf("json parsing error: %d\n", e);
+        ret = EINA_FALSE;
         goto end;
      }
    tree = eina_json_context_dom_tree_take(ctx);
@@ -503,6 +505,7 @@ _class_parse_json(char *buffer)
    if (type != EINA_JSON_TYPE_OBJECT)
      {
         printf("Json Value is not oblect\n");
+        ret = EINA_FALSE;
         goto end;
      }
 
@@ -512,6 +515,12 @@ _class_parse_json(char *buffer)
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
      {
         class_name = eina_json_string_get(jv);
+        if (database_class_exists(class_name))
+          {
+             printf("Class: \"%s\" already exists in database,\n", class_name);
+             ret = EINA_FALSE;
+             goto end;
+          }
         database_class_add(class_name);
      }
    /* Get "macro" section. */
@@ -565,6 +574,7 @@ _class_parse_json(char *buffer)
 end:
    if (tree) eina_json_value_free(tree);
    if (ctx) eina_json_context_free(ctx);
+   return ret;
 }
 #undef JSON_ARR_NTH_STRING_GET
 
