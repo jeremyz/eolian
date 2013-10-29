@@ -388,7 +388,6 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
                }
              else
                {
-                  printf("%s\n", func_name);
                   f_type = PROPERTY_FUNC;
                }
           }
