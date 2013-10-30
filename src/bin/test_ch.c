@@ -218,8 +218,148 @@ Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classna
    return EINA_TRUE;
 }  
 
-char* ch_parser_eo_header_generate(char *classname);
-char* ch_parser_eo_source_generate(char *classname);
+char* ch_parser_eo_header_generate(char *classname)
+{
+   const Eina_List *l;
+   void *data;
+   
+   if (!database_class_exists(classname)) return NULL;
+   
+   char *cap_class = strdup(classname);
+   eina_str_toupper(&cap_class);
+   
+   Eina_Strbuf * str_decl = eina_strbuf_new();
+   eina_strbuf_append_printf(str_decl, "#define %s_CLASS %s_class_get()\n", 
+                             cap_class, classname);
+   eina_strbuf_append_printf(str_decl, "const Eo_Class *%s_class_get(void) EINA_CONST;\n", 
+                             classname);
+   eina_strbuf_append_printf(str_decl, "extern EAPI Eo_Op %s_BASE_ID;\n", cap_class);
+   eina_strbuf_append_printf(str_decl, "enum\n{\n");
+   
+   Eina_Strbuf *cap_buff = eina_strbuf_new();
+   EINA_LIST_FOREACH(database_class_functions_list_get(classname, METHOD_FUNC), l, data)
+     {
+        eina_strbuf_reset(cap_buff);
+        _strbuf_uppercase_append(cap_buff, database_function_name_get((Function_Id)data));
+        eina_strbuf_append_printf(str_decl, "   %s_SUB_ID_%s,\n", cap_class,
+                                          eina_strbuf_string_get(cap_buff));
+     }
+   eina_strbuf_append_printf(str_decl, "   %s_SUB_ID_LAST\n};", cap_class);
+   
+   eina_strbuf_free(cap_buff);
+   free(cap_class);
+   
+   return eina_strbuf_string_steal(str_decl);
+}
+
+/*
+#define ELM_OBJ_BUTTON_CLASS elm_obj_button_class_get()
+
+const Eo_Class *elm_obj_button_class_get(void) EINA_CONST;
+
+extern EAPI Eo_Op ELM_OBJ_BUTTON_BASE_ID;
+
+enum
+{
+   ELM_OBJ_BUTTON_SUB_ID_ADMITS_AUTOREPEAT_GET,
+   ELM_OBJ_BUTTON_SUB_ID_AUTOREPEAT_SET,
+   ELM_OBJ_BUTTON_SUB_ID_AUTOREPEAT_GET,
+   ELM_OBJ_BUTTON_SUB_ID_AUTOREPEAT_INITIAL_TIMEOUT_SET,
+   ELM_OBJ_BUTTON_SUB_ID_AUTOREPEAT_INITIAL_TIMEOUT_GET,
+   ELM_OBJ_BUTTON_SUB_ID_AUTOREPEAT_GAP_TIMEOUT_SET,
+   ELM_OBJ_BUTTON_SUB_ID_AUTOREPEAT_GAP_TIMEOUT_GET,
+   ELM_OBJ_BUTTON_SUB_ID_LAST
+};
+
+#define ELM_OBJ_BUTTON_ID(sub_id) (ELM_OBJ_BUTTON_BASE_ID + sub_id)
+
+
+/**
+ * @def elm_obj_button_admits_autorepeat_get
+ * @since 1.8
+ *
+ * No description supplied by the EAPI.
+ *
+ * @param[out] ret
+ *
+ * @see elm_button_admits_autorepeat_get
+ *
+ * @ingroup Button
+ */
+//#define elm_obj_button_admits_autorepeat_get(ret) ELM_OBJ_BUTTON_ID(ELM_OBJ_BUTTON_SUB_ID_ADMITS_AUTOREPEAT_GET), EO_TYPECHECK(Eina_Bool *, ret)
+
+
+char* ch_parser_eo_source_generate(char *classname)
+{
+   const Eina_List *l;
+   void *data;
+   
+   if (!database_class_exists(classname)) return NULL;
+   
+   char *cap_class = strdup(classname);
+   eina_str_toupper(&cap_class);
+   
+   Eina_Strbuf * str_decl = eina_strbuf_new();
+   eina_strbuf_append_printf(str_decl, "EO_DEFINE_CLASS(%s_class_get, &class_desc, ", classname);
+   EINA_LIST_FOREACH(database_class_inherits_list_get(classname), l, data)
+     {
+        _strbuf_uppercase_append(str_decl, (char*)data);
+        eina_strbuf_append(str_decl, "_CLASS, "); 
+     }
+   eina_strbuf_append(str_decl, "NULL);");
+   
+   Eina_Strbuf * str_desc = eina_strbuf_new();
+   eina_strbuf_append_printf(str_desc, "static const Eo_Class_Description class_desc = {\n"
+                                       "     EO_VERSION,\n" 
+                                       "     \"%s\",\n"
+                                       "     EO_CLASS_TYPE_REGULAR,\n"
+                                       "     EO_CLASS_DESCRIPTION_OPS(&%s_BASE_ID, op_desc, %s_SUB_ID_LAST),\n"
+                                       "     NULL,\n"
+                                       "     _class_constructor,\n"
+                                       "     NULL\n};",
+                                       classname, cap_class, cap_class);
+   
+   Eina_Strbuf * str_op = eina_strbuf_new();
+   eina_strbuf_append(str_op, "static const Eo_Op_Description op_desc[] = {\n");
+   
+   Eina_Strbuf * str_constr = eina_strbuf_new();
+   eina_strbuf_append(str_constr, "static void\n_class_constructor(Eo_Class *klass)\n{\n"
+                                  "   const Eo_Op_Func_Description func_desc[] = {\n");
+   
+   Eina_Strbuf *cap_buff = eina_strbuf_new();
+   EINA_LIST_FOREACH(database_class_functions_list_get(classname, METHOD_FUNC), l, data)
+     {
+        eina_strbuf_reset(cap_buff);
+        _strbuf_uppercase_append(cap_buff, database_function_name_get((Function_Id)data));
+        eina_strbuf_append_printf(str_op, 
+                  "     EO_OP_DESCRIPTION(%s_SUB_ID_%s, \"%s\"),\n", 
+                  cap_class,
+                  eina_strbuf_string_get(cap_buff), 
+                  database_function_description_get((Function_Id)data,"comment"));
+        
+        eina_strbuf_append_printf(str_constr, 
+                  "        EO_OP_FUNC(%s_ID(%s_SUB_ID_%s), _%s),\n", 
+                  cap_class,
+                  cap_class,
+                  eina_strbuf_string_get(cap_buff), 
+                  database_function_name_get((Function_Id)data));          
+     }
+   eina_strbuf_append(str_op, "     EO_OP_DESCRIPTION_SENTINEL\n};");
+   eina_strbuf_append(str_constr, "        EO_OP_FUNC_SENTINEL\n   };\n"
+                                  "   eo_class_funcs_set(klass, func_desc);\n}");
+
+   Eina_Strbuf *str_ret = eina_strbuf_new();
+   eina_strbuf_append_printf(str_ret, "EAPI Eo_Op %s_BASE_ID = EO_NOOP;\n", cap_class);
+   eina_strbuf_append_printf(str_ret, "\n%s\n", eina_strbuf_string_steal(str_constr));
+   eina_strbuf_append_printf(str_ret, "\n%s\n", eina_strbuf_string_steal(str_op));
+   eina_strbuf_append_printf(str_ret, "\n%s\n", eina_strbuf_string_steal(str_desc));
+   eina_strbuf_append_printf(str_ret, "\n%s\n", eina_strbuf_string_steal(str_decl));
+   
+   eina_strbuf_free(cap_buff);
+   free(cap_class);
+   
+   return eina_strbuf_string_steal(str_ret);
+}
 
 int main(int argc, char **argv)
 {
@@ -306,6 +446,10 @@ int main(int argc, char **argv)
      {
         eolian_show();
      }
+     
+   printf("Hello!\n");
+   printf ("%s\n",ch_parser_eo_header_generate("Evas_Object_Image"));
+   
    EINA_LIST_FREE(files, filename)
       free(filename);
    eolian_database_shutdown();

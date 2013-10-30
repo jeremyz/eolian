@@ -68,6 +68,9 @@ Function_Type database_function_type_get(Function_Id function_id);
 /* Add a function to a class */
 Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id);
 
+/* Get a name of a function */
+const char *database_function_name_get(Function_Id function_id);
+
 /* Add a description to a function */
 void database_function_description_set(Function_Id function_id, const char *key, const char *description);
 

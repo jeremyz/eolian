@@ -245,6 +245,13 @@ database_function_type_get(Function_Id function_id)
    return fid->type;
 }
 
+const char *
+database_function_name_get(Function_Id function_id)
+{
+   _Function_Id *fid = (_Function_Id *)function_id;
+   return fid->name;
+}
+
 void
 database_function_description_set(Function_Id function_id, const char *key, const char *description)
 {
