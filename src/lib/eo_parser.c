@@ -41,12 +41,12 @@ _strip(char *str)
 }
 
 static Function_Type
-_get_func_type(const char *type)
+_func_type_resolve(const char *type)
 {
    if (!type) return METHOD_FUNC;
    if (!strcmp("rw", type)) return PROPERTY_FUNC;
-   if (!strcmp("ro", type)) return GET;
-   if (!strcmp("wo", type)) return SET;
+   if ((!strcmp("ro", type)) || (!strcmp("get_only", type))) return GET;
+   if ((!strcmp("wo", type)) || (!strcmp("set_only", type))) return SET;
    return METHOD_FUNC;
 }
 
@@ -84,7 +84,7 @@ _property_parse(char *buffer, char **new_buffer)
 
    // FUNC_NAME
    LEX_REVERSE(types_function, strlen(types_function), UWORD(&function));
-   foo_id = database_function_new(function, _get_func_type(prop_dir));
+   foo_id = database_function_new(function, _func_type_resolve(prop_dir));
    if (comment)
       database_function_description_set(foo_id, "comment", comment);
 
@@ -377,12 +377,6 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
         func_name = eina_json_pair_name_get(itv);
         func_body = eina_json_pair_value_get(itv);
 
-        ret = database_class_function_exists(class_name, func_name);
-        if (ret)
-          {
-             printf("ERR: Function: \"%s\" already exists in class \"%s\"\n", func_name, class_name);
-             return EINA_FALSE;
-          }
 
         /* UNRESOLVED passed when iterating over properties.
          * If field "type" is absent in JSON, t.e. type is PROPERTY. */
@@ -392,7 +386,7 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
              if (v)
                {
                   const char *prop_type = eina_json_string_get(v);
-                  f_type = _get_func_type(prop_type);
+                  f_type = _func_type_resolve(prop_type);
                }
              else
                {
@@ -401,6 +395,13 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
           }
         else
           f_type = _f_type;
+
+        ret = database_class_function_exists(class_name, func_name, f_type);
+        if (ret)
+          {
+             printf("ERR: Function: \"%s\" already exists in class \"%s\"\n", func_name, class_name);
+             return EINA_FALSE;
+          }
 
         foo_id = database_function_new(func_name, f_type);
         if (!foo_id) return EINA_FALSE;
@@ -586,9 +587,11 @@ _class_parse_json(char *buffer)
         /* Parameter's array: ["direction", "modificator", "type", "name", "comment"]"*/
         EINA_ITERATOR_FOREACH(it, param)
           {
-             const char *cl, *f;
+             const char *cl, *f, *t;
              cl = JSON_ARR_NTH_STRING_GET(param, 0);
              f = JSON_ARR_NTH_STRING_GET(param, 1);
+             t = JSON_ARR_NTH_STRING_GET(param, 2);
+             database_class_implements_add(class_name, database_class_implements_new(cl, f, _func_type_resolve(t)));
           }
         eina_iterator_free(it);
      }

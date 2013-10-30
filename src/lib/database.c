@@ -10,9 +10,10 @@ typedef struct
    char *macro;
    char *description;
    Eina_List *inherits;
-   Eina_List *properties; /* Hash prop_name -> _Function_Id */
-   Eina_List *methods; /* Hash meth_name -> _Function_Id */
-   Eina_List *constructors; /* Hash constructors_name -> _Function_Id */
+   Eina_List *properties; /* List prop_name -> _Function_Id */
+   Eina_List *methods; /* List meth_name -> _Function_Id */
+   Eina_List *constructors; /* List constructors_name -> _Function_Id */
+   Eina_List *implements; /* List implements name -> _Implements_Desc */
 } Class_desc;
 
 typedef struct
@@ -31,6 +32,12 @@ typedef struct
    Parameter_Dir param_dir;
 } _Parameter_Desc;
 
+typedef struct
+{
+   char *class_name;
+   char *func_name;
+   Function_Type type;
+} _Implements_Desc;
 
 static void
 _param_del(_Parameter_Desc *pdesc)
@@ -189,6 +196,13 @@ database_class_inherits_list_get(char *class_name)
    return (desc?desc->inherits:NULL);
 }
 
+const Eina_List*
+database_class_implements_list_get(const char *class_name)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   return (desc ? desc->implements : NULL);
+}
+
 Function_Id
 database_function_new(const char *function_name, Function_Type foo_type)
 {
@@ -223,30 +237,67 @@ Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id)
    return EINA_TRUE;
 }
 
-Eina_Bool database_class_function_exists(const char *classname, const char *func_name)
+Implements_Desc
+database_class_implements_new(const char *class_name, const char *func_name, Function_Type type)
+{
+   _Implements_Desc *impl_desc = calloc(1, sizeof(_Implements_Desc));
+   if (!impl_desc || !class_name || !func_name) return NULL;
+   impl_desc->class_name = strdup(class_name);
+   impl_desc->func_name = strdup(func_name);
+   impl_desc->type = type;
+   return (Implements_Desc) impl_desc;
+}
+
+Eina_Bool
+database_class_implements_add(const char *class_name, Implements_Desc impl_desc)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   if (!impl_desc || !desc) return EINA_FALSE;
+   desc->implements = eina_list_append(desc->implements, impl_desc);
+   return EINA_TRUE;
+}
+
+Eina_Bool database_class_function_exists(const char *classname, const char *func_name, Function_Type f_type)
 {
    Eina_Bool ret = EINA_FALSE;
    Eina_List *itr;
    Function_Id foo_id;
    Class_desc *desc = eina_hash_find(_classes, classname);
 
-   EINA_LIST_FOREACH(desc->methods, itr, foo_id)
+   switch (f_type)
      {
-        _Function_Id *fid = (_Function_Id *) foo_id;
-        if (!strcmp(fid->name, func_name))
-          return EINA_TRUE;
-     }
-   EINA_LIST_FOREACH(desc->properties, itr, foo_id)
-     {
-        _Function_Id *fid = (_Function_Id *) foo_id;
-        if (!strcmp(fid->name, func_name))
-          return EINA_TRUE;
-     }
-   EINA_LIST_FOREACH(desc->constructors, itr, foo_id)
-     {
-        _Function_Id *fid = (_Function_Id *) foo_id;
-        if (!strcmp(fid->name, func_name))
-          return EINA_TRUE;
+      case METHOD_FUNC:
+           {
+              EINA_LIST_FOREACH(desc->methods, itr, foo_id)
+                {
+                   _Function_Id *fid = (_Function_Id *) foo_id;
+                   if (!strcmp(fid->name, func_name))
+                     return EINA_TRUE;
+                }
+              break;
+           }
+        case SET:
+        case GET:
+        case PROPERTY_FUNC:
+        {
+           EINA_LIST_FOREACH(desc->properties, itr, foo_id)
+             {
+                _Function_Id *fid = (_Function_Id *) foo_id;
+                if (!strcmp(fid->name, func_name))
+                  return EINA_TRUE;
+             }
+           break;
+        }
+        case CONSTRUCTOR:
+        {
+           EINA_LIST_FOREACH(desc->constructors, itr, foo_id)
+             {
+                _Function_Id *fid = (_Function_Id *) foo_id;
+                if (!strcmp(fid->name, func_name))
+                  return EINA_TRUE;
+             }
+           break;
+        }
      }
    return ret;
 }
@@ -337,6 +388,44 @@ database_parameter_information_get(Parameter_Desc param_desc, Parameter_Dir *par
    if (type) *type = param->type;
    if (name) *name = param->name;
    if (description) *description = param->description;
+}
+
+void
+database_class_implement_information_get(Implements_Desc impl, char **class_name, char **func_name, Function_Type *type)
+{
+   _Implements_Desc *_impl = (_Implements_Desc *)impl;
+   if (class_name) *class_name = _impl->class_name;
+   if (func_name) *func_name = _impl->func_name;
+   if (type) *type = _impl->type;
+}
+
+static void
+_implements_print(Implements_Desc impl, int nb_spaces)
+{
+   char t[10];
+   char *cl, *fn;
+   Function_Type ft;
+
+   database_class_implement_information_get(impl, &cl, &fn, &ft);
+   switch (ft)
+     {
+      case SET:
+           {
+              strcpy(t, "SET");
+              break;
+           }
+      case GET:
+           {
+              strcpy(t, "GET");
+              break;
+           }
+      case METHOD_FUNC:
+           {
+              strcpy(t, "METHOD");
+              break;
+           }
+     }
+   printf("%*s <%s :: %s> <%s>\n", nb_spaces + 5, "", cl, fn, t);
 }
 
 static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
@@ -435,6 +524,13 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    EINA_LIST_FOREACH(desc->methods, itr, function)
      {
         _function_print(function, 4);
+     }
+   // Implements
+   printf("  implements:\n");
+   Implements_Desc impl;
+   EINA_LIST_FOREACH((Eina_List *) database_class_implements_list_get(desc->name), itr, impl)
+     {
+        _implements_print(impl, 4);
      }
    printf("\n");
    return EINA_TRUE;

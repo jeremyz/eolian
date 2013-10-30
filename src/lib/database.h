@@ -3,6 +3,7 @@
 
 typedef struct _Function_Id* Function_Id;
 typedef struct _Parameter_Desc* Parameter_Desc;
+typedef struct _Implements_Desc* Implements_Desc;
 
 typedef enum
 {
@@ -71,7 +72,7 @@ Eina_Bool database_class_function_add(const char *classname, Function_Id foo_id)
 /* Get a name of a function */
 const char *database_function_name_get(Function_Id function_id);
 
-Eina_Bool database_class_function_exists(const char *class_name, const char *func_name);
+Eina_Bool database_class_function_exists(const char *classname, const char *func_name, Function_Type f_type);
 
 /* Add a description to a function */
 void database_function_description_set(Function_Id function_id, const char *key, const char *description);
@@ -89,5 +90,17 @@ const Eina_List *database_parameters_list_get(Function_Id foo_id);
 void
 database_parameter_information_get(Parameter_Desc param_desc, Parameter_Dir *param_dir, char **type, char **name, char **description);
 /* Need to add API for callbacks and implements */
+
+Implements_Desc
+database_class_implements_new(const char *class_name, const char *func_name, Function_Type type);
+
+Eina_Bool
+database_class_implements_add(const char *class_name, Implements_Desc impl_id);
+
+const Eina_List*
+database_class_implements_list_get(const char *class_name);
+
+void
+database_class_implement_information_get(Implements_Desc impl, char **class_name, char **func_name, Function_Type *type);
 
 #endif

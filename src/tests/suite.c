@@ -47,7 +47,7 @@ START_TEST(class_name_test)
    fail_if(!ret);
    fail_if(!database_class_exists("MyClassName"));
    ck_assert_str_eq(database_class_macro_get("MyClassName"), "MY_CLASS_NAME");
-   fail_if(!database_class_function_exists("MyClassName", "func_name"));
+   fail_if(!database_class_function_exists("MyClassName", "func_name", METHOD_FUNC));
 
    ret = eolian_eo_class_desc_parse_json(EO_COMMENT_JSON2);
    fail_if(ret);

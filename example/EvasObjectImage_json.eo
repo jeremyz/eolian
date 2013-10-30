@@ -728,5 +728,22 @@
       "comment": "Reload an image object's image data.", 
       "parameters": []
     }
-  }
+  }, 
+  "implements": [
+    [
+      "Eo Base", 
+      "destructor", 
+      "method"
+    ], 
+    [
+      "Eo Base", 
+      "dbg_info_get", 
+      "method"
+    ], 
+    [
+      "Eo Base", 
+      "constructor", 
+      "method"
+    ]
+  ]
 }
