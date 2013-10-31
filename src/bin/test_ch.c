@@ -218,6 +218,48 @@ Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classna
    return EINA_TRUE;
 }  
 
+static char* _function_define_string_get(Function_Id func, char *classname)
+{
+   const char *str_dir[] = {"in", "out", "inout"}; 
+   const Eina_List *l;
+   void *data;
+   
+   Eina_Strbuf *ret = eina_strbuf_new();
+   const char *fnname = database_function_name_get(func);
+
+   eina_strbuf_append_printf(ret, "/**\n * @def %s\n *\n * %s\n *\n", fnname,
+                      database_function_description_get(func, "comment"));
+   
+   Eina_Strbuf *param = eina_strbuf_new();
+   Eina_Strbuf *typecheck = eina_strbuf_new();                  
+   EINA_LIST_FOREACH(database_parameters_list_get(func), l, data)
+     {
+        char *pname;
+        char *ptype;
+        Parameter_Dir pdir;
+        database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
+        eina_strbuf_append_printf(ret, " * @param[%s] %s\n", str_dir[(int)pdir], pname);
+        
+        if (eina_strbuf_length_get(param)) eina_strbuf_append(param, ", ");
+        eina_strbuf_append(param, pname);
+        eina_strbuf_append_printf(typecheck, ", EO_TYPECHECK(%s%s, %s)", 
+                                  ptype,
+                                  (pdir==IN_PARAM) ? "" : "*",
+                                  pname);
+     }
+   eina_strbuf_append(ret, " *\n */\n");
+   eina_strbuf_append_printf(ret, "#define %s_%s(%s) ", classname, fnname, eina_strbuf_string_steal(param));
+   _strbuf_uppercase_append(ret, classname);
+   eina_strbuf_append(ret, "_ID(");
+   _strbuf_uppercase_append(ret, classname);
+   eina_strbuf_append(ret, "_SUB_ID_");
+   _strbuf_uppercase_append(ret, fnname);
+   eina_strbuf_append(ret, ")");
+   eina_strbuf_append(ret, eina_strbuf_string_steal(typecheck));
+   
+   return eina_strbuf_string_steal(ret);
+}
+//#define elm_obj_button_admits_autorepeat_get(ret) ELM_OBJ_BUTTON_ID(ELM_OBJ_BUTTON_SUB_ID_ADMITS_AUTOREPEAT_GET), EO_TYPECHECK(Eina_Bool *, ret)
 char* ch_parser_eo_header_generate(char *classname)
 {
    const Eina_List *l;
@@ -229,22 +271,25 @@ char* ch_parser_eo_header_generate(char *classname)
    eina_str_toupper(&cap_class);
    
    Eina_Strbuf * str_decl = eina_strbuf_new();
-   eina_strbuf_append_printf(str_decl, "#define %s_CLASS %s_class_get()\n", 
+   eina_strbuf_append_printf(str_decl, "#define %s_CLASS %s_class_get()\n\n", 
                              cap_class, classname);
-   eina_strbuf_append_printf(str_decl, "const Eo_Class *%s_class_get(void) EINA_CONST;\n", 
+   eina_strbuf_append_printf(str_decl, "const Eo_Class *%s_class_get(void) EINA_CONST;\n\n", 
                              classname);
-   eina_strbuf_append_printf(str_decl, "extern EAPI Eo_Op %s_BASE_ID;\n", cap_class);
-   eina_strbuf_append_printf(str_decl, "enum\n{\n");
+   eina_strbuf_append_printf(str_decl, "extern EAPI Eo_Op %s_BASE_ID;\n\n", cap_class);
+   eina_strbuf_append_printf(str_decl, "enum\n{\n\n");
    
    Eina_Strbuf *cap_buff = eina_strbuf_new();
+   Eina_Strbuf *func_defs = eina_strbuf_new();
    EINA_LIST_FOREACH(database_class_functions_list_get(classname, METHOD_FUNC), l, data)
      {
         eina_strbuf_reset(cap_buff);
         _strbuf_uppercase_append(cap_buff, database_function_name_get((Function_Id)data));
         eina_strbuf_append_printf(str_decl, "   %s_SUB_ID_%s,\n", cap_class,
                                           eina_strbuf_string_get(cap_buff));
+        eina_strbuf_append_printf(func_defs, "\n%s\n", _function_define_string_get((Function_Id)data, classname));
      }
    eina_strbuf_append_printf(str_decl, "   %s_SUB_ID_LAST\n};", cap_class);
+   eina_strbuf_append_printf(str_decl, "\n%s\n", eina_strbuf_string_get(func_defs));
    
    eina_strbuf_free(cap_buff);
    free(cap_class);
