@@ -61,16 +61,29 @@ const char *_skipchars(const char *str, const char *chars)
    return ret;
 }
 
-const char *_nextline(const char *str, unsigned int lines)
+char *_nextline(char *str, unsigned int lines)
 {
-   const char *ret = str;
-   while ((lines--) && ret)
+   if (!str) return NULL;
+   
+   char *ret = str;
+   while ((lines--) && *ret)
      {
         ret= strchr(ret, '\n');
         if (ret) ret++;
      }
    return ret;
 }
+
+char *_startline(char *str, char *pos)
+{
+   if (!str || !pos) return NULL;
+   
+   char *ret =  pos;
+   while ((ret > str) && (*(ret-1)!='\n')) ret--;
+  
+   return ret;
+}
+
 
 Eina_Strbuf *_get_str_until(const char *str, const char *stopper)
 {
@@ -139,8 +152,6 @@ Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classna
   //txstr = eina_strbuf_string_get(text);
    //pstr = strchr(txstr, '\0');
    //if (pstr > txstr) pstr--;
-   
-   
    Eina_Strbuf *func_entry = eina_strbuf_new();
    //Docs
    eina_strbuf_append_printf(func_entry, "\n/**\n*@def %s_%s\n*\n%s\n*\n*/\n", classname, func_name, func_desc);
@@ -155,10 +166,11 @@ Eina_Bool ch_parser_eo_class_h_method_add(Eina_Strbuf *text, const char *classna
 }
 
 // API ?
+/*
 Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classname, EINA_UNUSED Function_Id func)
 {
    const char *txstr = eina_strbuf_string_get(text);
-   const char *pstr;
+   char *pstr;
    Eina_Strbuf *str_desc, *str_opt, *str_constructor;
    
    //Def
@@ -217,7 +229,7 @@ Eina_Bool ch_parser_eo_class_c_method_add(Eina_Strbuf *text, const char *classna
    // free strings;
    return EINA_TRUE;
 }  
-
+*/
 static char* _function_define_string_get(Function_Id func, char *classname)
 {
    const char *str_dir[] = {"in", "out", "inout"}; 
@@ -259,7 +271,7 @@ static char* _function_define_string_get(Function_Id func, char *classname)
    
    return eina_strbuf_string_steal(ret);
 }
-//#define elm_obj_button_admits_autorepeat_get(ret) ELM_OBJ_BUTTON_ID(ELM_OBJ_BUTTON_SUB_ID_ADMITS_AUTOREPEAT_GET), EO_TYPECHECK(Eina_Bool *, ret)
+
 char* ch_parser_eo_header_generate(char *classname)
 {
    const Eina_List *l;
@@ -289,6 +301,8 @@ char* ch_parser_eo_header_generate(char *classname)
         eina_strbuf_append_printf(func_defs, "\n%s\n", _function_define_string_get((Function_Id)data, classname));
      }
    eina_strbuf_append_printf(str_decl, "   %s_SUB_ID_LAST\n};", cap_class);
+   eina_strbuf_append_printf(str_decl, "\n\n#define %s_ID(sub_id) (%s_BASE_ID + sub_id)", cap_class, cap_class);
+   
    eina_strbuf_append_printf(str_decl, "\n%s\n", eina_strbuf_string_get(func_defs));
    
    eina_strbuf_free(cap_buff);
@@ -297,6 +311,66 @@ char* ch_parser_eo_header_generate(char *classname)
    return eina_strbuf_string_steal(str_decl);
 }
 
+Eina_Bool ch_parser_header_append(Eina_Strbuf *header, char *classname)
+{
+   char *clsptr = ch_parser_eo_class_h_find(header, classname);
+   
+   if (!clsptr)
+     {
+        printf ("Method %s not found - appending\n", classname);
+        char *hptr = ch_parser_eo_header_generate(classname);
+        eina_strbuf_append_printf(header, "\n%s", hptr);
+        free(hptr);
+        return EINA_TRUE;
+     }
+   
+   printf ("Class %s found - searching for functions...\n", classname);
+   
+   char *defs_ins = _nextline(strstr(clsptr, "+ sub_id)"), 1);
+   char *enum_ins = _startline(clsptr, strstr(clsptr, "SUB_ID_LAST"));
+   
+   if (!(defs_ins && enum_ins) || (enum_ins > defs_ins))
+     {
+       printf ("Bad insertion ques - update aborted\n"); 
+       return EINA_FALSE;
+     }
+   
+   Eina_Strbuf *enum_list = eina_strbuf_new();
+   Eina_Strbuf *defs_list = eina_strbuf_new();
+   
+   const Eina_List *l;
+   void *data;
+   
+   EINA_LIST_FOREACH(database_class_functions_list_get(classname, METHOD_FUNC), l, data)
+     {
+        const char *funcname = database_function_name_get((Function_Id)data);
+        char *found = strstr(clsptr, funcname);
+        if (!found)
+          {
+            printf ("Method %s found - appending\n", funcname);
+            
+            eina_strbuf_append(enum_list,"   ");
+            _strbuf_uppercase_append(enum_list, classname);
+            eina_strbuf_append(enum_list,"_SUB_ID_");
+            _strbuf_uppercase_append(enum_list, funcname);
+            eina_strbuf_append(enum_list,",\n");
+            
+            eina_strbuf_append_printf(defs_list, "\n%s\n", _function_define_string_get((Function_Id)data, classname));
+          }
+     }
+
+   const char *hdstr = eina_strbuf_string_get(header);
+   unsigned enum_offs = enum_ins - hdstr;
+   unsigned defs_offs = defs_ins - hdstr + eina_strbuf_length_get(enum_list);
+   eina_strbuf_insert(header, eina_strbuf_string_get(enum_list), enum_offs);
+   eina_strbuf_insert(header, eina_strbuf_string_get(defs_list), defs_offs);
+   
+   eina_strbuf_free(enum_list);
+   eina_strbuf_free(defs_list);
+   
+   return EINA_TRUE;
+}
+   
 /*
 #define ELM_OBJ_BUTTON_CLASS elm_obj_button_class_get()
 
@@ -491,9 +565,16 @@ int main(int argc, char **argv)
      {
         eolian_show();
      }
-     
-   printf("Hello!\n");
-   printf ("%s\n",ch_parser_eo_header_generate("Evas_Object_Image"));
+   
+   
+   Eina_File *fn = eina_file_open("../EvasObjectImage1.h", EINA_FALSE);
+   Eina_Strbuf *hfile = eina_strbuf_new();
+   eina_strbuf_append(hfile, (char*)eina_file_map_all(fn, EINA_FILE_SEQUENTIAL));
+   ch_parser_header_append(hfile, "Evas_Object_Image");
+   printf ("upd\n%s\n",eina_strbuf_string_get(hfile));
+   eina_file_close(fn);
+   
+   //printf ("%s\n",ch_parser_eo_header_generate("Evas_Object_Image"));
    
    EINA_LIST_FREE(files, filename)
       free(filename);
