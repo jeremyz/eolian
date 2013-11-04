@@ -401,7 +401,7 @@
       "type": "wo", 
       "parameters": [
         [
-          "", 
+          "const", 
           "Eina_File*", 
           "f", 
           "in"
@@ -745,5 +745,6 @@
       "constructor", 
       "method"
     ]
-  ]
+  ], 
+  "old_styled_signals": []
 }

@@ -584,7 +584,7 @@ _class_parse_json(char *buffer)
      {
         Eina_Iterator *it = eina_json_array_iterator_new(jv);
         Eina_Json_Value *param;
-        /* Parameter's array: ["direction", "modificator", "type", "name", "comment"]"*/
+        /* Implement's array: ["Class Name", "Func Name", "Func Type"]"*/
         EINA_ITERATOR_FOREACH(it, param)
           {
              const char *cl, *f, *t;
@@ -592,6 +592,21 @@ _class_parse_json(char *buffer)
              f = JSON_ARR_NTH_STRING_GET(param, 1);
              t = JSON_ARR_NTH_STRING_GET(param, 2);
              database_class_implements_add(class_name, database_class_implements_new(cl, f, _func_type_resolve(t)));
+          }
+        eina_iterator_free(it);
+     }
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "old_styled_signals");
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
+     {
+        Eina_Iterator *it = eina_json_array_iterator_new(jv);
+        Eina_Json_Value *param;
+        /* Signal's array: ["clicked", "This event will shoot when button is clecked"]"*/
+        EINA_ITERATOR_FOREACH(it, param)
+          {
+             const char *s, *d;
+             s = JSON_ARR_NTH_STRING_GET(param, 0);
+             d = JSON_ARR_NTH_STRING_GET(param, 1);
+             database_class_event_add(class_name, database_class_event_new(s, d));
           }
         eina_iterator_free(it);
      }

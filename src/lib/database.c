@@ -14,6 +14,7 @@ typedef struct
    Eina_List *methods; /* List meth_name -> _Function_Id */
    Eina_List *constructors; /* List constructors_name -> _Function_Id */
    Eina_List *implements; /* List implements name -> _Implements_Desc */
+   Eina_List *events; /* List event_name -> _Event_Desc */
 } Class_desc;
 
 typedef struct
@@ -38,6 +39,12 @@ typedef struct
    char *func_name;
    Function_Type type;
 } _Implements_Desc;
+
+typedef struct
+{
+   char *event_name;
+   char *event_comment;
+} _Event_Desc;
 
 static void
 _param_del(_Parameter_Desc *pdesc)
@@ -399,6 +406,40 @@ database_class_implement_information_get(Implements_Desc impl, char **class_name
    if (type) *type = _impl->type;
 }
 
+Event_Desc
+database_class_event_new(const char *event_name, const char *event_comment)
+{
+   _Event_Desc *event_desc = calloc(1, sizeof(_Event_Desc));
+   if (!event_desc || !event_name) return NULL;
+   event_desc->event_name = strdup(event_name);
+   if (event_comment) event_desc->event_comment = strdup(event_comment);
+   return (Event_Desc) event_desc;
+}
+
+Eina_Bool
+database_class_event_add(const char *class_name, Event_Desc event_desc)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   if (!event_desc || !desc) return EINA_FALSE;
+   desc->events = eina_list_append(desc->events, event_desc);
+   return EINA_TRUE;
+}
+
+const Eina_List*
+database_class_events_list_get(const char *class_name)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   return (desc ? desc->events : NULL);
+}
+
+void
+database_class_event_information_get(Event_Desc event_desc, char **event_name, char **event_comment)
+{
+   _Event_Desc *_event_desc = (_Event_Desc *) event_desc;
+   if (event_name) *event_name = _event_desc->event_name;
+   if (event_comment) *event_comment = _event_desc->event_comment;
+}
+
 static void
 _implements_print(Implements_Desc impl, int nb_spaces)
 {
@@ -426,6 +467,16 @@ _implements_print(Implements_Desc impl, int nb_spaces)
            }
      }
    printf("%*s <%s :: %s> <%s>\n", nb_spaces + 5, "", cl, fn, t);
+}
+
+static void
+_event_print(Event_Desc ev, int nb_spaces)
+{
+   char *name, *comment;
+   Function_Type ft;
+
+   database_class_event_information_get(ev, &name, &comment);
+   printf("%*s <%s> <%s>\n", nb_spaces + 5, "", name, comment);
 }
 
 static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
@@ -531,6 +582,14 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    EINA_LIST_FOREACH((Eina_List *) database_class_implements_list_get(desc->name), itr, impl)
      {
         _implements_print(impl, 4);
+     }
+   printf("\n");
+   // Implements
+   printf("  events:\n");
+   Event_Desc ev;
+   EINA_LIST_FOREACH((Eina_List *) database_class_events_list_get(desc->name), itr, ev)
+     {
+        _event_print(ev, 4);
      }
    printf("\n");
    return EINA_TRUE;

@@ -4,6 +4,7 @@
 typedef struct _Function_Id* Function_Id;
 typedef struct _Parameter_Desc* Parameter_Desc;
 typedef struct _Implements_Desc* Implements_Desc;
+typedef struct _Event_Desc* Event_Desc;
 
 typedef enum
 {
@@ -103,4 +104,15 @@ database_class_implements_list_get(const char *class_name);
 void
 database_class_implement_information_get(Implements_Desc impl, char **class_name, char **func_name, Function_Type *type);
 
+Event_Desc
+database_class_event_new(const char *event_name, const char *event_desc);
+
+Eina_Bool
+database_class_event_add(const char *class_name, Event_Desc event_desc);
+
+const Eina_List*
+database_class_events_list_get(const char *class_name);
+
+void
+database_class_event_information_get(Event_Desc event_desc, char **event_name, char **eventd_desc);
 #endif
