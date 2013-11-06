@@ -155,8 +155,8 @@ _class_h_find(Eina_Strbuf *str, const char *classname)
    return ret;
 }
 
-static char* 
-_eo_fundef_generate(Function_Id func, char *classname, Function_Type ftype)
+static const char* 
+_eo_fundef_generate(Eina_Strbuf *functext, Function_Id func, char *classname, Function_Type ftype)
 {
    const char *str_dir[] = {"in", "out", "inout"}; 
    const Eina_List *l;
@@ -205,7 +205,8 @@ _eo_fundef_generate(Function_Id func, char *classname, Function_Type ftype)
    eina_strbuf_free(str_pardesc);
    eina_strbuf_free(str_typecheck);
    
-   return eina_strbuf_string_steal(str_func);
+   eina_strbuf_append(functext, eina_strbuf_string_steal(str_func));
+   return eina_strbuf_string_get(functext);
 }
 
 char*
@@ -235,25 +236,19 @@ ch_parser_eo_header_generate(char *classname)
            if (!prop_read && !prop_write)
              {
                 _template_fill(str_subid, tmpl_eo_subid, classname, funcname, EINA_FALSE);
-                char *funcdef = _eo_fundef_generate((Function_Id)data, classname, UNRESOLVED);
-                eina_strbuf_append(str_hdr, funcdef);
-                free(funcdef);
+                _eo_fundef_generate(str_hdr, (Function_Id)data, classname, UNRESOLVED);
              }
            if (prop_read)
              {
                 sprintf(tmpstr, "%s_get", funcname);
                 _template_fill(str_subid, tmpl_eo_subid, classname, tmpstr, EINA_FALSE);
-                char *funcdef = _eo_fundef_generate((Function_Id)data, classname, GET);
-                eina_strbuf_append(str_hdr, funcdef);
-                free(funcdef);
+                _eo_fundef_generate(str_hdr, (Function_Id)data, classname, GET);
              }
            if (prop_write)
              {
                 sprintf(tmpstr, "%s_set", funcname);
                 _template_fill(str_subid, tmpl_eo_subid, classname, tmpstr, EINA_FALSE);
-                char *funcdef = _eo_fundef_generate((Function_Id)data, classname, SET);
-                eina_strbuf_append(str_hdr, funcdef);
-                free(funcdef);
+                _eo_fundef_generate(str_hdr, (Function_Id)data, classname, SET);
              }
         }
    
@@ -347,9 +342,7 @@ ch_parser_header_append(Eina_Strbuf *header, char *classname)
             
             _template_fill(str_subid, tmpl_eo_subid_apnd, classname, funcname, EINA_FALSE);
             
-            char *funcdef = _eo_fundef_generate((Function_Id)data, classname, UNRESOLVED);
-            eina_strbuf_append(str_funcdef, funcdef);
-            free(funcdef);
+            _eo_fundef_generate(str_funcdef, (Function_Id)data, classname, UNRESOLVED);
           }
      }
 
