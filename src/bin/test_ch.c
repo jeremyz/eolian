@@ -83,7 +83,7 @@ const char
 tmpl_eo_pardesc[] =" * @param[%s] %s\n";
 
 static const char*
-_template_fill(Eina_Strbuf *buf, const char* templ,const char* classname,const char *funcname, Eina_Bool reset)
+_template_fill(Eina_Strbuf *buf, const char* templ, const char* classname, const char *funcname, Eina_Bool reset)
 {
    if (reset) eina_strbuf_reset(buf);
    if (templ) eina_strbuf_append(buf, templ);
@@ -156,14 +156,20 @@ _class_h_find(Eina_Strbuf *str, const char *classname)
 }
 
 static char* 
-_eo_fundef_generate(Function_Id func, char *classname)
+_eo_fundef_generate(Function_Id func, char *classname, Function_Type ftype)
 {
    const char *str_dir[] = {"in", "out", "inout"}; 
    const Eina_List *l;
    void *data;
+   char funcname[0xFF];
+   char descname[0xFF];
+   char *fsuffix = "";
+   if (ftype == GET) fsuffix = "_get";
+   if (ftype == SET) fsuffix = "_set";
    
-   const char *funcname = database_function_name_get(func);
-   const char *funcdesc = database_function_description_get(func, "comment");
+   sprintf (funcname,"%s%s", database_function_name_get(func), fsuffix);
+   sprintf (descname,"comment%s", fsuffix);
+   const char *funcdesc = database_function_description_get(func, descname);
    
    Eina_Strbuf *str_func = eina_strbuf_new();
    _template_fill(str_func, tmpl_eo_funcdef, classname, funcname, EINA_TRUE);
@@ -179,7 +185,11 @@ _eo_fundef_generate(Function_Id func, char *classname)
         char *ptype;
         Parameter_Dir pdir;
         database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
-        eina_strbuf_append_printf(str_pardesc, tmpl_eo_pardesc, str_dir[(int)pdir], pname);
+        
+        const char *dir_str = str_dir[(int)pdir];
+        if (ftype == GET) dir_str = "out";
+        if (ftype == SET) dir_str = "in";
+        eina_strbuf_append_printf(str_pardesc, tmpl_eo_pardesc, dir_str, pname);
         
         if (eina_strbuf_length_get(str_par)) eina_strbuf_append(str_par, ", ");
         eina_strbuf_append(str_par, pname);
@@ -201,8 +211,10 @@ _eo_fundef_generate(Function_Id func, char *classname)
 char*
 ch_parser_eo_header_generate(char *classname)
 {
+   const Function_Type ftype_order[] = {PROPERTY_FUNC, METHOD_FUNC};
    const Eina_List *l;
    void *data;
+   char tmpstr[0x1FF];
    
    if (!database_class_exists(classname)) return NULL;
    
@@ -211,15 +223,39 @@ ch_parser_eo_header_generate(char *classname)
    
    Eina_Strbuf *str_subid = eina_strbuf_new();
    
-   EINA_LIST_FOREACH(database_class_functions_list_get(classname, METHOD_FUNC), l, data)
-     {
-        const char *funcname = database_function_name_get((Function_Id)data);
-        _template_fill(str_subid, tmpl_eo_subid, classname, funcname, EINA_FALSE);
-        
-        char *funcdef = _eo_fundef_generate((Function_Id)data, classname);
-        eina_strbuf_append(str_hdr, funcdef);
-        free(funcdef);
-     }
+   int i;
+   for (i = 0; i < 2; i++)
+      EINA_LIST_FOREACH(database_class_functions_list_get(classname, ftype_order[i]), l, data)
+        {
+           const Function_Type ftype = database_function_type_get((Function_Id)data);
+           const char *funcname = database_function_name_get((Function_Id)data);
+           Eina_Bool prop_read = (ftype == PROPERTY_FUNC || ftype == GET ) ? EINA_TRUE : EINA_FALSE ;
+           Eina_Bool prop_write = (ftype == PROPERTY_FUNC || ftype == SET ) ? EINA_TRUE : EINA_FALSE ;
+           
+           if (!prop_read && !prop_write)
+             {
+                _template_fill(str_subid, tmpl_eo_subid, classname, funcname, EINA_FALSE);
+                char *funcdef = _eo_fundef_generate((Function_Id)data, classname, UNRESOLVED);
+                eina_strbuf_append(str_hdr, funcdef);
+                free(funcdef);
+             }
+           if (prop_read)
+             {
+                sprintf(tmpstr, "%s_get", funcname);
+                _template_fill(str_subid, tmpl_eo_subid, classname, tmpstr, EINA_FALSE);
+                char *funcdef = _eo_fundef_generate((Function_Id)data, classname, GET);
+                eina_strbuf_append(str_hdr, funcdef);
+                free(funcdef);
+             }
+           if (prop_write)
+             {
+                sprintf(tmpstr, "%s_set", funcname);
+                _template_fill(str_subid, tmpl_eo_subid, classname, tmpstr, EINA_FALSE);
+                char *funcdef = _eo_fundef_generate((Function_Id)data, classname, SET);
+                eina_strbuf_append(str_hdr, funcdef);
+                free(funcdef);
+             }
+        }
    
    eina_strbuf_replace_all(str_hdr, "@#list_subid", eina_strbuf_string_get(str_subid));
    eina_strbuf_free(str_subid);
@@ -311,7 +347,7 @@ ch_parser_header_append(Eina_Strbuf *header, char *classname)
             
             _template_fill(str_subid, tmpl_eo_subid_apnd, classname, funcname, EINA_FALSE);
             
-            char *funcdef = _eo_fundef_generate((Function_Id)data, classname);
+            char *funcdef = _eo_fundef_generate((Function_Id)data, classname, UNRESOLVED);
             eina_strbuf_append(str_funcdef, funcdef);
             free(funcdef);
           }
@@ -425,7 +461,7 @@ int main(int argc, char **argv)
    eina_file_close(fn);
    */
    
-   printf ("%s\n",ch_parser_eo_header_generate("Evas_Object_Image"));
+   printf ("%s\n",ch_parser_eo_header_generate("elm_win"));
    
    EINA_LIST_FREE(files, filename)
       free(filename);
