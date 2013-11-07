@@ -42,7 +42,7 @@ const char
 tmpl_eo_op_desc[] = "\n     EO_OP_DESCRIPTION(@#CLASS_SUB_ID_@#FUNC, \"@#desc\"),";
 
 const char 
-tmpl_eo_func_desc[] = "\n        EO_OP_FUNC(@#CLASS_ID(E@#CLASS_SUB_@#FUNC), _@#func),";
+tmpl_eo_func_desc[] = "\n        EO_OP_FUNC(@#CLASS_ID(@#CLASS_SUB_@#FUNC), _@#func),";
 
 const char 
 tmpl_eo_header[] = "\
@@ -163,6 +163,7 @@ _eo_fundef_generate(Eina_Strbuf *functext, Function_Id func, char *classname, Fu
    void *data;
    char funcname[0xFF];
    char descname[0xFF];
+   
    char *fsuffix = "";
    if (ftype == GET) fsuffix = "_get";
    if (ftype == SET) fsuffix = "_set";
@@ -279,16 +280,65 @@ ch_parser_eo_source_generate(char *classname)
      }
    eina_strbuf_replace_all(str_src, "@#list_inherit", eina_strbuf_string_get(tmpbuf));
    
+   //Implements - TODO one generate func def for all
+   EINA_LIST_FOREACH(database_class_implements_list_get(classname), l, data)
+     {
+        //Todo type resolve
+        char *funcname;
+        char *impl_class;
+        database_class_implement_information_get((Implements_Desc)data, &impl_class, &funcname, NULL);
+        _template_fill(str_func, tmpl_eo_func_desc, impl_class, funcname, EINA_FALSE);
+     }
+   
+   //Constructors
+   EINA_LIST_FOREACH(database_class_functions_list_get(classname, CONSTRUCTOR), l, data)
+     {
+        const char *funcname = database_function_name_get((Function_Id)data);
+        _template_fill(str_func, tmpl_eo_func_desc, classname, funcname, EINA_FALSE);
+     }
+   
+   //Properties
+   EINA_LIST_FOREACH(database_class_functions_list_get(classname, PROPERTY_FUNC), l, data)
+     {
+        const char *funcname = database_function_name_get((Function_Id)data);
+        const Function_Type ftype = database_function_type_get((Function_Id)data);
+        char tmpstr[0xFF];
+        
+        Eina_Bool prop_read = ( ftype == SET ) ? EINA_FALSE : EINA_TRUE;
+        Eina_Bool prop_write = ( ftype == GET ) ? EINA_FALSE : EINA_TRUE;
+        
+        if (prop_read)
+          {
+             const char *desc = database_function_description_get((Function_Id)data, "comment_get");
+             sprintf(tmpstr, "%s_get", funcname);
+             _template_fill(str_func, tmpl_eo_func_desc, classname, tmpstr, EINA_FALSE);
+             _template_fill(tmpbuf, tmpl_eo_op_desc, classname, tmpstr, EINA_TRUE);
+             eina_strbuf_replace_all(tmpbuf, "@#desc", desc);
+             eina_strbuf_append(str_op, eina_strbuf_string_get(tmpbuf));
+          }
+        if (prop_write)
+          {
+             const char *desc = database_function_description_get((Function_Id)data, "comment_set");
+             sprintf(tmpstr, "%s_set", funcname);
+             _template_fill(str_func, tmpl_eo_func_desc, classname, tmpstr, EINA_FALSE);
+             _template_fill(tmpbuf, tmpl_eo_op_desc, classname, tmpstr, EINA_TRUE);
+             eina_strbuf_replace_all(tmpbuf, "@#desc", desc);
+             eina_strbuf_append(str_op, eina_strbuf_string_get(tmpbuf));
+          }
+     }
+     
+   //Methods
    EINA_LIST_FOREACH(database_class_functions_list_get(classname, METHOD_FUNC), l, data)
      {
         const char *funcname = database_function_name_get((Function_Id)data);
         const char *desc = database_function_description_get((Function_Id)data, "comment");
-        
+
         _template_fill(str_func, tmpl_eo_func_desc, classname, funcname, EINA_FALSE);
         _template_fill(tmpbuf, tmpl_eo_op_desc, classname, funcname, EINA_TRUE);
         eina_strbuf_replace_all(tmpbuf, "@#desc", desc);
         eina_strbuf_append(str_op, eina_strbuf_string_get(tmpbuf));
      }
+     
    eina_strbuf_replace_all(str_src, "@#list_func", eina_strbuf_string_get(str_func));
    eina_strbuf_replace_all(str_src, "@#list_op", eina_strbuf_string_get(str_op));
    
@@ -454,7 +504,7 @@ int main(int argc, char **argv)
    eina_file_close(fn);
    */
    
-   printf ("%s\n",ch_parser_eo_header_generate("elm_win"));
+   printf ("%s\n",ch_parser_eo_source_generate("elm_win"));
    
    EINA_LIST_FREE(files, filename)
       free(filename);
