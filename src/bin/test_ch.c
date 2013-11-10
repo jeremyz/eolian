@@ -11,6 +11,12 @@ const char
 tmpl_eo_src[] = "\
 EAPI Eo_Op @#CLASS_BASE_ID = EO_NOOP;\n\
 \n\
+@#list_events\n\
+\n\
+static const Evas_Smart_Cb_Description _smart_callbacks[] = {@#list_desc_events\n\
+   {NULL, NULL}\n\
+};\n\
+\n\
 static void\n\
 _class_constructor(Eo_Class *klass)\n\
 {\n\
@@ -274,10 +280,27 @@ ch_parser_eo_source_generate(char *classname)
    
    _template_fill(str_src, tmpl_eo_src, classname, "", EINA_TRUE);
    
+   Eina_Strbuf *str_ev_decl = eina_strbuf_new();
+   Eina_Strbuf *str_ev_op = eina_strbuf_new();
+   
+   EINA_LIST_FOREACH(database_class_events_list_get(classname), l, data)
+     {
+        char *evname;
+        char *evdesc;
+        database_class_event_information_get((Event_Desc)data, &evname, &evdesc);
+        _template_fill(str_ev_decl, "static const char SIG_@#CLASS[] = \"@#class\";\n", evname, "", EINA_FALSE);
+        _template_fill(str_ev_op, "\n   {SIG_@#CLASS, \"@#func\"},", evname, evdesc, EINA_FALSE);
+     }
+ 
+   eina_strbuf_replace_all(str_src, "@#list_events", eina_strbuf_string_steal(str_ev_decl));
+   eina_strbuf_replace_all(str_src, "@#list_desc_events", eina_strbuf_string_steal(str_ev_op));
+   
    EINA_LIST_FOREACH(database_class_inherits_list_get(classname), l, data)
      {
         _template_fill(tmpbuf, "@#CLASS_CLASS, ", classname, "", EINA_FALSE);
      }
+   eina_strbuf_replace_all(str_src, "@#list_inherit", eina_strbuf_string_get(tmpbuf));
+   
    eina_strbuf_replace_all(str_src, "@#list_inherit", eina_strbuf_string_get(tmpbuf));
    
    //Implements - TODO one generate func def for all
