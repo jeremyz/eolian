@@ -1,913 +1,253 @@
+Elm_Win =
 {
-  "name": "elm_win", 
-  "macro": "ELM_OBJ_WIN_CLASS", 
-  "inherits": [
-    "elm_widget"
-  ], 
-  "constructors": {
-    "win_constructor": {
-      "comment": "No description supplied by the EAPI.", 
-      "parameters": [
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "name", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Elm_Win_Type", 
-          "type", 
-          ""
-        ]
-      ]
-    }
-  }, 
-  "properties": {
-    "keyboard_win": {
-      "comment_set": "Sets whether the window is a keyboard.", 
-      "comment_get": "Get whether the window is a keyboard.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "is_keyboard", 
-          ""
-        ]
-      ]
-    }, 
-    "autodel": {
-      "comment_set": "Set the window's autodel state.", 
-      "comment_get": "Get the window's autodel state.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "autodel", 
-          ""
-        ]
-      ]
-    }, 
-    "override": {
-      "comment_set": "Set the override state of a window.", 
-      "comment_get": "Get the override state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "override", 
-          ""
-        ]
-      ]
-    }, 
-    "iconified": {
-      "comment_set": "Set the iconified state of a window.", 
-      "comment_get": "Get the iconified state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "iconified", 
-          ""
-        ]
-      ]
-    }, 
-    "quickpanel_zone": {
-      "comment_set": "Set which zone this quickpanel should appear in", 
-      "comment_get": "Get which zone this quickpanel should appear in", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "zone", 
-          ""
-        ]
-      ]
-    }, 
-    "maximized": {
-      "comment_set": "Set the maximized state of a window.", 
-      "comment_get": "Get the maximized state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "maximized", 
-          ""
-        ]
-      ]
-    }, 
-    "modal": {
-      "comment_set": "Set the modal state of a window.", 
-      "comment_get": "Get the modal state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "modal", 
-          ""
-        ]
-      ]
-    }, 
-    "icon_name": {
-      "comment_set": "Set the icon name of the window", 
-      "comment_get": "Get the icon name of the window", 
-      "parameters": [
-        [
-          "const", 
-          "char*", 
-          "icon_name", 
-          ""
-        ]
-      ]
-    }, 
-    "withdrawn": {
-      "comment_set": "Set the withdrawn state of a window.", 
-      "comment_get": "Get the withdrawn state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "withdrawn", 
-          ""
-        ]
-      ]
-    }, 
-    "role": {
-      "comment_set": "Set the role of the window", 
-      "comment_get": "Get the role of the window", 
-      "parameters": [
-        [
-          "const", 
-          "char*", 
-          "role", 
-          ""
-        ]
-      ]
-    }, 
-    "size_step": {
-      "comment_set": "Set the window stepping used with sizing calculation", 
-      "comment_get": "Get the stepping of a window.", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "w", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          ""
-        ]
-      ]
-    }, 
-    "focus_highlight_style": {
-      "comment_set": "Set the style for the focus highlight on this window", 
-      "comment_get": "Get the style set for the focus highlight object", 
-      "parameters": [
-        [
-          "const", 
-          "char*", 
-          "style", 
-          ""
-        ]
-      ]
-    }, 
-    "borderless": {
-      "comment_set": "Set the borderless state of a window.", 
-      "comment_get": "Get the borderless state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "borderless", 
-          ""
-        ]
-      ]
-    }, 
-    "screen_constrain": {
-      "comment_set": "Constrain the maximum width and height of a window to the width and height of its screen", 
-      "comment_get": "Retrieve the constraints on the maximum width and height of a window relative to the width and height of its screen", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "constrain", 
-          ""
-        ]
-      ]
-    }, 
-    "available_profiles": {
-      "comment_set": "Set the array of available profiles to a window.", 
-      "comment_get": "Get the array of available profiles of a window.", 
-      "parameters": [
-        [
-          "const", 
-          "char**", 
-          "profiles", 
-          ""
-        ], 
-        [
-          "", 
-          "unsigned int", 
-          "count", 
-          ""
-        ]
-      ]
-    }, 
-    "focus_highlight_enabled": {
-      "comment_set": "Set the enabled status for the focus highlight in a window", 
-      "comment_get": "Get the enabled value of the focus highlight for this window", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "enabled", 
-          ""
-        ]
-      ]
-    }, 
-    "title": {
-      "comment_set": "Set the title of the window", 
-      "comment_get": "Get the title of the window", 
-      "parameters": [
-        [
-          "const", 
-          "char*", 
-          "title", 
-          ""
-        ]
-      ]
-    }, 
-    "alpha": {
-      "comment_set": "Set the alpha channel state of a window.", 
-      "comment_get": "Get the alpha channel state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "alpha", 
-          ""
-        ]
-      ]
-    }, 
-    "urgent": {
-      "comment_set": "Set the urgent state of a window.", 
-      "comment_get": "Get the urgent state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "urgent", 
-          ""
-        ]
-      ]
-    }, 
-    "rotation": {
-      "comment_set": "Set the rotation of the window.", 
-      "comment_get": "Get the rotation of the window.", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "rotation", 
-          ""
-        ]
-      ]
-    }, 
-    "icon_object": {
-      "comment_set": "Set a window object's icon", 
-      "comment_get": "Get the icon object used for the window", 
-      "parameters": [
-        [
-          "", 
-          "Evas_Object*", 
-          "icon", 
-          ""
-        ]
-      ]
-    }, 
-    "quickpanel_priority_minor": {
-      "comment_set": "Set the minor priority of a quickpanel window", 
-      "comment_get": "Get the minor priority of a quickpanel window", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "priority", 
-          ""
-        ]
-      ]
-    }, 
-    "sticky": {
-      "comment_set": "Set the sticky state of the window.", 
-      "comment_get": "Get the sticky state of the window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "sticky", 
-          ""
-        ]
-      ]
-    }, 
-    "keyboard_mode": {
-      "comment_set": "Sets the keyboard mode of the window.", 
-      "comment_get": "Get the keyboard mode of the window.", 
-      "parameters": [
-        [
-          "", 
-          "Elm_Win_Keyboard_Mode", 
-          "mode", 
-          ""
-        ]
-      ]
-    }, 
-    "focus_highlight_animate": {
-      "comment_set": "Set the animate status for the focus highlight for this window.", 
-      "comment_get": "Get the animate status for the focus highlight for this window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "animate", 
-          ""
-        ]
-      ]
-    }, 
-    "aspect": {
-      "comment_set": "Set the aspect ratio of a window.", 
-      "comment_get": "Get the aspect ratio of a window.", 
-      "parameters": [
-        [
-          "", 
-          "double", 
-          "aspect", 
-          ""
-        ]
-      ]
-    }, 
-    "quickpanel_priority_major": {
-      "comment_set": "Set the major priority of a quickpanel window", 
-      "comment_get": "Get the major priority of a quickpanel window", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "priority", 
-          ""
-        ]
-      ]
-    }, 
-    "indicator_opacity": {
-      "comment_set": "Sets the indicator opacity mode of the window.", 
-      "comment_get": "Get the indicator opacity mode of the window.", 
-      "parameters": [
-        [
-          "", 
-          "Elm_Win_Indicator_Opacity_Mode", 
-          "mode", 
-          ""
-        ]
-      ]
-    }, 
-    "demand_attention": {
-      "comment_set": "Set the demand_attention state of a window.", 
-      "comment_get": "Get the demand_attention state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "demand_attention", 
-          ""
-        ]
-      ]
-    }, 
-    "layer": {
-      "comment_set": "Set the layer of the window.", 
-      "comment_get": "Get the layer of the window.", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "layer", 
-          ""
-        ]
-      ]
-    }, 
-    "profile": {
-      "comment_set": "Set the profile of a window.", 
-      "comment_get": "Get the profile of a window.", 
-      "parameters": [
-        [
-          "const", 
-          "char*", 
-          "profile", 
-          ""
-        ]
-      ]
-    }, 
-    "shaped": {
-      "comment_set": "Set the shaped state of a window.", 
-      "comment_get": "Get the shaped state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "shaped", 
-          ""
-        ]
-      ]
-    }, 
-    "fullscreen": {
-      "comment_set": "Set the fullscreen state of a window.", 
-      "comment_get": "Get the fullscreen state of a window.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "fullscreen", 
-          ""
-        ]
-      ]
-    }, 
-    "indicator_mode": {
-      "comment_set": "Sets the indicator mode of the window.", 
-      "comment_get": "Get the indicator mode of the window.", 
-      "parameters": [
-        [
-          "", 
-          "Elm_Win_Indicator_Mode", 
-          "mode", 
-          ""
-        ]
-      ]
-    }, 
-    "conformant": {
-      "comment_set": "Set if this window is an illume conformant window", 
-      "comment_get": "Get if this window is an illume conformant window", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "conformant", 
-          ""
-        ]
-      ]
-    }, 
-    "size_base": {
-      "comment_set": "Set the base window size used with stepping calculation", 
-      "comment_get": "Get the base size of a window.", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "w", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          ""
-        ]
-      ]
-    }, 
-    "quickpanel": {
-      "comment_set": "Set a window to be an illume quickpanel window", 
-      "comment_get": "Get if this window is a quickpanel or not", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "quickpanel", 
-          ""
-        ]
-      ]
-    }, 
-    "rotation_with_resize": {
-      "comment": "Rotates the window and resizes it.", 
-      "type": "wo", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "rotation", 
-          ""
-        ]
-      ]
-    }, 
-    "prop_focus_skip": {
-      "comment": "Set the window to be skipped by keyboard focus", 
-      "type": "wo", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "skip", 
-          ""
-        ]
-      ]
-    }, 
-    "screen_position": {
-      "comment": "Get the screen position of a window.", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "x", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "y", 
-          ""
-        ]
-      ]
-    }, 
-    "xwindow": {
-      "comment": "Get the Ecore_X_Window of an Evas_Object", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "Ecore_X_Window", 
-          "ret", 
-          ""
-        ]
-      ]
-    }, 
-    "focus": {
-      "comment": "Determine whether a window has focus", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "ret", 
-          ""
-        ]
-      ]
-    }, 
-    "screen_size": {
-      "comment": "Get screen geometry details for the screen that a window is on", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "x", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "y", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "w", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          ""
-        ]
-      ]
-    }, 
-    "main_menu": {
-      "comment": "Get the Main Menu of a window.", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "Eo*", 
-          "ret", 
-          "Main menu"
-        ]
-      ]
-    }, 
-    "wl_window": {
-      "comment": "Get the Ecore_Wl_Window of an Evas_Object", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "Ecore_Wl_Window*", 
-          "ret", 
-          ""
-        ]
-      ]
-    }, 
-    "window_id": {
-      "comment": "Get the Ecore_Window of an Evas_Object", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "Ecore_Window", 
-          "ret", 
-          ""
-        ]
-      ]
-    }, 
-    "screen_dpi": {
-      "comment": "Get screen dpi for the screen that a window is on", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "xdpi", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "ydpi", 
-          ""
-        ]
-      ]
-    }, 
-    "inlined_image_object": {
-      "comment": "Get the inlined image object handle", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "Evas_Object*", 
-          "ret", 
-          ""
-        ]
-      ]
-    }
-  }, 
-  "methods": {
-    "socket_listen": {
-      "comment": "Create a socket to provide the service for Plug widget", 
-      "parameters": [
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "svcname", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "int", 
-          "svcnum", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "svcsys", 
-          ""
-        ], 
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "ret", 
-          ""
-        ]
-      ]
-    }, 
-    "illume_command_send": {
-      "comment": "Send a command to the windowing environment", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Elm_Illume_Command", 
-          "command", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "void*", 
-          "params", 
-          ""
-        ]
-      ]
-    }, 
-    "activate": {
-      "comment": "Activate a window object.", 
-      "parameters": []
-    }, 
-    "resize_object_add": {
-      "comment": "Add subobj as a resize object of window", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Object*", 
-          "subobj", 
-          ""
-        ]
-      ]
-    }, 
-    "raise": {
-      "comment": "Raise a window object.", 
-      "parameters": []
-    }, 
-    "lower": {
-      "comment": "Lower a window object.", 
-      "parameters": []
-    }, 
-    "resize_object_del": {
-      "comment": "Delete subobj as a resize object of window", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Object*", 
-          "subobj", 
-          ""
-        ]
-      ]
-    }, 
-    "center": {
-      "comment": "Center a window on its screen", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "h", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "v", 
-          ""
-        ]
-      ]
-    }
-  }, 
-  "implements": [
-    [
-      "Evas_Object_Smart", 
-      "resize", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "focus_next_manager_is", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "focus_next", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "focus_direction", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "on_focus", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "theme", 
-      "method"
-    ], 
-    [
-      "Evas_Object_Smart", 
-      "del", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "focus_direction_manager_is", 
-      "method"
-    ], 
-    [
-      "Evas_Object_Smart", 
-      "hide", 
-      "method"
-    ], 
-    [
-      "elm_widget", 
-      "event", 
-      "method"
-    ], 
-    [
-      "Evas_Object_Smart", 
-      "show", 
-      "method"
-    ], 
-    [
-      "Eo Base", 
-      "constructor", 
-      "method"
-    ], 
-    [
-      "Evas_Object_Smart", 
-      "add", 
-      "method"
-    ], 
-    [
-      "Evas_Object_Smart", 
-      "move", 
-      "method"
-    ]
-  ], 
-  "old_styled_signals": [
-    [
-      "delete,request", 
-      ""
-    ], 
-    [
-      "focus,out", 
-      ""
-    ], 
-    [
-      "focus,in", 
-      ""
-    ], 
-    [
-      "moved", 
-      ""
-    ], 
-    [
-      "withdrawn", 
-      ""
-    ], 
-    [
-      "iconified", 
-      ""
-    ], 
-    [
-      "normal", 
-      ""
-    ], 
-    [
-      "stick", 
-      ""
-    ], 
-    [
-      "unstick", 
-      ""
-    ], 
-    [
-      "fullscreen", 
-      ""
-    ], 
-    [
-      "unfullscreen", 
-      ""
-    ], 
-    [
-      "maximized", 
-      ""
-    ], 
-    [
-      "unmaximized", 
-      ""
-    ], 
-    [
-      "ioerr", 
-      ""
-    ], 
-    [
-      "indicator,prop,changed", 
-      ""
-    ], 
-    [
-      "rotation,changed", 
-      ""
-    ], 
-    [
-      "profile,changed", 
-      ""
-    ], 
-    [
-      "focused", 
-      ""
-    ], 
-    [
-      "unfocused", 
-      ""
-    ]
-  ]
+     inherit
+     {
+          Elm_Widget;
+     }
+     properties
+     {
+           /* Sets whether the window is a keyboard. */
+           rw keyboard_win(
+               Eina_Bool is_keyboard /*  */
+          );
+           /* Set the window's autodel state. */
+           rw autodel(
+               Eina_Bool autodel /*  */
+          );
+           /* Set the override state of a window. */
+           rw override(
+               Eina_Bool override /*  */
+          );
+           /* Set the iconified state of a window. */
+           rw iconified(
+               Eina_Bool iconified /*  */
+          );
+           /* Set which zone this quickpanel should appear in */
+           rw quickpanel_zone(
+               int zone /*  */
+          );
+           /* Set the maximized state of a window. */
+           rw maximized(
+               Eina_Bool maximized /*  */
+          );
+           /* Set the modal state of a window. */
+           rw modal(
+               Eina_Bool modal /*  */
+          );
+           /* Set the icon name of the window */
+           rw icon_name(
+               char* icon_name /*  */
+          );
+           /* Set the withdrawn state of a window. */
+           rw withdrawn(
+               Eina_Bool withdrawn /*  */
+          );
+           /* Set the role of the window */
+           rw role(
+               char* role /*  */
+          );
+           /* Set the window stepping used with sizing calculation */
+           rw size_step(
+               int w /*  */,
+               int h /*  */
+          );
+           /* Set the style for the focus highlight on this window */
+           rw focus_highlight_style(
+               char* style /*  */
+          );
+           /* Set the borderless state of a window. */
+           rw borderless(
+               Eina_Bool borderless /*  */
+          );
+           /* Constrain the maximum width and height of a window to the width and height of its screen */
+           rw screen_constrain(
+               Eina_Bool constrain /*  */
+          );
+           /* Set the array of available profiles to a window. */
+           rw available_profiles(
+               char** profiles /*  */,
+               unsigned int count /*  */
+          );
+           /* Set the enabled status for the focus highlight in a window */
+           rw focus_highlight_enabled(
+               Eina_Bool enabled /*  */
+          );
+           /* Set the title of the window */
+           rw title(
+               char* title /*  */
+          );
+           /* Set the alpha channel state of a window. */
+           rw alpha(
+               Eina_Bool alpha /*  */
+          );
+           /* Set the urgent state of a window. */
+           rw urgent(
+               Eina_Bool urgent /*  */
+          );
+           /* Set the rotation of the window. */
+           rw rotation(
+               int rotation /*  */
+          );
+           /* Set a window object's icon */
+           rw icon_object(
+               Evas_Object* icon /*  */
+          );
+           /* Set the minor priority of a quickpanel window */
+           rw quickpanel_priority_minor(
+               int priority /*  */
+          );
+           /* Set the sticky state of the window. */
+           rw sticky(
+               Eina_Bool sticky /*  */
+          );
+           /* Sets the keyboard mode of the window. */
+           rw keyboard_mode(
+               Elm_Win_Keyboard_Mode mode /*  */
+          );
+           /* Set the animate status for the focus highlight for this window. */
+           rw focus_highlight_animate(
+               Eina_Bool animate /*  */
+          );
+           /* Set the aspect ratio of a window. */
+           rw aspect(
+               double aspect /*  */
+          );
+           /* Set the major priority of a quickpanel window */
+           rw quickpanel_priority_major(
+               int priority /*  */
+          );
+           /* Sets the indicator opacity mode of the window. */
+           rw indicator_opacity(
+               Elm_Win_Indicator_Opacity_Mode mode /*  */
+          );
+           /* Set the demand_attention state of a window. */
+           rw demand_attention(
+               Eina_Bool demand_attention /*  */
+          );
+           /* Set the layer of the window. */
+           rw layer(
+               int layer /*  */
+          );
+           /* Set the profile of a window. */
+           rw profile(
+               char* profile /*  */
+          );
+           /* Set the shaped state of a window. */
+           rw shaped(
+               Eina_Bool shaped /*  */
+          );
+           /* Set the fullscreen state of a window. */
+           rw fullscreen(
+               Eina_Bool fullscreen /*  */
+          );
+           /* Sets the indicator mode of the window. */
+           rw indicator_mode(
+               Elm_Win_Indicator_Mode mode /*  */
+          );
+           /* Set if this window is an illume conformant window */
+           rw conformant(
+               Eina_Bool conformant /*  */
+          );
+           /* Set the base window size used with stepping calculation */
+           rw size_base(
+               int w /*  */,
+               int h /*  */
+          );
+           /* Set a window to be an illume quickpanel window */
+           rw quickpanel(
+               Eina_Bool quickpanel /*  */
+          );
+           /* Rotates the window and resizes it. */
+           wo rotation_with_resize_set(
+               int rotation /*  */
+          );
+           /* Set the window to be skipped by keyboard focus */
+           wo prop_focus_skip_set(
+               Eina_Bool skip /*  */
+          );
+           /* Get the screen position of a window. */
+           ro screen_position_get(
+               int* x /*  */,
+               int* y /*  */
+          );
+           /* Get the Ecore_X_Window of an Evas_Object */
+           ro xwindow_get(
+               Ecore_X_Window* ret /*  */
+          );
+           /* Determine whether a window has focus */
+           ro focus_get(
+               Eina_Bool* ret /*  */
+          );
+           /* Get screen geometry details for the screen that a window is on */
+           ro screen_size_get(
+               int* x /*  */,
+               int* y /*  */,
+               int* w /*  */,
+               int* h /*  */
+          );
+           /* Get the Main Menu of a window. */
+           ro main_menu_get(
+               Eo** ret /* Main menu */
+          );
+           /* Get the Ecore_Wl_Window of an Evas_Object */
+           ro wl_window_get(
+               Ecore_Wl_Window** ret /*  */
+          );
+           /* Get the Ecore_Window of an Evas_Object */
+           ro window_id_get(
+               Ecore_Window* ret /*  */
+          );
+           /* Get screen dpi for the screen that a window is on */
+           ro screen_dpi_get(
+               int* xdpi /*  */,
+               int* ydpi /*  */
+          );
+           /* Get the inlined image object handle */
+           ro inlined_image_object_get(
+               Evas_Object** ret /*  */
+          );
+     }
+     methods
+     {
+           /* Create a socket to provide the service for Plug widget */
+          socket_listen(
+               in char* svcname /*  */,
+               in int svcnum /*  */,
+               in Eina_Bool svcsys /*  */,
+               out Eina_Bool* ret /*  */
+          );
+           /* Send a command to the windowing environment */
+          illume_command_send(
+               in Elm_Illume_Command command /*  */,
+               in void* params /*  */
+          );
+           /* Activate a window object. */
+          activate(
+          );
+           /* Add subobj as a resize object of window */
+          resize_object_add(
+               in Evas_Object* subobj /*  */
+          );
+           /* No description supplied by the EAPI. */
+          win_constructor(
+               in char* name /*  */,
+               in Elm_Win_Type type /*  */
+          );
+           /* Raise a window object. */
+          raise(
+          );
+           /* Lower a window object. */
+          lower(
+          );
+           /* Delete subobj as a resize object of window */
+          resize_object_del(
+               in Evas_Object* subobj /*  */
+          );
+           /* Center a window on its screen */
+          center(
+               in Eina_Bool h /*  */,
+               in Eina_Bool v /*  */
+          );
+     }
+
 }

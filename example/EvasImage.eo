@@ -1,4 +1,4 @@
-Evas_Object_Image =
+Evas_Image =
 {
      inherit
      {
