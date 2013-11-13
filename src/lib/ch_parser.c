@@ -247,7 +247,11 @@ ch_parser_eo_header_generate(char *classname)
    void *data;
    char tmpstr[0x1FF];
    
-   if (!database_class_exists(classname)) return NULL;
+   if (!database_class_exists(classname)) 
+     {
+        printf ("Class \"%s\" not found in database\n", classname); 
+        return NULL;
+     }
    
    Eina_Strbuf * str_hdr = eina_strbuf_new();
    _template_fill(str_hdr, tmpl_eo_header, classname, "", EINA_TRUE);
@@ -364,7 +368,11 @@ ch_parser_eo_source_generate(char *classname)
    const Eina_List *l;
    void *data;
    
-   if (!database_class_exists(classname)) return NULL;
+   if (!database_class_exists(classname)) 
+     {
+        printf ("Class \"%s\" not found in database\n", classname); 
+        return NULL;
+     }
    
    Eina_Strbuf *tmpbuf = eina_strbuf_new();
    Eina_Strbuf *str_src = eina_strbuf_new();
@@ -479,6 +487,13 @@ ch_parser_eo_source_generate(char *classname)
 Eina_Bool
 ch_parser_header_append(Eina_Strbuf *header, char *classname)
 {
+   
+   if (!database_class_exists(classname)) 
+     {
+        printf ("Class \"%s\" not found in database\n", classname); 
+        return EINA_FALSE;
+     }
+   
    char *clsptr = _class_h_find(header, classname);
    
    if (!clsptr)

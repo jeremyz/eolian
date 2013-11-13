@@ -103,7 +103,7 @@ int main(int argc, char **argv)
    eina_file_close(fn);
    */
    
-   printf ("%s\n",ch_parser_eo_source_generate("elm_win"));
+   printf ("%s\n",ch_parser_eo_source_generate("Elm_Win"));
    
    EINA_LIST_FREE(files, filename)
       free(filename);
