@@ -1,5 +1,5 @@
 LIST(APPEND EOLIAN_CC_SOURCES
-   eo_parser.c lexer.c database.c)
+   eo_parser.c lexer.c database.c ch_parser.c)
 include_directories(
    ${EINA_INCLUDE_DIRS}
    ${ECORE_FILE_INCLUDE_DIRS}
