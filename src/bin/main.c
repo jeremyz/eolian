@@ -169,7 +169,10 @@ int main(int argc, char **argv)
 
    if (!files || help)
      {
-        printf("Usage: %s [-h/--help] [--show] input files\n", argv[0]);
+        printf("Usage: %s [-h/--help] [--show] input files [-gh|-gc|-ah] filename [-class] classname \n", argv[0]);
+        printf("       -gh Generate c header file [.h] for eo class specified by classname\n");
+        printf("       -gc Generate c source file [.c] for eo class specified by classname\n");
+        printf("       -ah Append eo class definitions to an existing c header file [.h]\n");
         return 0;
      }
 
