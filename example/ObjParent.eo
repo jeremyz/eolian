@@ -1,0 +1,155 @@
+{
+  "name": "Obj_Parent", 
+  "macro": "OBJ_PARENT", 
+  "inherits": [], 
+  "constructors": {}, 
+  "properties": {
+    "Prop_rw1": {
+      "comment_set": "Sets Prop_rw1.", 
+      "comment_get": "Get Prop_rw1.", 
+      "parameters": [
+        [
+          "", 
+          "Eina_Bool", 
+          "myBool", 
+          ""
+        ],
+        [
+          "", 
+          "int", 
+          "myInt", 
+          ""
+        ]
+      ]
+    }, 
+    "Prop_rw2": {
+      "comment_set": "Sets Prop_rw2.", 
+      "comment_get": "Get Prop_rw2.", 
+      "parameters": [
+        [
+          "", 
+          "char*", 
+          "myChar", 
+          ""
+        ]
+        
+      ]
+    }, 
+    "Prop_wo": {
+      "comment": "Does write only stuff with Prop.", 
+      "type": "wo", 
+      "parameters": [
+        [
+          "", 
+          "int", 
+          "myInt", 
+          ""
+        ]
+      ]
+    },
+    "Prop_ro": {
+      "comment": "Does read only stuff with Prop.", 
+      "type": "ro", 
+      "parameters": [
+        [
+          "", 
+          "char*", 
+          "myChar", 
+          ""
+        ]
+      ]
+    }
+  }, 
+  "methods": {
+    "Prop_rw1": {
+      "comment": "Method Prop_rw1.", 
+      "parameters": [
+        [
+          "out", 
+          "",
+          "char*", 
+          "killer", 
+          ""
+        ],
+        [
+          "in",
+          "",
+          "float", 
+          "myFloat", 
+          ""
+        ]
+      ]
+    },
+    "socket_listen": {
+      "comment": "Create a socket to provide the service for Plug widget", 
+      "parameters": [
+        [
+          "in", 
+          "const", 
+          "char*", 
+          "svcname", 
+          ""
+        ], 
+        [
+          "out", 
+          "", 
+          "int", 
+          "svcnum", 
+          ""
+        ], 
+        [
+          "in", 
+          "", 
+          "Eina_Bool", 
+          "svcsys", 
+          ""
+        ], 
+        [
+          "out", 
+          "", 
+          "Eina_Bool", 
+          "ret", 
+          ""
+        ]
+      ]
+    }, 
+    "illume_command_send": {
+      "comment": "Send a command to the windowing environment", 
+      "parameters": [
+        [
+          "in", 
+          "", 
+          "Elm_Illume_Command", 
+          "command", 
+          ""
+        ], 
+        [
+          "in", 
+          "", 
+          "void*", 
+          "params", 
+          ""
+        ]
+      ]
+    }, 
+    "activate": {
+      "comment": "Activate a window object.", 
+      "parameters": []
+    }
+  }, 
+  "implements": [],
+  "old_styled_signals": [
+    [
+      "delete,request", 
+      ""
+    ], 
+    [
+      "focus,out", 
+      ""
+    ], 
+    [
+      "focus,in", 
+      ""
+    ]
+  ]
+}

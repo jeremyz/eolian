@@ -104,7 +104,7 @@ static const char
 tmpl_eobind_body[] ="\
 \n\
 static void\n\
-_eo_obj_@#class_@#func(Eo *obj, void *_pd EINA_UNUSED, va_list *list)\n\
+_eo_obj_@#func(Eo *obj, void *_pd EINA_UNUSED, va_list *list)\n\
 {\n\
 @#list_vars\
    _@#class_@#func(obj@#list_params);\n\
@@ -187,7 +187,7 @@ _class_h_find(Eina_Strbuf *str, const char *classname)
 static const char* 
 _eo_fundef_generate(Eina_Strbuf *functext, Function_Id func, char *classname, Function_Type ftype)
 {
-   const char *str_dir[] = {"in", "out", "inout"}; 
+   const char *str_dir[] = {"in", "out", "inout"};
    const Eina_List *l;
    void *data;
    char funcname[0xFF];
@@ -408,12 +408,70 @@ ch_parser_eo_source_generate(char *classname)
    //Implements - TODO one generate func def for all
    EINA_LIST_FOREACH(database_class_implements_list_get(classname), l, data)
      {
-        //Todo type resolve
         char *funcname;
         char *impl_class;
-        database_class_implement_information_get((Implements_Desc)data, &impl_class, &funcname, NULL);
-        _template_fill(str_func, tmpl_eo_func_desc, impl_class, funcname, EINA_FALSE);
-        //_eobind_func_generate(str_bodyf, classname, (Function_Id)data);
+        Function_Type ftype;
+        database_class_implement_information_get((Implements_Desc)data, &impl_class, &funcname, &ftype);
+        
+        Function_Id in_meth = NULL; 
+        Function_Id in_prop = NULL;
+        const Eina_List *ll;
+        Function_Id fnid;
+        EINA_LIST_FOREACH(database_class_functions_list_get(impl_class, METHOD_FUNC), ll, fnid)
+          if (fnid && !strcmp(database_function_name_get(fnid), funcname)) in_meth = fnid;
+        EINA_LIST_FOREACH(database_class_functions_list_get(impl_class, PROPERTY_FUNC), ll, fnid)
+          if (fnid && !strcmp(database_function_name_get(fnid), funcname)) in_prop = fnid;
+        
+        if (!in_meth && !in_prop)
+          {
+             printf ("Failed to generate imlementation of %s:%s - missing form super class\n", impl_class, funcname);
+             return NULL;
+          }
+        if (in_meth && in_prop)
+          {
+             switch(ftype)
+              {
+               case PROPERTY_FUNC:
+               case SET:
+               case GET:
+                 in_meth = NULL;
+                 break;
+               case METHOD_FUNC:
+                 in_prop = NULL;
+                 break;
+               default:
+                 printf ("Failed to generate imlementation of %s:%s - ambigious\n", impl_class, funcname);
+                 return NULL;
+              }
+          } 
+        if (in_meth)
+          {
+             _template_fill(str_func, tmpl_eo_func_desc, impl_class, funcname, EINA_FALSE);
+             _eobind_func_generate(str_bodyf, classname, in_meth);
+          }
+        if (in_prop)
+          {
+             char tmpstr[0xFF];
+
+             if (ftype == PROPERTY_FUNC) ftype = database_function_type_get(in_prop);
+            
+             Eina_Bool prop_read = ( ftype == SET ) ? EINA_FALSE : EINA_TRUE;
+             Eina_Bool prop_write = ( ftype == GET ) ? EINA_FALSE : EINA_TRUE;
+               
+             if (prop_read)
+               {
+                  sprintf(tmpstr, "%s_get", funcname);
+                  _template_fill(str_func, tmpl_eo_func_desc, impl_class, tmpstr, EINA_FALSE);
+                  _eobind_func_generate(str_bodyf, classname, in_prop);
+               }
+                
+             if (prop_write)
+               {
+                  sprintf(tmpstr, "%s_set", funcname);
+                  _template_fill(str_func, tmpl_eo_func_desc, impl_class, tmpstr, EINA_FALSE);
+                  _eobind_func_generate(str_bodyf, classname, in_prop);
+               }
+          }
      }
    
    //Constructors

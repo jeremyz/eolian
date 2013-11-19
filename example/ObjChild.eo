@@ -1,0 +1,135 @@
+{
+  "name": "Obj_Child", 
+  "macro": "OBJ_CHILD", 
+  "inherits": ["Obj_Parent"], 
+  "constructors": {}, 
+  "properties": {
+    "Awesomness_rw1": {
+      "comment_set": "Sets Awesomness_rw1.", 
+      "comment_get": "Get Awesomness_rw1.", 
+      "parameters": [
+        [
+          "", 
+          "Eina_Bool", 
+          "myBool", 
+          ""
+        ],
+        [
+          "", 
+          "void*", 
+          "myVoid", 
+          ""
+        ]
+      ]
+    }, 
+    "Awesomness_rw2": {
+      "comment_set": "Sets Awesomness_rw2.", 
+      "comment_get": "Get Awesomness_rw2.", 
+      "parameters": [
+        [
+          "", 
+          "int*", 
+          "myIntPtr", 
+          ""
+        ]
+        
+      ]
+    }, 
+    "Awesomness_wo": {
+      "comment": "Does write only stuff with Awesomness.", 
+      "type": "wo", 
+      "parameters": [
+        [
+          "", 
+          "int", 
+          "myInt", 
+          ""
+        ]
+      ]
+    },
+    "Awesomness_ro": {
+      "comment": "Does read only stuff with Awesomness.", 
+      "type": "ro", 
+      "parameters": [
+        [
+          "", 
+          "char*", 
+          "myChar", 
+          ""
+        ]
+      ]
+    }
+  }, 
+  "methods": {
+    "lower": {
+      "comment": "Lower a window object.", 
+      "parameters": []
+    }, 
+    "resize_object_del": {
+      "comment": "Delete subobj as a resize object of window", 
+      "parameters": [
+        [
+          "in", 
+          "", 
+          "Evas_Object*", 
+          "subobj", 
+          ""
+        ]
+      ]
+    }, 
+    "center": {
+      "comment": "Center a window on its screen", 
+      "parameters": [
+        [
+          "out", 
+          "", 
+          "Eina_Bool", 
+          "h", 
+          ""
+        ], 
+        [
+          "in", 
+          "", 
+          "Eina_Bool", 
+          "v", 
+          ""
+        ]
+      ]
+    }
+  }, 
+  "implements": [
+    [
+      "Obj_Parent", 
+      "activate", 
+      "method"
+    ], 
+    [
+      "Obj_Parent", 
+      "Prop_rw1", 
+      "rw"
+    ],
+    [
+      "Obj_Parent", 
+      "Prop_wo", 
+      "rw"
+    ]
+  ],
+  "old_styled_signals": [
+    [
+      "unmaximized", 
+      ""
+    ], 
+    [
+      "ioerr", 
+      ""
+    ], 
+    [
+      "indicator,prop,changed", 
+      ""
+    ], 
+    [
+      "rotation,changed", 
+      ""
+    ]
+  ]
+}
