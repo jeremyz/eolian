@@ -15,10 +15,6 @@ MESSAGE(STATUS ${ECORE_INCLUDE_DIRS})
 include_directories(
    ${EINA_INCLUDE_DIRS}
    ${CHECK_INCLUDE_DIRS}
-   # hack, include ECORE_INCLUDE_DIRS,
-   # because path /include/efl-1 is not in
-   # EINA_INCLUDE_DIRS
-   ${ECORE_INCLUDE_DIRS}
    )
 
 target_link_libraries(suite
