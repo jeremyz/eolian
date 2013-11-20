@@ -215,16 +215,19 @@ _eo_fundef_generate(Eina_Strbuf *functext, Function_Id func, char *classname, Fu
         char *ptype;
         Parameter_Dir pdir;
         database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
+        printf ("Func %s parameter %s type %d\n", funcname, pname, pdir );
+        if (ftype == GET) pdir = OUT_PARAM;
+        if (ftype == SET) pdir = IN_PARAM;
+        char *umpr = (pdir == IN_PARAM) ? "" : "*";
         
         const char *dir_str = str_dir[(int)pdir];
-        if (ftype == GET) dir_str = "out";
-        if (ftype == SET) dir_str = "in";
+       
         eina_strbuf_append_printf(str_pardesc, tmpl_eo_pardesc, dir_str, pname);
         
         if (eina_strbuf_length_get(str_par)) eina_strbuf_append(str_par, ", ");
         eina_strbuf_append(str_par, pname);
         
-        eina_strbuf_append_printf(str_typecheck, ", EO_TYPECHECK(%s, %s)", ptype, pname);
+        eina_strbuf_append_printf(str_typecheck, ", EO_TYPECHECK(%s%s, %s)", ptype, umpr, pname);
      }
    
    eina_strbuf_replace_all(str_func, "@#list_param", eina_strbuf_string_get(str_par));
@@ -293,14 +296,29 @@ ch_parser_eo_header_generate(char *classname)
 }
 
 static void
-_eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid)
+_eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Function_Type ftype)
 {
+   const char *suffix = "";
+   const char *umpr = NULL;
+   
    Eina_Strbuf *fbody = eina_strbuf_new();
    Eina_Strbuf *vars = eina_strbuf_new();
    Eina_Strbuf *params = eina_strbuf_new();
    
-   const char *funcname = database_function_name_get(funcid);
-   _template_fill(fbody, tmpl_eobind_body, classname, funcname, EINA_FALSE);
+   if (ftype == GET)
+     {
+        suffix = "_get";
+        umpr = "*";
+     }
+   if (ftype == SET)
+     {
+        suffix = "_set";
+        umpr = "";
+     }
+   
+   char tmpstr[0xFF];
+   sprintf (tmpstr, "%s%s", database_function_name_get(funcid), suffix);
+   _template_fill(fbody, tmpl_eobind_body, classname, tmpstr, EINA_FALSE);
    
    const Eina_List *l;
    void *data;
@@ -311,7 +329,8 @@ _eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid)
         char *ptype;
         Parameter_Dir pdir;
         database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
-        eina_strbuf_append_printf(vars, "  %s %s = va_arg(*list, %s);\n", ptype, pname, ptype);
+        umpr = (umpr) ? umpr : ( (pdir == IN_PARAM) ? "" : "*" );
+        eina_strbuf_append_printf(vars, "  %s%s %s = va_arg(*list, %s%s);\n", ptype, umpr, pname, ptype, umpr);
         eina_strbuf_append_printf(params, ", %s", pname);
      }
    
@@ -325,16 +344,30 @@ _eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid)
 }
 
 static void
-_eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid)
+_eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Function_Type ftype)
 {
    //TODO return value
+   const char *suffix = "";
+   const char *umpr = NULL;
+   
+   if (ftype == GET)
+     {
+        suffix = "_get";
+        umpr = "*";
+     }
+   if (ftype == SET)
+     {
+        suffix = "_set";
+        umpr = "";
+     }
    
    Eina_Strbuf *fbody = eina_strbuf_new();
    Eina_Strbuf *fparam = eina_strbuf_new();
    Eina_Strbuf *eoparam = eina_strbuf_new();
    
-   const char *funcname = database_function_name_get(funcid);
-   _template_fill(fbody, tmpl_eapi_body, classname, funcname, EINA_FALSE);
+   char tmpstr[0xFF];
+   sprintf (tmpstr, "%s%s", database_function_name_get(funcid), suffix);
+   _template_fill(fbody, tmpl_eapi_body, classname, tmpstr, EINA_FALSE);
    
    const Eina_List *l;
    void *data;
@@ -345,7 +378,7 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid)
         char *ptype;
         Parameter_Dir pdir;
         database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
-        eina_strbuf_append_printf(fparam, ", %s %s", ptype, pname);
+        eina_strbuf_append_printf(fparam, ", %s%s %s", ptype, umpr, pname);
         if (eina_strbuf_length_get(eoparam)) eina_strbuf_append(eoparam, ", ");
         eina_strbuf_append_printf(eoparam, "%s", pname);
      }
@@ -447,7 +480,7 @@ ch_parser_eo_source_generate(char *classname)
         if (in_meth)
           {
              _template_fill(str_func, tmpl_eo_func_desc, impl_class, funcname, EINA_FALSE);
-             _eobind_func_generate(str_bodyf, classname, in_meth);
+             _eobind_func_generate(str_bodyf, classname, in_meth, UNRESOLVED);
           }
         if (in_prop)
           {
@@ -462,14 +495,14 @@ ch_parser_eo_source_generate(char *classname)
                {
                   sprintf(tmpstr, "%s_get", funcname);
                   _template_fill(str_func, tmpl_eo_func_desc, impl_class, tmpstr, EINA_FALSE);
-                  _eobind_func_generate(str_bodyf, classname, in_prop);
+                  _eobind_func_generate(str_bodyf, classname, in_prop, GET);
                }
                 
              if (prop_write)
                {
                   sprintf(tmpstr, "%s_set", funcname);
                   _template_fill(str_func, tmpl_eo_func_desc, impl_class, tmpstr, EINA_FALSE);
-                  _eobind_func_generate(str_bodyf, classname, in_prop);
+                  _eobind_func_generate(str_bodyf, classname, in_prop, SET);
                }
           }
      }
@@ -479,7 +512,7 @@ ch_parser_eo_source_generate(char *classname)
      {
         const char *funcname = database_function_name_get((Function_Id)data);
         _template_fill(str_func, tmpl_eo_func_desc, classname, funcname, EINA_FALSE);
-        _eobind_func_generate(str_bodyf, classname, (Function_Id)data);
+        _eobind_func_generate(str_bodyf, classname, (Function_Id)data, UNRESOLVED);
      }
    
    //Properties
@@ -500,8 +533,8 @@ ch_parser_eo_source_generate(char *classname)
              _template_fill(tmpbuf, tmpl_eo_op_desc, classname, tmpstr, EINA_TRUE);
              eina_strbuf_replace_all(tmpbuf, "@#desc", desc);
              eina_strbuf_append(str_op, eina_strbuf_string_get(tmpbuf));
-             _eobind_func_generate(str_bodyf, classname, (Function_Id)data);
-             _eapi_func_generate(str_bodyf, classname, (Function_Id)data);
+             _eobind_func_generate(str_bodyf, classname, (Function_Id)data, GET);
+             _eapi_func_generate(str_bodyf, classname, (Function_Id)data, GET);
           }
         if (prop_write)
           {
@@ -511,8 +544,8 @@ ch_parser_eo_source_generate(char *classname)
              _template_fill(tmpbuf, tmpl_eo_op_desc, classname, tmpstr, EINA_TRUE);
              eina_strbuf_replace_all(tmpbuf, "@#desc", desc);
              eina_strbuf_append(str_op, eina_strbuf_string_get(tmpbuf));
-             _eobind_func_generate(str_bodyf, classname, (Function_Id)data);
-             _eapi_func_generate(str_bodyf, classname, (Function_Id)data);
+             _eobind_func_generate(str_bodyf, classname, (Function_Id)data, SET);
+             _eapi_func_generate(str_bodyf, classname, (Function_Id)data, SET);
           }
      }
      
@@ -526,8 +559,8 @@ ch_parser_eo_source_generate(char *classname)
         _template_fill(tmpbuf, tmpl_eo_op_desc, classname, funcname, EINA_TRUE);
         eina_strbuf_replace_all(tmpbuf, "@#desc", desc);
         eina_strbuf_append(str_op, eina_strbuf_string_get(tmpbuf));
-        _eobind_func_generate(str_bodyf, classname, (Function_Id)data);
-        _eapi_func_generate(str_bodyf, classname, (Function_Id)data);
+        _eobind_func_generate(str_bodyf, classname, (Function_Id)data, UNRESOLVED);
+        _eapi_func_generate(str_bodyf, classname, (Function_Id)data, UNRESOLVED);
      }
      
    eina_strbuf_replace_all(str_src, "@#list_func", eina_strbuf_string_get(str_func));

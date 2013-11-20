@@ -199,7 +199,7 @@ int main(int argc, char **argv)
    
    if (c_filename)
     {
-       printf("Generating source file %s\n", h_filename);
+       printf("Generating source file %s\n", c_filename);
        _generate_c_file(c_filename, classname);
     }
      
