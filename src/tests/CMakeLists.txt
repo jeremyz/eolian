@@ -8,10 +8,6 @@ link_directories (${CMAKE_SOURCE_DIR}/src/lib)
 
 add_executable(suite suite.c)
 
-MESSAGE(STATUS ${EINA_INCLUDE_DIRS})
-MESSAGE(STATUS ${ECORE_INCLUDE_DIRS})
-   # hack, include ECORE_FILE_INCLUDE_DIRS
-
 include_directories(
    ${EINA_INCLUDE_DIRS}
    ${CHECK_INCLUDE_DIRS}
