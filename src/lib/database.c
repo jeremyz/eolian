@@ -7,7 +7,6 @@ static Eina_Hash *_classes = NULL;
 typedef struct
 {
    char *name;
-   char *macro;
    char *description;
    Eina_List *inherits;
    Eina_List *properties; /* List prop_name -> _Function_Id */
@@ -554,7 +553,6 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    _Function_Id *function;
    Class_desc *desc = data;
    printf("Class %s:\n", desc->name);
-   printf("  macro: %s\n", desc->macro);
    printf("  description: %s\n", desc->description);
 
    // Inherits
