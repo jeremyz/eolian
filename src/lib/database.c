@@ -260,6 +260,9 @@ Eina_Bool database_class_function_exists(const char *classname, const char *func
    switch (f_type)
      {
       case METHOD_FUNC:
+      case SET:
+      case GET:
+      case PROPERTY_FUNC:
            {
               EINA_LIST_FOREACH(desc->methods, itr, foo_id)
                 {
@@ -267,30 +270,24 @@ Eina_Bool database_class_function_exists(const char *classname, const char *func
                    if (!strcmp(fid->name, func_name))
                      return EINA_TRUE;
                 }
+              EINA_LIST_FOREACH(desc->properties, itr, foo_id)
+                {
+                   _Function_Id *fid = (_Function_Id *) foo_id;
+                   if (!strcmp(fid->name, func_name))
+                     return EINA_TRUE;
+                }
               break;
            }
-        case SET:
-        case GET:
-        case PROPERTY_FUNC:
-        {
-           EINA_LIST_FOREACH(desc->properties, itr, foo_id)
-             {
-                _Function_Id *fid = (_Function_Id *) foo_id;
-                if (!strcmp(fid->name, func_name))
-                  return EINA_TRUE;
-             }
-           break;
-        }
-        case CONSTRUCTOR:
-        {
-           EINA_LIST_FOREACH(desc->constructors, itr, foo_id)
-             {
-                _Function_Id *fid = (_Function_Id *) foo_id;
-                if (!strcmp(fid->name, func_name))
-                  return EINA_TRUE;
-             }
-           break;
-        }
+      case CONSTRUCTOR:
+           {
+              EINA_LIST_FOREACH(desc->constructors, itr, foo_id)
+                {
+                   _Function_Id *fid = (_Function_Id *) foo_id;
+                   if (!strcmp(fid->name, func_name))
+                     return EINA_TRUE;
+                }
+              break;
+           }
      }
    return ret;
 }
