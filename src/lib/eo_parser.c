@@ -381,15 +381,20 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
          * If field "type" is absent in JSON, t.e. type is PROPERTY. */
         if (_f_type == UNRESOLVED)
           {
-             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "type");
-             if (v)
+             Eina_Json_Value *sp, *gp;
+             sp = EINA_JSON_OBJECT_VALUE_GET(func_body, "set");
+             gp = EINA_JSON_OBJECT_VALUE_GET(func_body, "get");
+             if (sp && gp)
                {
-                  const char *prop_type = eina_json_string_get(v);
-                  f_type = _func_type_resolve(prop_type);
+                  f_type = PROPERTY_FUNC;
+               }
+             else if (sp)
+               {
+                  f_type = SET;
                }
              else
                {
-                  f_type = PROPERTY_FUNC;
+                  f_type = GET;
                }
           }
         else
@@ -416,12 +421,22 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
              const char *comment_set = NULL, *comment_get = NULL;
              const char *tmp = NULL;
 
-             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment_get");
-             if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
-               comment_get = eina_json_string_get(v);
-             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment_set");
-             if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
-               comment_set = eina_json_string_get(v);
+             Eina_Json_Value *sp, *gp;
+             sp = EINA_JSON_OBJECT_VALUE_GET(func_body, "set");
+             gp = EINA_JSON_OBJECT_VALUE_GET(func_body, "get");
+
+             if (gp)
+               {
+                  v = EINA_JSON_OBJECT_VALUE_GET(gp, "comment");
+                  if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
+                    comment_get = eina_json_string_get(v);
+               }
+             if (sp)
+               {
+                  v = EINA_JSON_OBJECT_VALUE_GET(sp, "comment");
+                  if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
+                    comment_set = eina_json_string_get(v);
+               }
 
              if (f_type == PROPERTY_FUNC)
                {
@@ -449,40 +464,71 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
           }
 
         /* Read parameters. */
-        Eina_Json_Value *param_arr, *param;
-        param_arr = EINA_JSON_OBJECT_VALUE_GET(func_body, "parameters");
-        Eina_Iterator *param_it = eina_json_array_iterator_new(param_arr);
-        /* Parameter's array: ["direction", "modificator", "type", "name", "comment"]"*/
-        EINA_ITERATOR_FOREACH(param_it, param)
+        Eina_Json_Value *params_section;
+        params_section = EINA_JSON_OBJECT_VALUE_GET(func_body, "parameters");
+        if (f_type == METHOD_FUNC)
           {
-             Parameter_Dir param_dir;
-             const char *par_type, *par_name, *par_comment;
-             unsigned int idx = 0;
-             if (f_type == METHOD_FUNC)
+             if ((params_section) &&
+                 (eina_json_type_get(params_section) == EINA_JSON_TYPE_OBJECT))
                {
-                  /* Get direction. */
-                  const char *dir;
-                  dir = JSON_ARR_NTH_STRING_GET(param, idx);
-                  param_dir = _get_param_dir(dir);
-                  idx += 2;
-               }
-             else
-               {
-                  param_dir = (f_type == GET) ? OUT_PARAM : IN_PARAM;
-                  idx++;
-               }
-             /* Get type. */
-             par_type = JSON_ARR_NTH_STRING_GET(param, idx);
-             idx++;
-             /* Get name. */
-             par_name = JSON_ARR_NTH_STRING_GET(param, idx);
-             idx++;
-             /* Get comment */
-             par_comment = JSON_ARR_NTH_STRING_GET(param, idx);
+                  Eina_Json_Value *params;
+                  Eina_Json_Value *itr;
 
-             database_function_parameter_add(foo_id, param_dir, par_type, par_name, par_comment);
+                  Eina_List *lst = NULL;
+                  char *data;
+                  lst = eina_list_append(lst, "in");
+                  lst = eina_list_append(lst, "in,out");
+                  lst = eina_list_append(lst, "out");
+
+                  EINA_LIST_FREE(lst, data)
+                    {
+                       /* consequentially get in, in-out and out parameters */
+                       params = EINA_JSON_OBJECT_VALUE_GET(params_section, data);
+                       if ((params) && (eina_json_type_get(params) == EINA_JSON_TYPE_ARRAY))
+                         {
+                            Eina_Iterator *par_it = eina_json_array_iterator_new(params);
+                            EINA_ITERATOR_FOREACH(par_it, itr)
+                              {
+                                 Eina_Json_Value *param = eina_json_object_nth_get(itr, 0);
+                                 const char *par_name, *par_comment = NULL, *par_type = NULL;
+                                 Eina_Json_Value *par_body;
+                                 Parameter_Dir par_dir;
+
+                                 par_name = eina_json_pair_name_get(param);
+                                 par_body = eina_json_pair_value_get(param);
+                                 par_type = JSON_ARR_NTH_STRING_GET(par_body, 0);
+                                 par_comment = JSON_ARR_NTH_STRING_GET(par_body, 1);
+                                 par_dir = _get_param_dir(data);
+                                 database_function_parameter_add(foo_id, par_dir, par_type, par_name, par_comment);
+                              }
+                            eina_iterator_free(par_it);
+                         }
+                    }
+               }
           }
-        eina_iterator_free(param_it);
+        else
+          {
+             if ((params_section) &&
+                 (eina_json_type_get(params_section) == EINA_JSON_TYPE_ARRAY))
+               {
+                  Eina_Iterator *par_it = eina_json_array_iterator_new(params_section);
+                  Eina_Json_Value *itr;
+                  EINA_ITERATOR_FOREACH(par_it, itr)
+                    {
+                       Eina_Json_Value *param = eina_json_object_nth_get(itr, 0);
+                       const char *par_name, *par_comment = NULL, *par_type = NULL;
+                       Eina_Json_Value *par_body;
+                       Parameter_Dir par_dir;
+
+                       par_name = eina_json_pair_name_get(param);
+                       par_body = eina_json_pair_value_get(param);
+                       par_type = JSON_ARR_NTH_STRING_GET(par_body, 0);
+                       par_comment = JSON_ARR_NTH_STRING_GET(par_body, 1);
+                       par_dir = (f_type == GET) ? OUT_PARAM : IN_PARAM;
+                       database_function_parameter_add(foo_id, par_dir, par_type, par_name, par_comment);
+                    }
+               }
+          }
         database_class_function_add(class_name, foo_id);
      }
    eina_iterator_free(it);
@@ -587,7 +633,7 @@ _class_parse_json(char *buffer)
           }
         eina_iterator_free(it);
      }
-   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "old_styled_signals");
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "signals");
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
      {
         Eina_Iterator *it = eina_json_array_iterator_new(jv);
