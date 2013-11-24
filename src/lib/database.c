@@ -169,20 +169,6 @@ database_class_inherit_add(const char *class_name, char *inherit_class_name)
 }
 
 const char*
-database_class_macro_get(const char *class_name)
-{
-   Class_desc *desc = eina_hash_find(_classes, class_name);
-   return (desc ? desc->macro : NULL);
-}
-
-void
-database_class_macro_set(const char *class_name, const char *macro)
-{
-   Class_desc *desc = eina_hash_find(_classes, class_name);
-   if (desc) desc->macro = strdup(macro);
-}
-
-const char*
 database_class_description_get(const char *class_name)
 {
    Class_desc *desc = eina_hash_find(_classes, class_name);

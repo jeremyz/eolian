@@ -40,13 +40,6 @@ Eina_Bool database_class_exists(const char *class_name);
 /* Add an inherit class name to a class */
 Eina_Bool database_class_inherit_add(const char *class_name, char *inherit_class_name);
 
-/* Returns c-macro for current class like EVAS_OBJ_IMAGE_CLASS */
-const char* database_class_macro_get(const  char *class_name);
-
-/* Set c-macro of class. */
-void
-database_class_macro_set(const char *class_name, const char *macro);
-
 /* Get description of class. */
 const char*
 database_class_description_get(const char *class_name);

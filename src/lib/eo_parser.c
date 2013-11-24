@@ -8,7 +8,6 @@
 #include "eina_json.h"
 
 #define NAME "name"
-#define MACRO "macro"
 #define INHERITS "inherits"
 #define PROPERTIES "properties"
 #define METHODS "methods"
@@ -531,13 +530,6 @@ _class_parse_json(char *buffer)
              goto end;
           }
         database_class_add(class_name);
-     }
-   /* Get "macro" section. */
-   jv = EINA_JSON_OBJECT_VALUE_GET(tree, MACRO);
-   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
-     {
-        const char *macro = eina_json_string_get(jv);
-        database_class_macro_set(class_name, macro);
      }
    /* Get "comment" section. */
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, "comment");
