@@ -376,7 +376,6 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
         func_name = eina_json_pair_name_get(itv);
         func_body = eina_json_pair_value_get(itv);
 
-
         /* UNRESOLVED passed when iterating over properties.
          * If field "type" is absent in JSON, t.e. type is PROPERTY. */
         if (_f_type == UNRESOLVED)
@@ -409,6 +408,13 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
 
         foo_id = database_function_new(func_name, f_type);
         if (!foo_id) return EINA_FALSE;
+
+        /* Read "return_type" parameter*/
+        v = EINA_JSON_OBJECT_VALUE_GET(func_body, "return_type");
+        if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
+          {
+             database_function_return_type_set(foo_id, eina_json_string_get(v));
+          }
 
         /* Read "comment" parameter*/
         v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment");
@@ -607,16 +613,19 @@ _class_parse_json(char *buffer)
      {
         _func_from_json(class_name, jv, UNRESOLVED);
      }
+   /* Get "methods" section. */
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, METHODS);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
      {
         _func_from_json(class_name, jv, METHOD_FUNC);
      }
+   /* Get "constructors" section. */
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, "constructors");
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
      {
         _func_from_json(class_name, jv, CONSTRUCTOR);
      }
+   /* Get "implements" section. */
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, "implements");
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
      {

@@ -344,6 +344,33 @@ database_function_description_get(Function_Id function_id, const char *key)
    return (fid ? eina_hash_find(fid->data, key) : NULL);
 }
 
+#define RETURN_TYPE "return_type"
+
+void
+database_function_return_type_set(Function_Id function_id, const char *ret_type)
+{
+   _Function_Id *fid = (_Function_Id *)function_id;
+   const char *key = RETURN_TYPE;
+   if (ret_type)
+     {
+        if (!eina_hash_find(fid->data, key))
+          eina_hash_set(fid->data, key, strdup(ret_type));
+     }
+   else
+     {
+        eina_hash_del(fid->data, key, NULL);
+     }
+}
+
+const char *
+database_function_return_type_get(Function_Id function_id)
+{
+   _Function_Id *fid = (_Function_Id *)function_id;
+   const char *key = RETURN_TYPE;
+   return (fid ? eina_hash_find(fid->data, key) : NULL);
+}
+#undef RETURN_TYPE
+
 Parameter_Desc
 database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, const char *type, const char *name, const char *description)
 {
@@ -464,7 +491,9 @@ _event_print(Event_Desc ev, int nb_spaces)
 
 static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
 {
-   printf("%*s%s ", nb_spaces, "", fid->name);
+   const char *ret_type;
+   ret_type = database_function_return_type_get((Function_Id ) fid);
+   printf("%*s%s %s", nb_spaces, "", ret_type ? ret_type : "VOID", fid->name);
    switch (fid->type)
      {
       case PROPERTY_FUNC:

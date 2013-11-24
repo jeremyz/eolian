@@ -83,6 +83,15 @@ const Eina_List *database_parameters_list_get(Function_Id foo_id);
 /* Get parameter information */
 void
 database_parameter_information_get(Parameter_Desc param_desc, Parameter_Dir *param_dir, char **type, char **name, char **description);
+
+/* Set functions return type */
+void
+database_function_return_type_set(Function_Id function_id, const char *ret_type);
+
+/* Get functions return type */
+const char*
+database_function_return_type_get(Function_Id function_id);
+
 /* Need to add API for callbacks and implements */
 
 Implements_Desc
