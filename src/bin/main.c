@@ -8,26 +8,26 @@ Eina_Bool
 _generate_h_file(char *filename, char *classname, Eina_Bool append)
 {
    char *htext = NULL;
-   
-   if (!classname) 
+
+   if (!classname)
      {
         printf ("No class name specified to generate %s\n", filename);
         return EINA_FALSE;
      }
-   
+
    if (append)
      {
         Eina_File *fn = eina_file_open(filename, EINA_FALSE);
         if (!fn)
           {
             printf ("Cant open file \"%s\" for updating.\n", filename);
-            return EINA_FALSE; 
+            return EINA_FALSE;
           }
-        
+
         Eina_Strbuf *hfile = eina_strbuf_new();
         eina_strbuf_append(hfile, (char*)eina_file_map_all(fn, EINA_FILE_SEQUENTIAL));
         eina_file_close(fn);
-        
+
         ch_parser_header_append(hfile, classname);
         htext = eina_strbuf_string_steal(hfile);
      }
@@ -35,46 +35,46 @@ _generate_h_file(char *filename, char *classname, Eina_Bool append)
      {
         htext = ch_parser_eo_header_generate(classname);
      }
-   
+
    FILE* fd = fopen(filename, "w");
-   
-   if (!fd) 
+
+   if (!fd)
      {
         printf ("Couldn't open file %s for writing\n", filename);
         return EINA_FALSE;
      }
-   
+
    if (htext) fputs(htext, fd);
-   
+
    free(htext);
    fclose(fd);
-   
+
    return EINA_TRUE;
 }
 
 Eina_Bool
 _generate_c_file(char *filename, char *classname)
 {
-   if (!classname) 
+   if (!classname)
      {
         printf ("No class name specified to generate %s\n", filename);
         return EINA_FALSE;
      }
-   
+
    FILE* fd = fopen(filename, "w");
-   if (!fd) 
+   if (!fd)
      {
         printf ("Couldnt open file %s for writing\n", filename);
         return EINA_FALSE;
      }
-   
+
    char *ctext = ch_parser_eo_source_generate(classname);
-   
+
    if (ctext) fputs(ctext, fd);
    free(ctext);
-   
+
    fclose(fd);
-   
+
    return EINA_TRUE;
 }
 
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
    Eina_List *files = NULL, *itr;
    char *h_filename = NULL, *c_filename = NULL, *classname = NULL;
    Eina_Bool happend = EINA_FALSE;
-   
+
    for(i = 1; i < argc; i++)
      {
         if (!strcmp(argv[i], "-gh") && (i < (argc-1)))
@@ -185,24 +185,24 @@ int main(int argc, char **argv)
              printf("Error during parsing file %s\n", filename);
           }
      }
-   
+
    if (show)
      {
         eolian_show();
      }
-     
+
    if (h_filename)
     {
        printf("%s header file %s\n", (happend) ? "Appending" : "Generating", h_filename);
        _generate_h_file(h_filename, classname, happend);
     }
-   
+
    if (c_filename)
     {
        printf("Generating source file %s\n", c_filename);
        _generate_c_file(c_filename, classname);
     }
-     
+
    EINA_LIST_FREE(files, filename)
       free(filename);
    eolian_database_shutdown();
