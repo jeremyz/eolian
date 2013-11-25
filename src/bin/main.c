@@ -4,7 +4,7 @@
 #include "ch_parser.h"
 #define EO_SUFFIX ".eo"
 
-Eina_Bool
+static Eina_Bool
 _generate_h_file(char *filename, char *classname, Eina_Bool append)
 {
    char *htext = NULL;
@@ -52,7 +52,7 @@ _generate_h_file(char *filename, char *classname, Eina_Bool append)
    return EINA_TRUE;
 }
 
-Eina_Bool
+static Eina_Bool
 _generate_c_file(char *filename, char *classname)
 {
    if (!classname)
