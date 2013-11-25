@@ -441,7 +441,7 @@ database_class_event_information_get(Event_Desc event_desc, char **event_name, c
 static void
 _implements_print(Implements_Desc impl, int nb_spaces)
 {
-   char t[10];
+   char t[50];
    char *cl, *fn;
    Function_Type ft;
 
@@ -463,6 +463,11 @@ _implements_print(Implements_Desc impl, int nb_spaces)
               strcpy(t, "METHOD");
               break;
            }
+      case UNRESOLVED:
+           {
+              strcpy(t, "Type is the same as function being overriden");
+              break;
+           }
      }
    printf("%*s <%s :: %s> <%s>\n", nb_spaces + 5, "", cl, fn, t);
 }
@@ -480,27 +485,35 @@ static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
 {
    const char *ret_type;
    ret_type = database_function_return_type_get((Function_Id ) fid);
-   printf("%*s%s %s", nb_spaces, "", ret_type ? ret_type : "VOID", fid->name);
+   printf("%*s%s %s\n", nb_spaces, "", ret_type ? ret_type : "VOID", fid->name);
    switch (fid->type)
      {
       case PROPERTY_FUNC:
            {
               const char *str = database_function_description_get((Function_Id)fid, "comment_set");
-              printf("\n%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              printf("%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
               str = database_function_description_get((Function_Id)fid, "comment_get");
               printf("%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              str = database_function_data_get((Function_Id)fid, LEGACY_GET);
+              printf("%*s legacy_get: <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              str = database_function_data_get((Function_Id)fid, LEGACY_SET);
+              printf("%*s legacy_set: <%s>\n", nb_spaces + 5, "", (str ? str : ""));
               break;
            }
       case GET:
            {
               const char *str = database_function_description_get((Function_Id)fid, "comment_get");
-              printf("<%s>\n", (str ? str : ""));
+              printf("%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              str = database_function_data_get((Function_Id)fid, LEGACY_GET);
+              printf("%*s legacy: <%s>\n", nb_spaces + 5, "", (str ? str : ""));
               break;
            }
       case SET:
            {
               const char *str = database_function_description_get((Function_Id)fid, "comment_set");
-              printf("<%s>\n", (str ? str : ""));
+              printf("%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              str = database_function_data_get((Function_Id)fid, LEGACY_SET);
+              printf("%*s legacy: <%s>\n", nb_spaces + 5, "", (str ? str : ""));
               break;
            }
 
@@ -509,7 +522,9 @@ static Eina_Bool _function_print(const _Function_Id *fid, int nb_spaces)
            {
               //char *str = eina_hash_find(fid->data, "comment");
               const char *str = database_function_description_get((Function_Id)fid, "comment");
-              printf("<%s>\n", (str ? str : ""));
+              printf("%*s <%s>\n", nb_spaces + 5, "", (str ? str : ""));
+              str = database_function_data_get((Function_Id)fid, LEGACY);
+              printf("%*s legacy: <%s>\n", nb_spaces + 5, "", (str ? str : ""));
               break;
            }
      }

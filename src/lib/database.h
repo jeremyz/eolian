@@ -7,6 +7,9 @@ typedef struct _Implements_Desc* Implements_Desc;
 typedef struct _Event_Desc* Event_Desc;
 
 #define RETURN_TYPE "return_type"
+#define LEGACY "legacy"
+#define LEGACY_GET "legacy_get"
+#define LEGACY_SET "legacy_set"
 
 typedef enum
 {
