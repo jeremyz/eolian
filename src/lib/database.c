@@ -471,7 +471,6 @@ static void
 _event_print(Event_Desc ev, int nb_spaces)
 {
    char *name, *comment;
-   Function_Type ft;
 
    database_class_event_information_get(ev, &name, &comment);
    printf("%*s <%s> <%s>\n", nb_spaces + 5, "", name, comment);
