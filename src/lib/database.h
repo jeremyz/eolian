@@ -48,6 +48,14 @@ database_class_description_get(const char *class_name);
 void
 database_class_description_set(const char *class_name, const char *description);
 
+/* Get legacy of class. */
+const char*
+database_class_legacy_prefix_get(const char *class_name);
+
+/* Set legacy of class. */
+void
+database_class_legacy_prefix_set(const char *class_name, const char *legacy_prefix);
+
 /* Returns the list of inherit class names of a certain class */
 const Eina_List *database_class_inherits_list_get(char *class_name);
 

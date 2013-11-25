@@ -8,6 +8,7 @@ typedef struct
 {
    char *name;
    char *description;
+   char *legacy_prefix;
    Eina_List *inherits;
    Eina_List *properties; /* List prop_name -> _Function_Id */
    Eina_List *methods; /* List meth_name -> _Function_Id */
@@ -81,6 +82,7 @@ _class_del(Class_desc *class)
 
    free(class->name);
    free(class->description);
+   free(class->legacy_prefix);
    free(class);
 }
 
@@ -179,6 +181,20 @@ database_class_description_set(const char *class_name, const char *description)
 {
    Class_desc *desc = eina_hash_find(_classes, class_name);
    if (desc) desc->description = strdup(description);
+}
+
+const char*
+database_class_legacy_prefix_get(const char *class_name)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   return (desc ? desc->legacy_prefix : NULL);
+}
+
+void
+database_class_legacy_prefix_set(const char *class_name, const char *description)
+{
+   Class_desc *desc = eina_hash_find(_classes, class_name);
+   if (desc) desc->legacy_prefix = strdup(description);
 }
 
 const Eina_List *
@@ -553,6 +569,7 @@ static Eina_Bool _class_print(const Eina_Hash *hash EINA_UNUSED, const void *key
    _Function_Id *function;
    Class_desc *desc = data;
    printf("Class %s:\n", desc->name);
+   printf("  legacy %s:\n", desc->legacy_prefix);
    printf("  description: %s\n", desc->description);
 
    // Inherits

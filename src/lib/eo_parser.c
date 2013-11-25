@@ -8,6 +8,7 @@
 #include "eina_json.h"
 
 #define NAME "name"
+#define LEGACY "legacy"
 #define INHERITS "inherits"
 #define PROPERTIES "properties"
 #define METHODS "methods"
@@ -591,6 +592,14 @@ _class_parse_json(char *buffer)
         database_class_description_set(class_name, comment);
      }
 
+   /* Get "legacy" section. */
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, LEGACY);
+   if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
+     {
+        const char *legacy = eina_json_string_get(jv);
+        database_class_legacy_prefix_set(class_name, legacy);
+     }
+
    /* Get "inhrits" section. */
    jv = EINA_JSON_OBJECT_VALUE_GET(tree, INHERITS);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
@@ -635,10 +644,16 @@ _class_parse_json(char *buffer)
         EINA_ITERATOR_FOREACH(it, param)
           {
              const char *cl, *f, *t;
+             Function_Type ft = UNRESOLVED;
              cl = JSON_ARR_NTH_STRING_GET(param, 0);
              f = JSON_ARR_NTH_STRING_GET(param, 1);
-             t = JSON_ARR_NTH_STRING_GET(param, 2);
-             database_class_implements_add(class_name, database_class_implements_new(cl, f, _func_type_resolve(t)));
+             jv =  eina_json_array_nth_get(param, 2);
+             if (jv)
+               {
+                  t = JSON_ARR_NTH_STRING_GET(param, 2);
+                  ft = _func_type_resolve(t);
+               }
+             database_class_implements_add(class_name, database_class_implements_new(cl, f, ft));
           }
         eina_iterator_free(it);
      }
