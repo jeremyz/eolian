@@ -6,6 +6,8 @@ typedef struct _Parameter_Desc* Parameter_Desc;
 typedef struct _Implements_Desc* Implements_Desc;
 typedef struct _Event_Desc* Event_Desc;
 
+#define RETURN_TYPE "return_type"
+
 typedef enum
 {
    UNRESOLVED,
@@ -76,11 +78,14 @@ const char *database_function_name_get(Function_Id function_id);
 
 Eina_Bool database_class_function_exists(const char *classname, const char *func_name, Function_Type f_type);
 
-/* Add a description to a function */
-void database_function_description_set(Function_Id function_id, const char *key, const char *description);
+void database_function_data_set(Function_Id function_id, const char *key, const char *description);
 
+const char *database_function_data_get(Function_Id function_id, const char *key);
+
+/* Add a description to a function */
+#define database_function_description_set(foo_id, key, desc) database_function_data_set((foo_id), (key), (desc))
 /* Get a description of a function */
-const char *database_function_description_get(Function_Id function_id, const char *key);
+#define database_function_description_get(foo_id, key) database_function_data_get((foo_id), (key))
 
 /* Add a parameter to a function */
 Parameter_Desc database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, const char *type, const char *name, const char *description);
@@ -93,12 +98,9 @@ void
 database_parameter_information_get(Parameter_Desc param_desc, Parameter_Dir *param_dir, char **type, char **name, char **description);
 
 /* Set functions return type */
-void
-database_function_return_type_set(Function_Id function_id, const char *ret_type);
-
+#define database_function_return_type_set(foo_id, ret_type) database_function_data_set((foo_id), RETURN_TYPE, (ret_type))
 /* Get functions return type */
-const char*
-database_function_return_type_get(Function_Id function_id);
+#define database_function_return_type_get(foo_id) database_function_data_get((foo_id), RETURN_TYPE)
 
 /* Need to add API for callbacks and implements */
 

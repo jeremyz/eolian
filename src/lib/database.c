@@ -337,14 +337,14 @@ database_function_name_get(Function_Id function_id)
 }
 
 void
-database_function_description_set(Function_Id function_id, const char *key, const char *description)
+database_function_data_set(Function_Id function_id, const char *key, const char *data)
 {
    _Function_Id *fid = (_Function_Id *)function_id;
    EINA_SAFETY_ON_NULL_RETURN(key);
-   if (description)
+   if (data)
      {
         if (!eina_hash_find(fid->data, key))
-          eina_hash_set(fid->data, key, strdup(description));
+          eina_hash_set(fid->data, key, strdup(data));
      }
    else
      {
@@ -353,38 +353,11 @@ database_function_description_set(Function_Id function_id, const char *key, cons
 }
 
 const char *
-database_function_description_get(Function_Id function_id, const char *key)
+database_function_data_get(Function_Id function_id, const char *key)
 {
    _Function_Id *fid = (_Function_Id *)function_id;
    return (fid ? eina_hash_find(fid->data, key) : NULL);
 }
-
-#define RETURN_TYPE "return_type"
-
-void
-database_function_return_type_set(Function_Id function_id, const char *ret_type)
-{
-   _Function_Id *fid = (_Function_Id *)function_id;
-   const char *key = RETURN_TYPE;
-   if (ret_type)
-     {
-        if (!eina_hash_find(fid->data, key))
-          eina_hash_set(fid->data, key, strdup(ret_type));
-     }
-   else
-     {
-        eina_hash_del(fid->data, key, NULL);
-     }
-}
-
-const char *
-database_function_return_type_get(Function_Id function_id)
-{
-   _Function_Id *fid = (_Function_Id *)function_id;
-   const char *key = RETURN_TYPE;
-   return (fid ? eina_hash_find(fid->data, key) : NULL);
-}
-#undef RETURN_TYPE
 
 Parameter_Desc
 database_function_parameter_add(Function_Id foo_id, Parameter_Dir param_dir, const char *type, const char *name, const char *description)
