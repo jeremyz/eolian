@@ -466,7 +466,7 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
         /* Read parameters. */
         Eina_Json_Value *params_section;
         params_section = EINA_JSON_OBJECT_VALUE_GET(func_body, "parameters");
-        if (f_type == METHOD_FUNC)
+        if ((f_type == METHOD_FUNC) || (f_type == CONSTRUCTOR))
           {
              if ((params_section) &&
                  (eina_json_type_get(params_section) == EINA_JSON_TYPE_OBJECT))

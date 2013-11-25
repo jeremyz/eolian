@@ -1,838 +1,978 @@
 {
   "name": "Elm_Win", 
-  "macro": "ELM_OBJ_WIN_CLASS", 
+  "legacy": "elm_win", 
   "inherits": [
     "Elm_Widget"
   ], 
   "constructors": {
     "win_constructor": {
       "comment": "No description supplied by the EAPI.", 
-      "parameters": [
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "name", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Elm_Win_Type", 
-          "type", 
-          ""
+      "parameters": {
+        "in": [
+          {
+            "name": [
+              "const char*", 
+              ""
+            ]
+          }, 
+          {
+            "type": [
+              "Elm_Win_Type", 
+              ""
+            ]
+          }
         ]
-      ]
+      }
     }
   }, 
   "properties": {
     "keyboard_win": {
-      "comment_set": "Sets whether the window is a keyboard.", 
-      "comment_get": "Get whether the window is a keyboard.", 
+      "set": {
+        "comment": "Sets whether the window is a keyboard."
+      }, 
+      "get": {
+        "comment": "Get whether the window is a keyboard."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "is_keyboard", 
-          ""
-        ]
+        {
+          "is_keyboard": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "autodel": {
-      "comment_set": "Set the window's autodel state.", 
-      "comment_get": "Get the window's autodel state.", 
+      "set": {
+        "comment": "Set the window's autodel state."
+      }, 
+      "get": {
+        "comment": "Get the window's autodel state."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "autodel", 
-          ""
-        ]
+        {
+          "autodel": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "override": {
-      "comment_set": "Set the override state of a window.", 
-      "comment_get": "Get the override state of a window.", 
+      "set": {
+        "comment": "Set the override state of a window."
+      }, 
+      "get": {
+        "comment": "Get the override state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "override", 
-          ""
-        ]
+        {
+          "override": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "iconified": {
-      "comment_set": "Set the iconified state of a window.", 
-      "comment_get": "Get the iconified state of a window.", 
+      "set": {
+        "comment": "Set the iconified state of a window."
+      }, 
+      "get": {
+        "comment": "Get the iconified state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "iconified", 
-          ""
-        ]
+        {
+          "iconified": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "quickpanel_zone": {
-      "comment_set": "Set which zone this quickpanel should appear in", 
-      "comment_get": "Get which zone this quickpanel should appear in", 
+      "set": {
+        "comment": "Set which zone this quickpanel should appear in"
+      }, 
+      "get": {
+        "comment": "Get which zone this quickpanel should appear in"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "zone", 
-          ""
-        ]
+        {
+          "zone": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "maximized": {
-      "comment_set": "Set the maximized state of a window.", 
-      "comment_get": "Get the maximized state of a window.", 
+      "set": {
+        "comment": "Set the maximized state of a window."
+      }, 
+      "get": {
+        "comment": "Get the maximized state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "maximized", 
-          ""
-        ]
+        {
+          "maximized": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "modal": {
-      "comment_set": "Set the modal state of a window.", 
-      "comment_get": "Get the modal state of a window.", 
+      "set": {
+        "comment": "Set the modal state of a window."
+      }, 
+      "get": {
+        "comment": "Get the modal state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "modal", 
-          ""
-        ]
+        {
+          "modal": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "icon_name": {
-      "comment_set": "Set the icon name of the window", 
-      "comment_get": "Get the icon name of the window", 
+      "set": {
+        "comment": "Set the icon name of the window"
+      }, 
+      "get": {
+        "comment": "Get the icon name of the window"
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char*", 
-          "icon_name", 
-          ""
-        ]
+        {
+          "icon_name": [
+            "const char*", 
+            ""
+          ]
+        }
       ]
     }, 
     "withdrawn": {
-      "comment_set": "Set the withdrawn state of a window.", 
-      "comment_get": "Get the withdrawn state of a window.", 
+      "set": {
+        "comment": "Set the withdrawn state of a window."
+      }, 
+      "get": {
+        "comment": "Get the withdrawn state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "withdrawn", 
-          ""
-        ]
+        {
+          "withdrawn": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "role": {
-      "comment_set": "Set the role of the window", 
-      "comment_get": "Get the role of the window", 
+      "set": {
+        "comment": "Set the role of the window"
+      }, 
+      "get": {
+        "comment": "Get the role of the window"
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char*", 
-          "role", 
-          ""
-        ]
+        {
+          "role": [
+            "const char*", 
+            ""
+          ]
+        }
       ]
     }, 
     "size_step": {
-      "comment_set": "Set the window stepping used with sizing calculation", 
-      "comment_get": "Get the stepping of a window.", 
+      "set": {
+        "comment": "Set the window stepping used with sizing calculation"
+      }, 
+      "get": {
+        "comment": "Get the stepping of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "w", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          ""
-        ]
+        {
+          "w": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "h": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "focus_highlight_style": {
-      "comment_set": "Set the style for the focus highlight on this window", 
-      "comment_get": "Get the style set for the focus highlight object", 
+      "set": {
+        "comment": "Set the style for the focus highlight on this window"
+      }, 
+      "get": {
+        "comment": "Get the style set for the focus highlight object"
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char*", 
-          "style", 
-          ""
-        ]
+        {
+          "style": [
+            "const char*", 
+            ""
+          ]
+        }
       ]
     }, 
     "borderless": {
-      "comment_set": "Set the borderless state of a window.", 
-      "comment_get": "Get the borderless state of a window.", 
+      "set": {
+        "comment": "Set the borderless state of a window."
+      }, 
+      "get": {
+        "comment": "Get the borderless state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "borderless", 
-          ""
-        ]
+        {
+          "borderless": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "screen_constrain": {
-      "comment_set": "Constrain the maximum width and height of a window to the width and height of its screen", 
-      "comment_get": "Retrieve the constraints on the maximum width and height of a window relative to the width and height of its screen", 
+      "set": {
+        "comment": "Constrain the maximum width and height of a window to the width and height of its screen"
+      }, 
+      "get": {
+        "comment": "Retrieve the constraints on the maximum width and height of a window relative to the width and height of its screen"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "constrain", 
-          ""
-        ]
+        {
+          "constrain": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "available_profiles": {
-      "comment_set": "Set the array of available profiles to a window.", 
-      "comment_get": "Get the array of available profiles of a window.", 
+      "set": {
+        "comment": "Set the array of available profiles to a window."
+      }, 
+      "get": {
+        "comment": "Get the array of available profiles of a window."
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char**", 
-          "profiles", 
-          ""
-        ], 
-        [
-          "", 
-          "unsigned int", 
-          "count", 
-          ""
-        ]
+        {
+          "profiles": [
+            "const char**", 
+            ""
+          ]
+        }, 
+        {
+          "count": [
+            "unsigned int", 
+            ""
+          ]
+        }
       ]
     }, 
     "focus_highlight_enabled": {
-      "comment_set": "Set the enabled status for the focus highlight in a window", 
-      "comment_get": "Get the enabled value of the focus highlight for this window", 
+      "set": {
+        "comment": "Set the enabled status for the focus highlight in a window"
+      }, 
+      "get": {
+        "comment": "Get the enabled value of the focus highlight for this window"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "enabled", 
-          ""
-        ]
+        {
+          "enabled": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "title": {
-      "comment_set": "Set the title of the window", 
-      "comment_get": "Get the title of the window", 
+      "set": {
+        "comment": "Set the title of the window"
+      }, 
+      "get": {
+        "comment": "Get the title of the window"
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char*", 
-          "title", 
-          ""
-        ]
+        {
+          "title": [
+            "const char*", 
+            ""
+          ]
+        }
       ]
     }, 
     "alpha": {
-      "comment_set": "Set the alpha channel state of a window.", 
-      "comment_get": "Get the alpha channel state of a window.", 
+      "set": {
+        "comment": "Set the alpha channel state of a window."
+      }, 
+      "get": {
+        "comment": "Get the alpha channel state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "alpha", 
-          ""
-        ]
+        {
+          "alpha": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "urgent": {
-      "comment_set": "Set the urgent state of a window.", 
-      "comment_get": "Get the urgent state of a window.", 
+      "set": {
+        "comment": "Set the urgent state of a window."
+      }, 
+      "get": {
+        "comment": "Get the urgent state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "urgent", 
-          ""
-        ]
+        {
+          "urgent": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "rotation": {
-      "comment_set": "Set the rotation of the window.", 
-      "comment_get": "Get the rotation of the window.", 
+      "set": {
+        "comment": "Set the rotation of the window."
+      }, 
+      "get": {
+        "comment": "Get the rotation of the window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "rotation", 
-          ""
-        ]
+        {
+          "rotation": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "icon_object": {
-      "comment_set": "Set a window object's icon", 
-      "comment_get": "Get the icon object used for the window", 
+      "set": {
+        "comment": "Set a window object's icon"
+      }, 
+      "get": {
+        "comment": "Get the icon object used for the window"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Object*", 
-          "icon", 
-          ""
-        ]
+        {
+          "icon": [
+            "Evas_Object*", 
+            ""
+          ]
+        }
       ]
     }, 
     "quickpanel_priority_minor": {
-      "comment_set": "Set the minor priority of a quickpanel window", 
-      "comment_get": "Get the minor priority of a quickpanel window", 
+      "set": {
+        "comment": "Set the minor priority of a quickpanel window"
+      }, 
+      "get": {
+        "comment": "Get the minor priority of a quickpanel window"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "priority", 
-          ""
-        ]
+        {
+          "priority": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "sticky": {
-      "comment_set": "Set the sticky state of the window.", 
-      "comment_get": "Get the sticky state of the window.", 
+      "set": {
+        "comment": "Set the sticky state of the window."
+      }, 
+      "get": {
+        "comment": "Get the sticky state of the window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "sticky", 
-          ""
-        ]
+        {
+          "sticky": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "keyboard_mode": {
-      "comment_set": "Sets the keyboard mode of the window.", 
-      "comment_get": "Get the keyboard mode of the window.", 
+      "set": {
+        "comment": "Sets the keyboard mode of the window."
+      }, 
+      "get": {
+        "comment": "Get the keyboard mode of the window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Elm_Win_Keyboard_Mode", 
-          "mode", 
-          ""
-        ]
+        {
+          "mode": [
+            "Elm_Win_Keyboard_Mode", 
+            ""
+          ]
+        }
       ]
     }, 
     "focus_highlight_animate": {
-      "comment_set": "Set the animate status for the focus highlight for this window.", 
-      "comment_get": "Get the animate status for the focus highlight for this window.", 
+      "set": {
+        "comment": "Set the animate status for the focus highlight for this window."
+      }, 
+      "get": {
+        "comment": "Get the animate status for the focus highlight for this window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "animate", 
-          ""
-        ]
+        {
+          "animate": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "aspect": {
-      "comment_set": "Set the aspect ratio of a window.", 
-      "comment_get": "Get the aspect ratio of a window.", 
+      "set": {
+        "comment": "Set the aspect ratio of a window."
+      }, 
+      "get": {
+        "comment": "Get the aspect ratio of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "double", 
-          "aspect", 
-          ""
-        ]
+        {
+          "aspect": [
+            "double", 
+            ""
+          ]
+        }
       ]
     }, 
     "quickpanel_priority_major": {
-      "comment_set": "Set the major priority of a quickpanel window", 
-      "comment_get": "Get the major priority of a quickpanel window", 
+      "set": {
+        "comment": "Set the major priority of a quickpanel window"
+      }, 
+      "get": {
+        "comment": "Get the major priority of a quickpanel window"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "priority", 
-          ""
-        ]
+        {
+          "priority": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "indicator_opacity": {
-      "comment_set": "Sets the indicator opacity mode of the window.", 
-      "comment_get": "Get the indicator opacity mode of the window.", 
+      "set": {
+        "comment": "Sets the indicator opacity mode of the window."
+      }, 
+      "get": {
+        "comment": "Get the indicator opacity mode of the window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Elm_Win_Indicator_Opacity_Mode", 
-          "mode", 
-          ""
-        ]
+        {
+          "mode": [
+            "Elm_Win_Indicator_Opacity_Mode", 
+            ""
+          ]
+        }
       ]
     }, 
     "demand_attention": {
-      "comment_set": "Set the demand_attention state of a window.", 
-      "comment_get": "Get the demand_attention state of a window.", 
+      "set": {
+        "comment": "Set the demand_attention state of a window."
+      }, 
+      "get": {
+        "comment": "Get the demand_attention state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "demand_attention", 
-          ""
-        ]
+        {
+          "demand_attention": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "layer": {
-      "comment_set": "Set the layer of the window.", 
-      "comment_get": "Get the layer of the window.", 
+      "set": {
+        "comment": "Set the layer of the window."
+      }, 
+      "get": {
+        "comment": "Get the layer of the window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "layer", 
-          ""
-        ]
+        {
+          "layer": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "profile": {
-      "comment_set": "Set the profile of a window.", 
-      "comment_get": "Get the profile of a window.", 
+      "set": {
+        "comment": "Set the profile of a window."
+      }, 
+      "get": {
+        "comment": "Get the profile of a window."
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char*", 
-          "profile", 
-          ""
-        ]
+        {
+          "profile": [
+            "const char*", 
+            ""
+          ]
+        }
       ]
     }, 
     "shaped": {
-      "comment_set": "Set the shaped state of a window.", 
-      "comment_get": "Get the shaped state of a window.", 
+      "set": {
+        "comment": "Set the shaped state of a window."
+      }, 
+      "get": {
+        "comment": "Get the shaped state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "shaped", 
-          ""
-        ]
+        {
+          "shaped": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "fullscreen": {
-      "comment_set": "Set the fullscreen state of a window.", 
-      "comment_get": "Get the fullscreen state of a window.", 
+      "set": {
+        "comment": "Set the fullscreen state of a window."
+      }, 
+      "get": {
+        "comment": "Get the fullscreen state of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "fullscreen", 
-          ""
-        ]
+        {
+          "fullscreen": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "indicator_mode": {
-      "comment_set": "Sets the indicator mode of the window.", 
-      "comment_get": "Get the indicator mode of the window.", 
+      "set": {
+        "comment": "Sets the indicator mode of the window."
+      }, 
+      "get": {
+        "comment": "Get the indicator mode of the window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Elm_Win_Indicator_Mode", 
-          "mode", 
-          ""
-        ]
+        {
+          "mode": [
+            "Elm_Win_Indicator_Mode", 
+            ""
+          ]
+        }
       ]
     }, 
     "conformant": {
-      "comment_set": "Set if this window is an illume conformant window", 
-      "comment_get": "Get if this window is an illume conformant window", 
+      "set": {
+        "comment": "Set if this window is an illume conformant window"
+      }, 
+      "get": {
+        "comment": "Get if this window is an illume conformant window"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "conformant", 
-          ""
-        ]
+        {
+          "conformant": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "size_base": {
-      "comment_set": "Set the base window size used with stepping calculation", 
-      "comment_get": "Get the base size of a window.", 
+      "set": {
+        "comment": "Set the base window size used with stepping calculation"
+      }, 
+      "get": {
+        "comment": "Get the base size of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "w", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          ""
-        ]
+        {
+          "w": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "h": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "quickpanel": {
-      "comment_set": "Set a window to be an illume quickpanel window", 
-      "comment_get": "Get if this window is a quickpanel or not", 
+      "set": {
+        "comment": "Set a window to be an illume quickpanel window"
+      }, 
+      "get": {
+        "comment": "Get if this window is a quickpanel or not"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "quickpanel", 
-          ""
-        ]
+        {
+          "quickpanel": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "rotation_with_resize": {
-      "comment": "Rotates the window and resizes it.", 
-      "type": "wo", 
+      "set": {
+        "comment": "Rotates the window and resizes it."
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "rotation", 
-          ""
-        ]
+        {
+          "rotation": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "prop_focus_skip": {
-      "comment": "Set the window to be skipped by keyboard focus", 
-      "type": "wo", 
+      "set": {
+        "comment": "Set the window to be skipped by keyboard focus"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "skip", 
-          ""
-        ]
+        {
+          "skip": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "screen_position": {
-      "comment": "Get the screen position of a window.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the screen position of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "x", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "y", 
-          ""
-        ]
+        {
+          "x": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "y": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "xwindow": {
-      "comment": "Get the Ecore_X_Window of an Evas_Object", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the Ecore_X_Window of an Evas_Object"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Ecore_X_Window", 
-          "ret", 
-          ""
-        ]
+        {
+          "ret": [
+            "Ecore_X_Window", 
+            ""
+          ]
+        }
       ]
     }, 
     "focus": {
-      "comment": "Determine whether a window has focus", 
-      "type": "ro", 
+      "get": {
+        "comment": "Determine whether a window has focus"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "ret", 
-          ""
-        ]
+        {
+          "ret": [
+            "Eina_Bool", 
+            ""
+          ]
+        }
       ]
     }, 
     "screen_size": {
-      "comment": "Get screen geometry details for the screen that a window is on", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get screen geometry details for the screen that a window is on"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "x", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "y", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "w", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          ""
-        ]
+        {
+          "x": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "y": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "w": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "h": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "main_menu": {
-      "comment": "Get the Main Menu of a window.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the Main Menu of a window."
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eo*", 
-          "ret", 
-          "Main menu"
-        ]
+        {
+          "ret": [
+            "Eo*", 
+            "Main menu"
+          ]
+        }
       ]
     }, 
     "wl_window": {
-      "comment": "Get the Ecore_Wl_Window of an Evas_Object", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the Ecore_Wl_Window of an Evas_Object"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Ecore_Wl_Window*", 
-          "ret", 
-          ""
-        ]
+        {
+          "ret": [
+            "Ecore_Wl_Window*", 
+            ""
+          ]
+        }
       ]
     }, 
     "window_id": {
-      "comment": "Get the Ecore_Window of an Evas_Object", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the Ecore_Window of an Evas_Object"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Ecore_Window", 
-          "ret", 
-          ""
-        ]
+        {
+          "ret": [
+            "Ecore_Window", 
+            ""
+          ]
+        }
       ]
     }, 
     "screen_dpi": {
-      "comment": "Get screen dpi for the screen that a window is on", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get screen dpi for the screen that a window is on"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "xdpi", 
-          ""
-        ], 
-        [
-          "", 
-          "int", 
-          "ydpi", 
-          ""
-        ]
+        {
+          "xdpi": [
+            "int", 
+            ""
+          ]
+        }, 
+        {
+          "ydpi": [
+            "int", 
+            ""
+          ]
+        }
       ]
     }, 
     "inlined_image_object": {
-      "comment": "Get the inlined image object handle", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the inlined image object handle"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Object*", 
-          "ret", 
-          ""
-        ]
+        {
+          "ret": [
+            "Evas_Object*", 
+            ""
+          ]
+        }
       ]
     }
   }, 
   "methods": {
     "socket_listen": {
       "comment": "Create a socket to provide the service for Plug widget", 
-      "parameters": [
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "svcname", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "int", 
-          "svcnum", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "svcsys", 
-          ""
-        ], 
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "ret", 
-          ""
+      "return_type": "Eina_Bool", 
+      "parameters": {
+        "in": [
+          {
+            "svcname": [
+              "const char*", 
+              ""
+            ]
+          }, 
+          {
+            "svcnum": [
+              "int", 
+              ""
+            ]
+          }, 
+          {
+            "svcsys": [
+              "Eina_Bool", 
+              ""
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "illume_command_send": {
       "comment": "Send a command to the windowing environment", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Elm_Illume_Command", 
-          "command", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "void*", 
-          "params", 
-          ""
+      "parameters": {
+        "in": [
+          {
+            "command": [
+              "Elm_Illume_Command", 
+              ""
+            ]
+          }, 
+          {
+            "params": [
+              "void*", 
+              ""
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "activate": {
       "comment": "Activate a window object.", 
-      "parameters": []
+      "parameters": {}
     }, 
     "resize_object_add": {
       "comment": "Add subobj as a resize object of window", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Object*", 
-          "subobj", 
-          ""
+      "parameters": {
+        "in": [
+          {
+            "subobj": [
+              "Evas_Object*", 
+              ""
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "raise": {
       "comment": "Raise a window object.", 
-      "parameters": []
+      "parameters": {}
     }, 
     "lower": {
       "comment": "Lower a window object.", 
-      "parameters": []
+      "parameters": {}
     }, 
     "resize_object_del": {
       "comment": "Delete subobj as a resize object of window", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Object*", 
-          "subobj", 
-          ""
+      "parameters": {
+        "in": [
+          {
+            "subobj": [
+              "Evas_Object*", 
+              ""
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "center": {
       "comment": "Center a window on its screen", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "h", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "v", 
-          ""
+      "parameters": {
+        "in": [
+          {
+            "h": [
+              "Eina_Bool", 
+              ""
+            ]
+          }, 
+          {
+            "v": [
+              "Eina_Bool", 
+              ""
+            ]
+          }
         ]
-      ]
+      }
     }
   }, 
   "implements": [
     [
-      "Evas_Smart", 
-      "resize", 
-      "method"
-    ], 
-    [
       "Elm_Widget", 
-      "focus_next_manager_is", 
-      "method"
-    ], 
-    [
-      "Elm_Widget", 
-      "focus_next", 
-      "method"
-    ], 
-    [
-      "Elm_Widget", 
-      "focus_direction", 
-      "method"
-    ], 
-    [
-      "Elm_Widget", 
-      "on_focus", 
-      "method"
-    ], 
-    [
-      "Elm_Widget", 
-      "theme", 
-      "method"
+      "focus_direction"
     ], 
     [
       "Evas_Smart", 
-      "del", 
-      "method"
+      "hide"
     ], 
     [
       "Elm_Widget", 
-      "focus_direction_manager_is", 
-      "method"
+      "focus_next_manager_is"
     ], 
     [
       "Evas_Smart", 
-      "hide", 
-      "method"
+      "show"
+    ], 
+    [
+      "Evas_Smart", 
+      "move"
     ], 
     [
       "Elm_Widget", 
-      "event", 
-      "method"
+      "theme"
+    ], 
+    [
+      "Elm_Widget", 
+      "focus_direction_manager_is"
+    ], 
+    [
+      "Elm_Widget", 
+      "focus_next"
     ], 
     [
       "Evas_Smart", 
-      "show", 
-      "method"
+      "add"
+    ], 
+    [
+      "Evas_Smart", 
+      "del"
     ], 
     [
       "Eo_Base", 
-      "constructor", 
-      "method"
+      "constructor"
+    ], 
+    [
+      "Elm_Widget", 
+      "on_focus"
+    ], 
+    [
+      "Elm_Widget", 
+      "event"
     ], 
     [
       "Evas_Smart", 
-      "add", 
-      "method"
-    ], 
-    [
-      "Evas_Smart", 
-      "move", 
-      "method"
+      "resize"
     ]
   ], 
-  "old_styled_signals": [
+  "signals": [
     [
       "delete,request", 
       ""

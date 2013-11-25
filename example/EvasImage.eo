@@ -1,750 +1,888 @@
 {
   "name": "Evas_Image", 
-  "macro": "EVAS_OBJ_IMAGE_CLASS", 
+  "legacy": "evas_image", 
   "inherits": [
     "Evas_Object"
   ], 
   "constructors": {}, 
   "properties": {
     "load_dpi": {
-      "comment_set": "Set the DPI resolution of an image object's source image.", 
-      "comment_get": "Get the DPI resolution of a loaded image object in the canvas.", 
+      "set": {
+        "comment": "Set the DPI resolution of an image object's source image.", 
+        "legacy": "evas_object_image_load_dpi_set"
+      }, 
+      "get": {
+        "comment": "Get the DPI resolution of a loaded image object in the canvas.", 
+        "legacy": "evas_object_image_load_dpi_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "double", 
-          "dpi", 
-          "in"
-        ]
+        {
+          "dpi": [
+            "double", 
+            "in"
+          ]
+        }
       ]
     }, 
     "source_clip": {
-      "comment_set": "Apply the source object's clip to the proxy", 
-      "comment_get": "Get the state of the source clip", 
+      "set": {
+        "comment": "Apply the source object's clip to the proxy", 
+        "legacy": "evas_object_image_source_clip_set"
+      }, 
+      "get": {
+        "comment": "Get the state of the source clip", 
+        "legacy": "evas_object_image_source_clip_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "source_clip", 
-          "in"
-        ]
+        {
+          "source_clip": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "filled": {
-      "comment_set": "Set whether the image object's fill property should track the object's size.", 
-      "comment_get": "Retrieve whether the image object's fill property should track the object's size.", 
+      "set": {
+        "comment": "Set whether the image object's fill property should track the object's size.", 
+        "legacy": "evas_object_image_filled_set"
+      }, 
+      "get": {
+        "comment": "Retrieve whether the image object's fill property should track the object's size.", 
+        "legacy": "evas_object_image_filled_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "filled", 
-          "in"
-        ]
+        {
+          "filled": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "content_hint": {
-      "comment_set": "Set the content hint setting of a given image object of the canvas.", 
-      "comment_get": "Get the content hint setting of a given image object of the canvas.", 
+      "set": {
+        "comment": "Set the content hint setting of a given image object of the canvas.", 
+        "legacy": "evas_object_image_content_hint_set"
+      }, 
+      "get": {
+        "comment": "Get the content hint setting of a given image object of the canvas.", 
+        "legacy": "evas_object_image_content_hint_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Image_Content_Hint", 
-          "hint", 
-          "in"
-        ]
+        {
+          "hint": [
+            "Evas_Image_Content_Hint", 
+            "in"
+          ]
+        }
       ]
     }, 
     "load_region": {
-      "comment_set": "Inform a given image object to load a selective region of its source image.", 
-      "comment_get": "Retrieve the coordinates of a given image object's selective (source image) load region.", 
+      "set": {
+        "comment": "Inform a given image object to load a selective region of its source image.", 
+        "legacy": "evas_object_image_load_region_set"
+      }, 
+      "get": {
+        "comment": "Retrieve the coordinates of a given image object's selective (source image) load region.", 
+        "legacy": "evas_object_image_load_region_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "x", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "y", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "w", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          "in"
-        ]
+        {
+          "x": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "y": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "w": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "h": [
+            "int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "alpha": {
-      "comment_set": "Enable or disable alpha channel usage on the given image object.", 
-      "comment_get": "Retrieve whether alpha channel data is being used on the given image object.", 
+      "set": {
+        "comment": "Enable or disable alpha channel usage on the given image object.", 
+        "legacy": "evas_object_image_alpha_set"
+      }, 
+      "get": {
+        "comment": "Retrieve whether alpha channel data is being used on the given image object.", 
+        "legacy": "evas_object_image_alpha_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "alpha", 
-          "in"
-        ]
+        {
+          "alpha": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "load_size": {
-      "comment_set": "Set the size of a given image object's source image, when loading it.", 
-      "comment_get": "Get the size of a given image object's source image, when loading it.", 
+      "set": {
+        "comment": "Set the size of a given image object's source image, when loading it.", 
+        "legacy": "evas_object_image_load_size_set"
+      }, 
+      "get": {
+        "comment": "Get the size of a given image object's source image, when loading it.", 
+        "legacy": "evas_object_image_load_size_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "w", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          "in"
-        ]
+        {
+          "w": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "h": [
+            "int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "border": {
-      "comment_set": "Set the dimensions for an image object's border, a region which won't ever be scaled together with its center.", 
-      "comment_get": "Retrieve the dimensions for an image object's border, a region which", 
+      "set": {
+        "comment": "Set the dimensions for an image object's border, a region which won't ever be scaled together with its center.", 
+        "legacy": "evas_object_image_border_set"
+      }, 
+      "get": {
+        "comment": "Retrieve the dimensions for an image object's border, a region which", 
+        "legacy": "evas_object_image_border_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "l", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "r", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "t", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "b", 
-          "in"
-        ]
+        {
+          "l": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "r": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "t": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "b": [
+            "int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "smooth_scale": {
-      "comment_set": "Sets whether to use high-quality image scaling algorithm on the given image object.", 
-      "comment_get": "Retrieves whether the given image object is using high-quality image scaling algorithm.", 
+      "set": {
+        "comment": "Sets whether to use high-quality image scaling algorithm on the given image object.", 
+        "legacy": "evas_object_image_smooth_scale_set"
+      }, 
+      "get": {
+        "comment": "Retrieves whether the given image object is using high-quality image scaling algorithm.", 
+        "legacy": "evas_object_image_smooth_scale_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "smooth_scale", 
-          "in"
-        ]
+        {
+          "smooth_scale": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "border_scale": {
-      "comment_set": "Sets the scaling factor (multiplier) for the borders of an image object.", 
-      "comment_get": "Retrieves the scaling factor (multiplier) for the borders of an image object.", 
+      "set": {
+        "comment": "Sets the scaling factor (multiplier) for the borders of an image object.", 
+        "legacy": "evas_object_image_border_scale_set"
+      }, 
+      "get": {
+        "comment": "Retrieves the scaling factor (multiplier) for the borders of an image object.", 
+        "legacy": "evas_object_image_border_scale_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "double", 
-          "scale", 
-          "in"
-        ]
+        {
+          "scale": [
+            "double", 
+            "in"
+          ]
+        }
       ]
     }, 
     "pixels_dirty": {
-      "comment_set": "Mark whether the given image object is dirty (needs to be redrawn).", 
-      "comment_get": "Retrieves whether the given image object is dirty (needs to be redrawn).", 
+      "set": {
+        "comment": "Mark whether the given image object is dirty (needs to be redrawn).", 
+        "legacy": "evas_object_image_pixels_dirty_set"
+      }, 
+      "get": {
+        "comment": "Retrieves whether the given image object is dirty (needs to be redrawn).", 
+        "legacy": "evas_object_image_pixels_dirty_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "dirty", 
-          "in"
-        ]
+        {
+          "dirty": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "video_surface": {
-      "comment_set": "Set the video surface linked to a given image of the canvas", 
-      "comment_get": "Get the video surface linked to a given image of the canvas", 
+      "set": {
+        "comment": "Set the video surface linked to a given image of the canvas", 
+        "legacy": "evas_object_image_video_surface_set"
+      }, 
+      "get": {
+        "comment": "Get the video surface linked to a given image of the canvas", 
+        "legacy": "evas_object_image_video_surface_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Video_Surface*", 
-          "surf", 
-          "in"
-        ]
+        {
+          "surf": [
+            "Evas_Video_Surface*", 
+            "in"
+          ]
+        }
       ]
     }, 
     "video_surface_caps": {
-      "comment_set": "Set the video surface capabilities to a given image of the canvas", 
-      "comment_get": "Get the video surface capabilities to a given image of the canvas", 
+      "set": {
+        "comment": "Set the video surface capabilities to a given image of the canvas", 
+        "legacy": "evas_object_image_video_surface_caps_set"
+      }, 
+      "get": {
+        "comment": "Get the video surface capabilities to a given image of the canvas", 
+        "legacy": "evas_object_image_video_surface_caps_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "unsigned int", 
-          "caps", 
-          "in"
-        ]
+        {
+          "caps": [
+            "unsigned int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "load_orientation": {
-      "comment_set": "Define if the orientation information in the image file should be honored.", 
-      "comment_get": "Get if the orientation information in the image file should be honored.", 
+      "set": {
+        "comment": "Define if the orientation information in the image file should be honored.", 
+        "legacy": "evas_object_image_load_orientation_set"
+      }, 
+      "get": {
+        "comment": "Get if the orientation information in the image file should be honored.", 
+        "legacy": "evas_object_image_load_orientation_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "enable", 
-          "in"
-        ]
+        {
+          "enable": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "fill_spread": {
-      "comment_set": "Sets the tiling mode for the given evas image object's fill.", 
-      "comment_get": "Retrieves the spread (tiling mode) for the given image object's fill.", 
+      "set": {
+        "comment": "Sets the tiling mode for the given evas image object's fill.", 
+        "legacy": "evas_object_image_fill_spread_set"
+      }, 
+      "get": {
+        "comment": "Retrieves the spread (tiling mode) for the given image object's fill.", 
+        "legacy": "evas_object_image_fill_spread_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Fill_Spread", 
-          "spread", 
-          "in"
-        ]
+        {
+          "spread": [
+            "Evas_Fill_Spread", 
+            "in"
+          ]
+        }
       ]
     }, 
     "file": {
-      "comment_set": "Set the source file from where an image object must fetch the real image data (it may be an Eet file, besides pure image ones).", 
-      "comment_get": "Retrieve the source file from where an image object is to fetch the real image data (it may be an Eet file, besides pure image ones). one). You must interested in: they'll be ignored by the function.", 
+      "set": {
+        "comment": "Set the source file from where an image object must fetch the real image data (it may be an Eet file, besides pure image ones).", 
+        "legacy": "evas_object_image_file_set"
+      }, 
+      "get": {
+        "comment": "Retrieve the source file from where an image object is to fetch the real image data (it may be an Eet file, besides pure image ones). You must interested in: they'll be ignored by the function.", 
+        "legacy": "evas_object_image_file_get"
+      }, 
       "parameters": [
-        [
-          "const", 
-          "char*", 
-          "file", 
-          "The image file path"
-        ], 
-        [
-          "const", 
-          "char*", 
-          "key", 
-          "The image key in @p file (if its an Eet one), or @c"
-        ]
+        {
+          "file": [
+            "const char*", 
+            "The image file path"
+          ]
+        }, 
+        {
+          "key": [
+            "const char*", 
+            "The image key in @p file (if its an Eet one), or @c"
+          ]
+        }
       ]
     }, 
     "border_center_fill": {
-      "comment_set": "Sets borders) should be drawn when Evas is rendering it.", 
-      "comment_get": "Retrieves borders) is to be drawn when Evas is rendering it.", 
+      "set": {
+        "comment": "Sets borders) should be drawn when Evas is rendering it.", 
+        "legacy": "evas_object_image_border_center_fill_set"
+      }, 
+      "get": {
+        "comment": "Retrieves borders) is to be drawn when Evas is rendering it.", 
+        "legacy": "evas_object_image_border_center_fill_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Border_Fill_Mode", 
-          "fill", 
-          "in"
-        ]
+        {
+          "fill": [
+            "Evas_Border_Fill_Mode", 
+            "in"
+          ]
+        }
       ]
     }, 
     "size": {
-      "comment_set": "Sets the size of the given image object.", 
-      "comment_get": "Retrieves the size of the given image object.", 
+      "set": {
+        "comment": "Sets the size of the given image object.", 
+        "legacy": "evas_object_image_size_set"
+      }, 
+      "get": {
+        "comment": "Retrieves the size of the given image object.", 
+        "legacy": "evas_object_image_size_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "w", 
-          "in"
-        ], 
-        [
-          "", 
-          "int", 
-          "h", 
-          "in"
-        ]
+        {
+          "w": [
+            "int", 
+            "in"
+          ]
+        }, 
+        {
+          "h": [
+            "int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "source_visible": {
-      "comment_set": "Set the source object to be shown or hidden.", 
-      "comment_get": "Get the state of the source object visibility.", 
+      "set": {
+        "comment": "Set the source object to be shown or hidden.", 
+        "legacy": "evas_object_image_source_visible_set"
+      }, 
+      "get": {
+        "comment": "Get the state of the source object visibility.", 
+        "legacy": "evas_object_image_source_visible_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "visible", 
-          "in"
-        ]
+        {
+          "visible": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "fill": {
-      "comment_set": "Set how to fill an image object's drawing rectangle given the (real) image bound to it.", 
-      "comment_get": "Retrieve how an image object is to fill its drawing rectangle, given the (real) image bound to it.", 
+      "set": {
+        "comment": "Set how to fill an image object's drawing rectangle given the (real) image bound to it.", 
+        "legacy": "evas_object_image_fill_set"
+      }, 
+      "get": {
+        "comment": "Retrieve how an image object is to fill its drawing rectangle, given the (real) image bound to it.", 
+        "legacy": "evas_object_image_fill_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Coord", 
-          "x", 
-          "in"
-        ], 
-        [
-          "", 
-          "Evas_Coord", 
-          "y", 
-          "in"
-        ], 
-        [
-          "", 
-          "Evas_Coord", 
-          "w", 
-          "in"
-        ], 
-        [
-          "", 
-          "Evas_Coord", 
-          "h", 
-          "in"
-        ]
+        {
+          "x": [
+            "Evas_Coord", 
+            "in"
+          ]
+        }, 
+        {
+          "y": [
+            "Evas_Coord", 
+            "in"
+          ]
+        }, 
+        {
+          "w": [
+            "Evas_Coord", 
+            "in"
+          ]
+        }, 
+        {
+          "h": [
+            "Evas_Coord", 
+            "in"
+          ]
+        }
       ]
     }, 
     "native_surface": {
-      "comment_set": "Set the native surface of a given image of the canvas", 
-      "comment_get": "Get the native surface of a given image of the canvas", 
+      "set": {
+        "comment": "Set the native surface of a given image of the canvas", 
+        "legacy": "evas_object_image_native_surface_set"
+      }, 
+      "get": {
+        "comment": "Get the native surface of a given image of the canvas", 
+        "legacy": "evas_object_image_native_surface_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Native_Surface*", 
-          "surf", 
-          "in"
-        ]
+        {
+          "surf": [
+            "Evas_Native_Surface*", 
+            "in"
+          ]
+        }
       ]
     }, 
     "load_scale_down": {
-      "comment_set": "Set the scale down factor of a given image object's source image, when loading it.", 
-      "comment_get": "Get the scale down factor of a given image object's source image, when loading it.", 
+      "set": {
+        "comment": "Set the scale down factor of a given image object's source image, when loading it.", 
+        "legacy": "evas_object_image_load_scale_down_set"
+      }, 
+      "get": {
+        "comment": "Get the scale down factor of a given image object's source image, when loading it.", 
+        "legacy": "evas_object_image_load_scale_down_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "scale_down", 
-          "in"
-        ]
+        {
+          "scale_down": [
+            "int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "scale_hint": {
-      "comment_set": "Set the scale hint of a given image of the canvas.", 
-      "comment_get": "Get the scale hint of a given image of the canvas.", 
+      "set": {
+        "comment": "Set the scale hint of a given image of the canvas.", 
+        "legacy": "evas_object_image_scale_hint_set"
+      }, 
+      "get": {
+        "comment": "Get the scale hint of a given image of the canvas.", 
+        "legacy": "evas_object_image_scale_hint_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Image_Scale_Hint", 
-          "hint", 
-          "in"
-        ]
+        {
+          "hint": [
+            "Evas_Image_Scale_Hint", 
+            "in"
+          ]
+        }
       ]
     }, 
     "source_events": {
-      "comment_set": "Set events to be repeated to the source object.", 
-      "comment_get": "Get the state of the source event.", 
+      "set": {
+        "comment": "Set events to be repeated to the source object.", 
+        "legacy": "evas_object_image_source_events_set"
+      }, 
+      "get": {
+        "comment": "Get the state of the source event.", 
+        "legacy": "evas_object_image_source_events_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "source", 
-          "in"
-        ]
+        {
+          "source": [
+            "Eina_Bool", 
+            "in"
+          ]
+        }
       ]
     }, 
     "colorspace": {
-      "comment_set": "Set the colorspace of a given image of the canvas.", 
-      "comment_get": "Get the colorspace of a given image of the canvas.", 
+      "set": {
+        "comment": "Set the colorspace of a given image of the canvas.", 
+        "legacy": "evas_object_image_colorspace_set"
+      }, 
+      "get": {
+        "comment": "Get the colorspace of a given image of the canvas.", 
+        "legacy": "evas_object_image_colorspace_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Colorspace", 
-          "cspace", 
-          "in"
-        ]
+        {
+          "cspace": [
+            "Evas_Colorspace", 
+            "in"
+          ]
+        }
       ]
     }, 
     "pixels_get_callback": {
-      "comment": "Set the callback function to get pixels from a canvas' image.", 
-      "type": "wo", 
+      "set": {
+        "comment": "Set the callback function to get pixels from a canvas' image.", 
+        "legacy": "evas_object_image_pixels_get_callback_set"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Object_Image_Pixels_Get_Cb", 
-          "func", 
-          "in"
-        ], 
-        [
-          "", 
-          "void*", 
-          "data", 
-          "in"
-        ]
+        {
+          "func": [
+            "Evas_Object_Image_Pixels_Get_Cb", 
+            "in"
+          ]
+        }, 
+        {
+          "data": [
+            "void*", 
+            "in"
+          ]
+        }
       ]
     }, 
     "mmap": {
-      "comment": "Set the source mmaped file from where an image object must fetch the real image data (it may be any Eina_File).", 
-      "type": "wo", 
+      "set": {
+        "comment": "Set the source mmaped file from where an image object must fetch the real image data (it may be any Eina_File).", 
+        "legacy": "evas_object_image_mmap_set"
+      }, 
       "parameters": [
-        [
-          "const", 
-          "Eina_File*", 
-          "f", 
-          "in"
-        ], 
-        [
-          "const", 
-          "char*", 
-          "key", 
-          "in"
-        ]
+        {
+          "f": [
+            "const Eina_File*", 
+            "in"
+          ]
+        }, 
+        {
+          "key": [
+            "const char*", 
+            "in"
+          ]
+        }
       ]
     }, 
     "data_copy": {
-      "comment": "Replaces the raw image data of the given image object.", 
-      "type": "wo", 
+      "set": {
+        "comment": "Replaces the raw image data of the given image object.", 
+        "legacy": "evas_object_image_data_copy_set"
+      }, 
       "parameters": [
-        [
-          "", 
-          "void*", 
-          "data", 
-          "in"
-        ]
+        {
+          "data": [
+            "void*", 
+            "in"
+          ]
+        }
       ]
     }, 
     "animated_frame": {
-      "comment": "Set the frame to current frame of an image object", 
-      "type": "wo", 
+      "set": {
+        "comment": "Set the frame to current frame of an image object", 
+        "legacy": "evas_object_image_animated_frame_set"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "frame_index", 
-          "in"
-        ]
+        {
+          "frame_index": [
+            "int", 
+            "in"
+          ]
+        }
       ]
     }, 
     "region_support": {
-      "comment": "Get the support state of a given image", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the support state of a given image", 
+        "legacy": "evas_object_image_region_support_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "region", 
-          "out"
-        ]
+        {
+          "region": [
+            "Eina_Bool", 
+            "out"
+          ]
+        }
       ]
     }, 
     "load_error": {
-      "comment": "Retrieves a number representing any error that occurred during the last loading of the given image object's source image.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Retrieves a number representing any error that occurred during the last loading of the given image object's source image.", 
+        "legacy": "evas_object_image_load_error_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Load_Error", 
-          "load_error", 
-          ""
-        ]
+        {
+          "load_error": [
+            "Evas_Load_Error", 
+            ""
+          ]
+        }
       ]
     }, 
     "animated_frame_count": {
-      "comment": "Get the total number of frames of the image object.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the total number of frames of the image object.", 
+        "legacy": "evas_object_image_animated_frame_count_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "frame_count", 
-          "out"
-        ]
+        {
+          "frame_count": [
+            "int", 
+            "out"
+          ]
+        }
       ]
     }, 
     "stride": {
-      "comment": "Retrieves the row stride of the given image object.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Retrieves the row stride of the given image object.", 
+        "legacy": "evas_object_image_stride_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "stride", 
-          "out"
-        ]
+        {
+          "stride": [
+            "int", 
+            "out"
+          ]
+        }
       ]
     }, 
     "animated": {
-      "comment": "Check if an image object can be animated (have multiple frames)", 
-      "type": "ro", 
+      "get": {
+        "comment": "Check if an image object can be animated (have multiple frames)", 
+        "legacy": "evas_object_image_animated_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "animated", 
-          "out"
-        ]
+        {
+          "animated": [
+            "Eina_Bool", 
+            "out"
+          ]
+        }
       ]
     }, 
     "animated_loop_type": {
-      "comment": "Get the kind of looping the image object does.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the kind of looping the image object does.", 
+        "legacy": "evas_object_image_animated_loop_type_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "Evas_Image_Animated_Loop_Hint", 
-          "hint", 
-          "out"
-        ]
+        {
+          "hint": [
+            "Evas_Image_Animated_Loop_Hint", 
+            "out"
+          ]
+        }
       ]
     }, 
     "animated_loop_count": {
-      "comment": "Get the number times the animation of the object loops.", 
-      "type": "ro", 
+      "get": {
+        "comment": "Get the number times the animation of the object loops.", 
+        "legacy": "evas_object_image_animated_loop_count_get"
+      }, 
       "parameters": [
-        [
-          "", 
-          "int", 
-          "loop_count", 
-          "out"
-        ]
+        {
+          "loop_count": [
+            "int", 
+            "out"
+          ]
+        }
       ]
     }
   }, 
   "methods": {
     "source_set": {
       "comment": "Set the source object on an image object to used as a", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Object*", 
-          "src", 
-          "in"
-        ], 
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "result", 
-          "out"
+      "return_type": "Eina_Bool", 
+      "legacy": "evas_object_image_source_set", 
+      "parameters": {
+        "in": [
+          {
+            "src": [
+              "Evas_Object*", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "source_get": {
       "comment": "Get the current source object of an image object.", 
-      "parameters": [
-        [
-          "out", 
-          "", 
-          "Evas_Object*", 
-          "src", 
-          "out"
-        ]
-      ]
+      "return_type": "Evas_Object*", 
+      "legacy": "evas_object_image_source_get", 
+      "parameters": {}
     }, 
     "preload_begin": {
       "comment": "Begin preloading an image object's image data in the background", 
-      "parameters": []
+      "parameters": {}
     }, 
     "data_update_add": {
       "comment": "Mark a sub-region of the given image object to be redrawn.", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "int", 
-          "x", 
-          "in"
-        ], 
-        [
-          "in", 
-          "", 
-          "int", 
-          "y", 
-          "in"
-        ], 
-        [
-          "in", 
-          "", 
-          "int", 
-          "w", 
-          "in"
-        ], 
-        [
-          "in", 
-          "", 
-          "int", 
-          "h", 
-          "in"
+      "legacy": "evas_object_image_data_update_add", 
+      "parameters": {
+        "in": [
+          {
+            "x": [
+              "int", 
+              "in"
+            ]
+          }, 
+          {
+            "y": [
+              "int", 
+              "in"
+            ]
+          }, 
+          {
+            "w": [
+              "int", 
+              "in"
+            ]
+          }, 
+          {
+            "h": [
+              "int", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "animated_frame_duration_get": {
       "comment": "Get the duration of a sequence of frames.", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "int", 
-          "start_frame", 
-          "in"
-        ], 
-        [
-          "in", 
-          "", 
-          "int", 
-          "frame_num", 
-          "in"
-        ], 
-        [
-          "out", 
-          "", 
-          "double", 
-          "frame_duration", 
-          "out"
+      "return_type": "double", 
+      "legacy": "evas_object_image_animated_frame_duration_get", 
+      "parameters": {
+        "in": [
+          {
+            "start_frame": [
+              "int", 
+              "in"
+            ]
+          }, 
+          {
+            "frame_num": [
+              "int", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "save": {
       "comment": "Save the given image object's contents to an (image) file.", 
-      "parameters": [
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "file", 
-          "in"
-        ], 
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "key", 
-          "in"
-        ], 
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "flags", 
-          "in"
-        ], 
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "result", 
-          "out"
+      "return_type": "Eina_Bool", 
+      "legacy": "evas_object_image_save", 
+      "parameters": {
+        "in": [
+          {
+            "file": [
+              "const char*", 
+              "in"
+            ]
+          }, 
+          {
+            "key": [
+              "const char*", 
+              "in"
+            ]
+          }, 
+          {
+            "flags": [
+              "const char*", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "data_set": {
       "comment": "Sets the raw image data of the given image object.", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "void*", 
-          "data", 
-          "in"
+      "legacy": "evas_object_image_data_set", 
+      "parameters": {
+        "in": [
+          {
+            "data": [
+              "void*", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "data_get": {
       "comment": "Get a pointer to the raw image data of the given image object.", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "for_writing", 
-          "in"
-        ], 
-        [
-          "out", 
-          "", 
-          "void*", 
-          "data", 
-          "out"
+      "return_type": "void*", 
+      "legacy": "evas_object_image_data_get", 
+      "parameters": {
+        "in": [
+          {
+            "for_writing": [
+              "Eina_Bool", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "preload_cancel": {
       "comment": "Cancel preloading an image object's image data in the background", 
-      "parameters": []
+      "parameters": {}
     }, 
     "data_convert": {
       "comment": "Converts the raw image data of the given image object to the specified colorspace.", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Colorspace", 
-          "to_cspace", 
-          "in"
-        ], 
-        [
-          "out", 
-          "", 
-          "void*", 
-          "data", 
-          "out"
+      "return_type": "void*", 
+      "legacy": "evas_object_image_data_convert", 
+      "parameters": {
+        "in": [
+          {
+            "to_cspace": [
+              "Evas_Colorspace", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "pixels_import": {
       "comment": "Import pixels from given source to a given canvas image object.", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Pixel_Import_Source*", 
-          "pixels", 
-          "in"
-        ], 
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "result", 
-          "out"
+      "return_type": "Eina_Bool", 
+      "legacy": "evas_object_image_pixels_import", 
+      "parameters": {
+        "in": [
+          {
+            "pixels": [
+              "Evas_Pixel_Import_Source*", 
+              "in"
+            ]
+          }
         ]
-      ]
+      }
     }, 
     "reload": {
       "comment": "Reload an image object's image data.", 
-      "parameters": []
+      "legacy": "evas_object_image_reload", 
+      "parameters": {}
     }
   }, 
   "implements": [
     [
       "Eo_Base", 
-      "destructor", 
-      "method"
+      "constructor"
     ], 
     [
       "Eo_Base", 
-      "dbg_info_get", 
-      "method"
+      "dbg_info_get"
     ], 
     [
       "Eo_Base", 
-      "constructor", 
-      "method"
+      "destructor"
     ]
   ], 
-  "old_styled_signals": []
+  "signals": []
 }
