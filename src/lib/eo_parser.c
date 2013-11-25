@@ -13,19 +13,25 @@
 #define PROPERTIES "properties"
 #define METHODS "methods"
 
-static char *
-_comment_parse(char *buffer, char **comment)
+static Function_Type
+_func_type_resolve(const char *type)
 {
-   char *new_buffer = LEX(buffer, KWORD("/*"), STRING("*/", comment));
-   /* If comment is empty, NULL will be returned. */
-   if (new_buffer && (*comment))
-     {
-        char *end = LEX_REVERSE(*comment, strlen(*comment), SKIP_SPACES_TOKEN);
-        *(end + 1) = '\0';
-     }
-   return new_buffer;
+   if (!type) return METHOD_FUNC;
+   if (!strcmp("rw", type)) return PROPERTY_FUNC;
+   if ((!strcmp("ro", type)) || (!strcmp("get_only", type))) return GET;
+   if ((!strcmp("wo", type)) || (!strcmp("set_only", type))) return SET;
+   return METHOD_FUNC;
 }
 
+static Parameter_Dir
+_get_param_dir(const char *dir)
+{
+   if (!strcmp("in", dir)) return IN_PARAM;
+   if (!strcmp("out", dir)) return OUT_PARAM;
+   return INOUT_PARAM;
+}
+
+#if 0
 static char*
 _strip(char *str)
 {
@@ -40,14 +46,17 @@ _strip(char *str)
    return strndup(beg, end - beg + 1);
 }
 
-static Function_Type
-_func_type_resolve(const char *type)
+static char *
+_comment_parse(char *buffer, char **comment)
 {
-   if (!type) return METHOD_FUNC;
-   if (!strcmp("rw", type)) return PROPERTY_FUNC;
-   if ((!strcmp("ro", type)) || (!strcmp("get_only", type))) return GET;
-   if ((!strcmp("wo", type)) || (!strcmp("set_only", type))) return SET;
-   return METHOD_FUNC;
+   char *new_buffer = LEX(buffer, KWORD("/*"), STRING("*/", comment));
+   /* If comment is empty, NULL will be returned. */
+   if (new_buffer && (*comment))
+     {
+        char *end = LEX_REVERSE(*comment, strlen(*comment), SKIP_SPACES_TOKEN);
+        *(end + 1) = '\0';
+     }
+   return new_buffer;
 }
 
 static Function_Id
@@ -149,14 +158,6 @@ end:
    return foo_id;
 }
 
-Parameter_Dir
-_get_param_dir(const char *dir)
-{
-   if (!strcmp("in", dir)) return IN_PARAM;
-   if (!strcmp("out", dir)) return OUT_PARAM;
-   return INOUT_PARAM;
-}
-
 static Function_Id
 _method_parse(char *buffer, char **new_buffer)
 {
@@ -246,7 +247,9 @@ end:
 
    return foo_id;
 }
-
+#endif
+/* c parser */
+#if 0
 static char *
 _class_parse(char *buffer)
 {
@@ -358,6 +361,7 @@ Eina_Bool eolian_eo_class_desc_parse(char *class_desc)
      }
    return EINA_TRUE;
 }
+#endif
 
 #define JSON_ARR_NTH_STRING_GET(arr, idx) eina_json_string_get(eina_json_array_nth_get((arr), (idx)))
 static Eina_Bool
