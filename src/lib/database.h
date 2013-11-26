@@ -10,6 +10,9 @@ typedef struct _Event_Desc* Event_Desc;
 #define LEGACY "legacy"
 #define LEGACY_GET "legacy_get"
 #define LEGACY_SET "legacy_set"
+#define COMMENT "comment"
+#define COMMENT_SET "comment_set"
+#define COMMENT_GET "comment_get"
 
 typedef enum
 {

@@ -8,10 +8,12 @@
 #include "eina_json.h"
 
 #define NAME "name"
-#define LEGACY "legacy"
 #define INHERITS "inherits"
 #define PROPERTIES "properties"
 #define METHODS "methods"
+#define CONSTRUCTORS "constructors"
+#define IMPLEMENTS "implements"
+#define SIGNALS "signals"
 
 static Function_Type
 _func_type_resolve(const char *type)
@@ -422,7 +424,7 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
           }
 
         /* Read "comment" parameter*/
-        v = EINA_JSON_OBJECT_VALUE_GET(func_body, "comment");
+        v = EINA_JSON_OBJECT_VALUE_GET(func_body, COMMENT);
         if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
           comment = eina_json_string_get(v);
 
@@ -438,19 +440,19 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
 
              if (gp)
                {
-                  v = EINA_JSON_OBJECT_VALUE_GET(gp, "comment");
+                  v = EINA_JSON_OBJECT_VALUE_GET(gp, COMMENT);
                   if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
                     comment_get = eina_json_string_get(v);
-                  v = EINA_JSON_OBJECT_VALUE_GET(gp, "legacy");
+                  v = EINA_JSON_OBJECT_VALUE_GET(gp, LEGACY);
                   if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
                     database_function_data_set(foo_id, LEGACY_GET, eina_json_string_get(v));
                }
              if (sp)
                {
-                  v = EINA_JSON_OBJECT_VALUE_GET(sp, "comment");
+                  v = EINA_JSON_OBJECT_VALUE_GET(sp, COMMENT);
                   if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
                     comment_set = eina_json_string_get(v);
-                  v = EINA_JSON_OBJECT_VALUE_GET(sp, "legacy");
+                  v = EINA_JSON_OBJECT_VALUE_GET(sp, LEGACY);
                   if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
                     database_function_data_set(foo_id, LEGACY_SET, eina_json_string_get(v));
                }
@@ -458,29 +460,29 @@ _func_from_json(const char *class_name, Eina_Json_Value *jv, Function_Type _f_ty
              if (f_type == PROPERTY_FUNC)
                {
                   tmp = comment ? comment : comment_set;
-                  database_function_description_set(foo_id, "comment", tmp);
-                  database_function_description_set(foo_id, "comment_set", tmp);
-                  database_function_description_set(foo_id, "comment_get", comment_get);
+                  database_function_description_set(foo_id, COMMENT, tmp);
+                  database_function_description_set(foo_id, COMMENT_SET, tmp);
+                  database_function_description_set(foo_id, COMMENT_GET, comment_get);
                }
              else if (f_type == GET)
                {
                   tmp = comment ? comment : comment_get;
-                  database_function_description_set(foo_id, "comment", tmp);
-                  database_function_description_set(foo_id, "comment_get", tmp);
+                  database_function_description_set(foo_id, COMMENT, tmp);
+                  database_function_description_set(foo_id, COMMENT_GET, tmp);
                }
              else if (f_type == SET)
                {
                   tmp = comment ? comment : comment_set;
-                  database_function_description_set(foo_id, "comment", tmp);
-                  database_function_description_set(foo_id, "comment_set", tmp);
+                  database_function_description_set(foo_id, COMMENT, tmp);
+                  database_function_description_set(foo_id, COMMENT_SET, tmp);
                }
           }
         else
           {
-             v = EINA_JSON_OBJECT_VALUE_GET(func_body, "legacy");
+             v = EINA_JSON_OBJECT_VALUE_GET(func_body, LEGACY);
              if ((v) && (eina_json_type_get(v) == EINA_JSON_TYPE_STRING))
                database_function_data_set(foo_id, LEGACY, eina_json_string_get(v));
-             database_function_description_set(foo_id, "comment", comment);
+             database_function_description_set(foo_id, COMMENT, comment);
           }
 
         /* Read parameters. */
@@ -598,7 +600,7 @@ _class_parse_json(char *buffer)
         database_class_add(class_name);
      }
    /* Get "comment" section. */
-   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "comment");
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, COMMENT);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_STRING))
      {
         const char *comment = eina_json_string_get(jv);
@@ -642,13 +644,13 @@ _class_parse_json(char *buffer)
         _func_from_json(class_name, jv, METHOD_FUNC);
      }
    /* Get "constructors" section. */
-   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "constructors");
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, CONSTRUCTORS);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_OBJECT))
      {
         _func_from_json(class_name, jv, CONSTRUCTOR);
      }
    /* Get "implements" section. */
-   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "implements");
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, IMPLEMENTS);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
      {
         Eina_Iterator *it = eina_json_array_iterator_new(jv);
@@ -670,7 +672,7 @@ _class_parse_json(char *buffer)
           }
         eina_iterator_free(it);
      }
-   jv = EINA_JSON_OBJECT_VALUE_GET(tree, "signals");
+   jv = EINA_JSON_OBJECT_VALUE_GET(tree, SIGNALS);
    if ((jv) && (eina_json_type_get(jv) == EINA_JSON_TYPE_ARRAY))
      {
         Eina_Iterator *it = eina_json_array_iterator_new(jv);
