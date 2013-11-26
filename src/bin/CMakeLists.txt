@@ -21,3 +21,7 @@ add_executable(ch_test test_ch.c)
 target_link_libraries (ch_test
    eolian
 )
+# call cmake with prefix parameter in order to specify install path
+# cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/eolian ..
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/eolian
+        DESTINATION bin)
