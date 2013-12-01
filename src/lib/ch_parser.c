@@ -93,10 +93,10 @@ tmpl_eapi_body[] ="\
 EAPI @#ret_type\n\
 @#class_@#func(Eo *obj@#full_params)\n\
 {\n\
-    @#CLASS_CHECK(obj);\n\
+   @#CLASS_CHECK(obj);\n\
 @#ret_init_val\
-    eo_do((Eo *) obj, @#class_@#func(@#eo_params));\n\
-    return @#ret_val;\n\
+   eo_do((Eo *) obj, @#class_@#func(@#eo_params));\n\
+   return @#ret_val;\n\
 }\n\
 ";
 
@@ -114,23 +114,23 @@ _eo_obj_@#func(Eo *obj, void *_pd EINA_UNUSED, va_list *list)\n\
 static const char*
 _template_fill(Eina_Strbuf *buf, const char* templ, const char* classname, const char *funcname, Eina_Bool reset)
 {
+   char capclass[0xFF];
+   char capfunc[0xFF];
+   char *p;
+   
    if (reset) eina_strbuf_reset(buf);
    if (templ) eina_strbuf_append(buf, templ);
    
-   // TODO Cache ?
-   char* capclass = strdup(classname);
-   eina_str_toupper(&capclass);
-   char* capfunc = strdup(funcname);
-   eina_str_toupper(&capfunc);
+   strcpy(capclass, classname);
+   strcpy(capfunc, funcname);
+   p = capclass; eina_str_toupper(&p);
+   p = capfunc; eina_str_toupper(&p);
    
    eina_strbuf_replace_all(buf, "@#class", classname);
    eina_strbuf_replace_all(buf, "@#func", funcname);
    
    eina_strbuf_replace_all(buf, "@#CLASS", capclass);
    eina_strbuf_replace_all(buf, "@#FUNC", capfunc);
-   
-   free(capfunc);
-   free(capclass);
    
    return eina_strbuf_string_get(buf);
 }
@@ -330,7 +330,7 @@ _eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Fu
         Parameter_Dir pdir;
         database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
         umpr = (umpr) ? umpr : ( (pdir == IN_PARAM) ? "" : "*" );
-        eina_strbuf_append_printf(vars, "  %s%s %s = va_arg(*list, %s%s);\n", ptype, umpr, pname, ptype, umpr);
+        eina_strbuf_append_printf(vars, "   %s%s %s = va_arg(*list, %s%s);\n", ptype, umpr, pname, ptype, umpr);
         eina_strbuf_append_printf(params, ", %s", pname);
      }
    
