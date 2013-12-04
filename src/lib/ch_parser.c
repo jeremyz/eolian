@@ -209,13 +209,20 @@ _eo_fundef_generate(Eina_Strbuf *functext, Function_Id func, char *classname, Fu
    Eina_Strbuf *str_pardesc = eina_strbuf_new();
    Eina_Strbuf *str_typecheck = eina_strbuf_new();             
    
+   const char* rettype = database_function_return_type_get(func);
+   if (rettype && !strcmp(rettype, "void"))
+     {
+        eina_strbuf_append_printf(str_pardesc, tmpl_eo_pardesc, "out", "ret");
+        eina_strbuf_append(str_par, "ret");
+        eina_strbuf_append_printf(str_typecheck, ", EO_TYPECHECK(%s*, ret)", rettype);
+     }
+   
    EINA_LIST_FOREACH(database_parameters_list_get(func), l, data)
      {
         char *pname;
         char *ptype;
         Parameter_Dir pdir;
         database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
-        printf ("Func %s parameter %s type %d\n", funcname, pname, pdir );
         if (ftype == GET) pdir = OUT_PARAM;
         if (ftype == SET) pdir = IN_PARAM;
         char *umpr = (pdir == IN_PARAM) ? "" : "*";
@@ -323,6 +330,13 @@ _eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Fu
    const Eina_List *l;
    void *data;
    
+   const char* rettype = database_function_return_type_get(funcid);
+   if (rettype && !strcmp(rettype, "void"))
+     {
+        eina_strbuf_append_printf(vars, "   %s* ret = va_arg(*list, %s*);\n", rettype, rettype);
+        eina_strbuf_append_printf(params, ", ret");
+     }
+   
    EINA_LIST_FOREACH(database_parameters_list_get(funcid), l, data)
      {
         char *pname;
@@ -349,6 +363,7 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Func
    //TODO return value
    const char *suffix = "";
    const char *umpr = NULL;
+   const char *rettype = NULL;
    
    if (ftype == GET)
      {
@@ -372,6 +387,16 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Func
    const Eina_List *l;
    void *data;
    
+   tmpstr[0] = '\0';
+   
+   const char* retstr = database_function_return_type_get(funcid);
+   if (retstr && !strcmp(retstr, "void"))
+     {
+        sprintf (tmpstr, "%s ret;", rettype);
+        eina_strbuf_append_printf(eoparam, "&ret");
+        rettype = retstr;
+     }
+   
    EINA_LIST_FOREACH(database_parameters_list_get(funcid), l, data)
      {
         char *pname;
@@ -385,9 +410,9 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Func
    
    eina_strbuf_replace_all(fbody, "@#full_params", eina_strbuf_string_get(fparam));
    eina_strbuf_replace_all(fbody, "@#eo_params", eina_strbuf_string_get(eoparam));
-   eina_strbuf_replace_all(fbody, "@#ret_type", "void");
-   eina_strbuf_replace_all(fbody, "@#ret_init_val", "");
-   eina_strbuf_replace_all(fbody, "@#ret_val", "");
+   eina_strbuf_replace_all(fbody, "@#ret_type", (rettype) ? rettype : "void");
+   eina_strbuf_replace_all(fbody, "@#ret_init_val", tmpstr); 
+   eina_strbuf_replace_all(fbody, "@#ret_val", (rettype) ? "ret" : "");
    eina_strbuf_append(text, eina_strbuf_string_get(fbody));
    
    eina_strbuf_free(fbody);
@@ -450,6 +475,8 @@ ch_parser_eo_source_generate(char *classname)
         Function_Id in_prop = NULL;
         const Eina_List *ll;
         Function_Id fnid;
+        EINA_LIST_FOREACH(database_class_functions_list_get(impl_class, CONSTRUCTOR), ll, fnid)
+          if (fnid && !strcmp(database_function_name_get(fnid), funcname)) in_meth = fnid;
         EINA_LIST_FOREACH(database_class_functions_list_get(impl_class, METHOD_FUNC), ll, fnid)
           if (fnid && !strcmp(database_function_name_get(fnid), funcname)) in_meth = fnid;
         EINA_LIST_FOREACH(database_class_functions_list_get(impl_class, PROPERTY_FUNC), ll, fnid)
