@@ -91,10 +91,10 @@ static const char
 tmpl_eapi_body[] ="\
 \n\
 EAPI @#ret_type\n\
-@#class_@#func(Eo *obj@#full_params)\n\
+@#eapi_prefix_@#func(Eo *obj@#full_params)\n\
 {\n\
    @#CLASS_CHECK(obj);\n\
-@#ret_init_val\
+   @#ret_init_val\n\
    eo_do((Eo *) obj, @#class_@#func(@#eo_params));\n\
    return @#ret_val;\n\
 }\n\
@@ -210,7 +210,7 @@ _eo_fundef_generate(Eina_Strbuf *functext, Function_Id func, char *classname, Fu
    Eina_Strbuf *str_typecheck = eina_strbuf_new();             
    
    const char* rettype = database_function_return_type_get(func);
-   if (rettype && !strcmp(rettype, "void"))
+   if (rettype && strcmp(rettype, "void"))
      {
         eina_strbuf_append_printf(str_pardesc, tmpl_eo_pardesc, "out", "ret");
         eina_strbuf_append(str_par, "ret");
@@ -331,7 +331,7 @@ _eobind_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Fu
    void *data;
    
    const char* rettype = database_function_return_type_get(funcid);
-   if (rettype && !strcmp(rettype, "void"))
+   if (rettype && strcmp(rettype, "void"))
      {
         eina_strbuf_append_printf(vars, "   %s* ret = va_arg(*list, %s*);\n", rettype, rettype);
         eina_strbuf_append_printf(params, ", ret");
@@ -364,16 +364,36 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Func
    const char *suffix = "";
    const char *umpr = NULL;
    const char *rettype = NULL;
+   const char *gettype = NULL;
+   const char *func_lpref = NULL;
    
    if (ftype == GET)
      {
         suffix = "_get";
         umpr = "*";
+        func_lpref = database_function_data_get(funcid, LEGACY_GET);
+        const Eina_List *l = database_parameters_list_get(funcid);
+        if (eina_list_count(l) == 1)
+          {
+             void* data = eina_list_data_get(l);
+             database_parameter_information_get((Parameter_Desc)data, NULL, &gettype, NULL, NULL);
+          }
      }
+   
    if (ftype == SET)
      {
         suffix = "_set";
         umpr = "";
+        func_lpref = database_function_data_get(funcid, LEGACY_SET);
+     }
+     
+   func_lpref = (func_lpref) ? func_lpref : database_function_data_get(funcid, LEGACY);
+   func_lpref = (func_lpref) ? func_lpref : database_class_legacy_prefix_get(classname);
+   
+   if (!func_lpref)
+     {
+        printf ("Error: Generating source legacy function in no-legacy class");
+        return;
      }
    
    Eina_Strbuf *fbody = eina_strbuf_new();
@@ -383,31 +403,35 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Func
    char tmpstr[0xFF];
    sprintf (tmpstr, "%s%s", database_function_name_get(funcid), suffix);
    _template_fill(fbody, tmpl_eapi_body, classname, tmpstr, EINA_FALSE);
+   eina_strbuf_replace_all(fbody, "@#eapi_prefix", func_lpref);
    
    const Eina_List *l;
    void *data;
    
    tmpstr[0] = '\0';
    
-   const char* retstr = database_function_return_type_get(funcid);
-   if (retstr && !strcmp(retstr, "void"))
+   const char* retstr = (gettype) ? gettype : database_function_return_type_get(funcid);
+   if (retstr && strcmp(retstr, "void"))
      {
+        rettype = retstr;
         sprintf (tmpstr, "%s ret;", rettype);
         eina_strbuf_append_printf(eoparam, "&ret");
-        rettype = retstr;
      }
    
-   EINA_LIST_FOREACH(database_parameters_list_get(funcid), l, data)
-     {
-        char *pname;
-        char *ptype;
-        Parameter_Dir pdir;
-        database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
-        eina_strbuf_append_printf(fparam, ", %s%s %s", ptype, umpr, pname);
-        if (eina_strbuf_length_get(eoparam)) eina_strbuf_append(eoparam, ", ");
-        eina_strbuf_append_printf(eoparam, "%s", pname);
-     }
-   
+   if (!gettype)
+   {
+       EINA_LIST_FOREACH(database_parameters_list_get(funcid), l, data)
+         {
+            char *pname;
+            char *ptype;
+            Parameter_Dir pdir;
+            database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, NULL);
+            umpr = (umpr) ? umpr : ( (pdir == IN_PARAM) ? "" : "*" );
+            eina_strbuf_append_printf(fparam, ", %s%s %s", ptype, umpr, pname);
+            if (eina_strbuf_length_get(eoparam)) eina_strbuf_append(eoparam, ", ");
+            eina_strbuf_append_printf(eoparam, "%s", pname);
+         }
+   }
    eina_strbuf_replace_all(fbody, "@#full_params", eina_strbuf_string_get(fparam));
    eina_strbuf_replace_all(fbody, "@#eo_params", eina_strbuf_string_get(eoparam));
    eina_strbuf_replace_all(fbody, "@#ret_type", (rettype) ? rettype : "void");
@@ -605,7 +629,6 @@ ch_parser_eo_source_generate(char *classname)
 Eina_Bool
 ch_parser_header_append(Eina_Strbuf *header, char *classname)
 {
-   
    if (!database_class_exists(classname)) 
      {
         printf ("Class \"%s\" not found in database\n", classname); 
