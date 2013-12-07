@@ -1,4 +1,4 @@
-
+Move ch_parser to bin (not related to library but only to C/H generator afaik)
 
 Improve:
 - when trying to add class name, which already in database, maybe should print
