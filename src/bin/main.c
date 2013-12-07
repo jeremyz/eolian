@@ -176,8 +176,8 @@ int main(int argc, char **argv)
         return 0;
      }
 
-   eolian_database_init();
-   char *filename;
+   eolian_init();
+   const char *filename;
    EINA_LIST_FOREACH(files, itr, filename)
      {
         if (!eolian_eo_file_parse(filename))
@@ -204,8 +204,8 @@ int main(int argc, char **argv)
     }
 
    EINA_LIST_FREE(files, filename)
-      free(filename);
-   eolian_database_shutdown();
+      free((char *)filename);
+   eolian_shutdown();
    eina_shutdown();
    return 0;
 }

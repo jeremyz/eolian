@@ -34,6 +34,9 @@ typedef enum
    INOUT_PARAM
 } Parameter_Dir;
 
+Eina_Bool database_init();
+Eina_Bool database_shutdown();
+
 /* Add a class in the database */
 Eina_Bool database_class_add(const char *class_name);
 

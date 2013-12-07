@@ -1,3 +1,4 @@
+#if 0
 /*
    gcc -o start some_func.c test.c `pkg-config --libs check`
    */
@@ -85,9 +86,11 @@ START_TEST(inherits_test)
    eina_shutdown();
 }
 END_TEST
+#endif
 
 int main(void)
 {
+#if 0
    Suite *s = suite_create("First");
 
    TCase *tc = tcase_create("test case");
@@ -101,4 +104,7 @@ int main(void)
    int number_failed = srunner_ntests_failed(sr);
    srunner_free(sr);
    return (number_failed == 0) ? 0 : 255;
+#else
+   return 1;
+#endif
 }

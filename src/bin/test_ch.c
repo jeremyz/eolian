@@ -79,8 +79,8 @@ int main(int argc, char **argv)
         return 0;
      }
 
-   eolian_database_init();
-   char *filename;
+   eolian_init();
+   const char *filename;
    EINA_LIST_FOREACH(files, itr, filename)
      {
         if (!eolian_eo_file_parse(filename))
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
      {
         eolian_show();
      }
-   
+
    /*
    Eina_File *fn = eina_file_open("../EvasObjectImage1.h", EINA_FALSE);
    Eina_Strbuf *hfile = eina_strbuf_new();
@@ -102,12 +102,12 @@ int main(int argc, char **argv)
    printf ("upd\n%s\n",eina_strbuf_string_get(hfile));
    eina_file_close(fn);
    */
-   
+
    printf ("%s\n",ch_parser_eo_source_generate("Elm_Win"));
-   
+
    EINA_LIST_FREE(files, filename)
-      free(filename);
-   eolian_database_shutdown();
+      free((char *)filename);
+   eolian_shutdown();
    eina_shutdown();
    return 0;
 }

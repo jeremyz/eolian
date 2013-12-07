@@ -93,7 +93,7 @@ void _hash_free_cb(void *data)
 }
 
 Eina_Bool
-eolian_database_init()
+database_init()
 {
    eina_init();
    if (!_classes)
@@ -102,7 +102,7 @@ eolian_database_init()
 }
 
 Eina_Bool
-eolian_database_shutdown()
+database_shutdown()
 {
    eina_hash_free(_classes);
    eina_shutdown();
