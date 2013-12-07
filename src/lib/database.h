@@ -7,6 +7,7 @@ typedef struct _Implements_Desc* Implements_Desc;
 typedef struct _Event_Desc* Event_Desc;
 
 #define RETURN_TYPE "return_type"
+#define RETURN_COMMENT "return_comment"
 #define LEGACY "legacy"
 #define LEGACY_GET "legacy_get"
 #define LEGACY_SET "legacy_set"
@@ -18,6 +19,7 @@ typedef enum
 {
    UNRESOLVED,
    PROPERTY_FUNC,
+   // FIXME: bs
    SET,
    GET,
    METHOD_FUNC,
@@ -46,7 +48,7 @@ const Eina_List *database_class_names_list_get();
 Eina_Bool database_class_exists(const char *class_name);
 
 /* Add an inherit class name to a class */
-Eina_Bool database_class_inherit_add(const char *class_name, char *inherit_class_name);
+Eina_Bool database_class_inherit_add(const char *class_name, const char *inherit_class_name);
 
 /* Get description of class. */
 const char*
@@ -72,6 +74,9 @@ const Eina_List *database_class_functions_list_get(char *class_name, Function_Ty
 
 /* Create a function */
 Function_Id database_function_new(const char *function_name, Function_Type foo_type);
+
+/* Set a type to a function */
+void database_function_type_set(Function_Id function_id, Function_Type foo_type);
 
 /* Get a type of a function */
 Function_Type database_function_type_get(Function_Id function_id);
