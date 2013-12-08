@@ -78,13 +78,41 @@ _generate_c_file(char *filename, char *classname)
    return EINA_TRUE;
 }
 
+// TODO join with header gen.
+static Eina_Bool
+_generate_legacy_file(char *filename, char *classname)
+{
+   if (!classname)
+     {
+        printf ("No class name specified to generate %s\n", filename);
+        return EINA_FALSE;
+     }
+
+   FILE* fd = fopen(filename, "w");
+   if (!fd)
+     {
+        printf ("Couldnt open file %s for writing\n", filename);
+        return EINA_FALSE;
+     }
+
+   char *ctext = ch_parser_legacy_header_generate(classname);
+
+   if (ctext) fputs(ctext, fd);
+   free(ctext);
+
+   fclose(fd);
+
+   return EINA_TRUE;
+}
+
 int main(int argc, char **argv)
 {
    eina_init();
    int i;
    Eina_Bool help = EINA_FALSE, show = EINA_FALSE;
    Eina_List *files = NULL, *itr;
-   char *h_filename = NULL, *c_filename = NULL, *classname = NULL;
+   char *h_filename = NULL, *c_filename = NULL, 
+        *classname = NULL, *leg_filename = NULL;
    Eina_Bool happend = EINA_FALSE;
 
    for(i = 1; i < argc; i++)
@@ -97,6 +125,11 @@ int main(int argc, char **argv)
         if (!strcmp(argv[i], "-gc") && (i < (argc-1)))
           {
              c_filename = argv[i + 1];
+             continue;
+          }
+        if (!strcmp(argv[i], "-gl") && (i < (argc-1)))
+          {
+             leg_filename = argv[i + 1];
              continue;
           }
         if (!strcmp(argv[i], "-ah") && (i < (argc-1)))
@@ -202,7 +235,13 @@ int main(int argc, char **argv)
        printf("Generating source file %s\n", c_filename);
        _generate_c_file(c_filename, classname);
     }
-
+   
+   if (leg_filename)
+    {
+       printf("Generating legacy header file %s\n", leg_filename);
+       _generate_legacy_file(leg_filename, classname);
+    }
+    
    EINA_LIST_FREE(files, filename)
       free(filename);
    eolian_database_shutdown();

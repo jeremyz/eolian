@@ -85,6 +85,17 @@ tmpl_eo_funcdef[] = "\n\
 ";
 
 static const char
+tmpl_eapi_funcdef[] = "\n\
+/**\n\
+ *\n\
+ * @#desc\n\
+ *\n\
+@#list_desc_param\
+ */\n\
+EAPI @#type_return @#class_@#func(@#params);\n\
+";
+
+static const char
 tmpl_eo_pardesc[] =" * @param[%s] %s\n";
 
 static const char
@@ -182,6 +193,127 @@ _class_h_find(Eina_Strbuf *str, const char *classname)
    eina_strbuf_free(classreal);
    
    return ret;
+}
+
+static void
+_eapi_decl_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Function_Type ftype)
+{
+   //TODO return value
+   const char *suffix = "";
+   const char *umpr = NULL;
+   const char *rettype = NULL;
+   char *gettype = NULL;
+   const char *func_lpref = NULL;
+   
+   if (ftype == GET)
+     {
+        suffix = "_get";
+        umpr = "*";
+        func_lpref = database_function_data_get(funcid, LEGACY_GET);
+        const Eina_List *l = database_parameters_list_get(funcid);
+        if (eina_list_count(l) == 1)
+          {
+             void* data = eina_list_data_get(l);
+             database_parameter_information_get((Parameter_Desc)data, NULL, &gettype, NULL, NULL);
+          }
+     }
+   
+   if (ftype == SET)
+     {
+        suffix = "_set";
+        umpr = "";
+        func_lpref = database_function_data_get(funcid, LEGACY_SET);
+     }
+     
+   func_lpref = (func_lpref) ? func_lpref : database_function_data_get(funcid, LEGACY);
+   func_lpref = (func_lpref) ? func_lpref : database_class_legacy_prefix_get(classname);
+   
+   if (!func_lpref)
+     {
+        printf ("Error: Generating header legacy function in no-legacy class");
+        return;
+     }
+   
+   Eina_Strbuf *fbody = eina_strbuf_new();
+   Eina_Strbuf *fparam = eina_strbuf_new();
+   Eina_Strbuf *descparam = eina_strbuf_new();
+   
+   char tmpstr[0xFF];
+   sprintf (tmpstr, "%s%s", database_function_name_get(funcid), suffix);
+   _template_fill(fbody, tmpl_eapi_funcdef, func_lpref, tmpstr, EINA_FALSE);
+   sprintf (tmpstr, "comment%s", suffix);
+   const char *desc = database_function_description_get(funcid, tmpstr);
+   eina_strbuf_replace_all(fbody, "@#desc", desc);
+   
+   const Eina_List *l;
+   void *data;
+   
+   rettype = (gettype) ? gettype : database_function_return_type_get(funcid);
+   if (rettype && !strcmp(rettype, "void")) rettype = NULL;
+    
+   if (!gettype)
+     {
+       EINA_LIST_FOREACH(database_parameters_list_get(funcid), l, data)
+         {
+            char *pname;
+            char *pdesc;
+            char *ptype;
+            Parameter_Dir pdir;
+            database_parameter_information_get((Parameter_Desc)data, &pdir, &ptype, &pname, &pdesc);
+            umpr = (umpr) ? umpr : ( (pdir == IN_PARAM) ? "" : "*" );
+            
+            if (eina_strbuf_length_get(fparam)) eina_strbuf_append(fparam, ", ");
+            eina_strbuf_append_printf(fparam, "%s%s %s", ptype, umpr, pname);
+            eina_strbuf_append_printf(descparam, " * @param %s\n", pname);
+         }
+     }
+   eina_strbuf_replace_all(fbody, "@#params", eina_strbuf_string_get(fparam));
+   eina_strbuf_replace_all(fbody, "@#list_desc_param", eina_strbuf_string_get(descparam));
+   eina_strbuf_replace_all(fbody, "@#type_return", (rettype) ? rettype : "void");
+   eina_strbuf_append(text, eina_strbuf_string_get(fbody));
+   
+   eina_strbuf_free(fbody);
+   eina_strbuf_free(fparam);
+   eina_strbuf_free(descparam);
+}
+
+char*
+ch_parser_legacy_header_generate(char *classname)
+{
+   const Function_Type ftype_order[] = {PROPERTY_FUNC, METHOD_FUNC};
+   const Eina_List *l;
+   void *data;
+   
+   if (!database_class_exists(classname)) 
+     {
+        printf ("Class \"%s\" not found in database\n", classname); 
+        return NULL;
+     }
+   
+   Eina_Strbuf * str_hdr = eina_strbuf_new();
+   
+   int i;
+   for (i = 0; i < 2; i++)
+      EINA_LIST_FOREACH(database_class_functions_list_get(classname, ftype_order[i]), l, data)
+        {
+           const Function_Type ftype = database_function_type_get((Function_Id)data);
+           Eina_Bool prop_read = (ftype == PROPERTY_FUNC || ftype == GET ) ? EINA_TRUE : EINA_FALSE ;
+           Eina_Bool prop_write = (ftype == PROPERTY_FUNC || ftype == SET ) ? EINA_TRUE : EINA_FALSE ;
+           
+           if (!prop_read && !prop_write)
+             {
+                _eapi_decl_func_generate(str_hdr, classname, (Function_Id)data, UNRESOLVED);
+             }
+           if (prop_read)
+             {
+                _eapi_decl_func_generate(str_hdr, classname, (Function_Id)data, GET);
+             }
+           if (prop_write)
+             {
+                _eapi_decl_func_generate(str_hdr ,classname, (Function_Id)data, SET);
+             }
+        }
+   return eina_strbuf_string_steal(str_hdr);
 }
 
 static const char* 
@@ -364,8 +496,8 @@ _eapi_func_generate(Eina_Strbuf *text, char *classname, Function_Id funcid, Func
    const char *suffix = "";
    const char *umpr = NULL;
    const char *rettype = NULL;
-   const char *gettype = NULL;
    const char *func_lpref = NULL;
+   char *gettype = NULL;
    
    if (ftype == GET)
      {

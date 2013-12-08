@@ -12,4 +12,7 @@ char* ch_parser_eo_source_generate(char *classname);
 // Generate c header text for eo class
 char* ch_parser_eo_header_generate(char *classname);
 
+// Generate legacy EAPI header text for eo class
+char* ch_parser_legacy_header_generate(char *classname);
+
 #endif
