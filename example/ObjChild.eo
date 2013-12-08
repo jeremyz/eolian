@@ -1,135 +1,78 @@
-{
-  "name": "Obj_Child", 
-  "macro": "OBJ_CHILD", 
-  "inherits": ["Obj_Parent"], 
-  "constructors": {}, 
-  "properties": {
-    "Awesomness_rw1": {
-      "comment_set": "Sets Awesomness_rw1.", 
-      "comment_get": "Get Awesomness_rw1.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "myBool", 
-          ""
-        ],
-        [
-          "", 
-          "void*", 
-          "myVoid", 
-          ""
-        ]
-      ]
-    }, 
-    "Awesomness_rw2": {
-      "comment_set": "Sets Awesomness_rw2.", 
-      "comment_get": "Get Awesomness_rw2.", 
-      "parameters": [
-        [
-          "", 
-          "int*", 
-          "myIntPtr", 
-          ""
-        ]
-        
-      ]
-    }, 
-    "Awesomness_wo": {
-      "comment": "Does write only stuff with Awesomness.", 
-      "type": "wo", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "myInt", 
-          ""
-        ]
-      ]
-    },
-    "Awesomness_ro": {
-      "comment": "Does read only stuff with Awesomness.", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "char*", 
-          "myChar", 
-          ""
-        ]
-      ]
-    }
-  }, 
-  "methods": {
-    "lower": {
-      "comment": "Lower a window object.", 
-      "parameters": []
-    }, 
-    "resize_object_del": {
-      "comment": "Delete subobj as a resize object of window", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Evas_Object*", 
-          "subobj", 
-          ""
-        ]
-      ]
-    }, 
-    "center": {
-      "comment": "Center a window on its screen", 
-      "parameters": [
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "h", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "v", 
-          ""
-        ]
-      ]
-    }
-  }, 
-  "implements": [
-    [
-      "Obj_Parent", 
-      "activate", 
-      "method"
-    ], 
-    [
-      "Obj_Parent", 
-      "Prop_rw1", 
-      "rw"
-    ],
-    [
-      "Obj_Parent", 
-      "Prop_wo", 
-      "rw"
-    ]
-  ],
-  "old_styled_signals": [
-    [
-      "unmaximized", 
-      ""
-    ], 
-    [
-      "ioerr", 
-      ""
-    ], 
-    [
-      "indicator,prop,changed", 
-      ""
-    ], 
-    [
-      "rotation,changed", 
-      ""
-    ]
-  ]
-}
+Obj_Child {
+     "constructors": {},
+        inherits { Obj_Parent };
+     properties {
+          Awesomness_rw1 {
+               params {
+                    Eina_Bool myBool;
+                    void *myVoid;
+               };
+               set {
+                    /*@ Sets Awesomness_rw1. */
+               };
+               get {
+                    /*@ Gets Awesomness_rw1. */
+               };
+          };
+          Awesomness_rw2 {
+               params {
+                    int *myIntPtr;
+               };
+               set {
+                    /*@ Sets Awesomness_rw2. */
+               };
+               get {
+                    /*@ Gets Awesomness_rw2. */
+               };
+          };
+          Awesomness_wo {
+               params {
+                    int myInt;
+               };
+               set {
+                    /*@ Does write only stuff with Awesomness. */
+               };
+          };
+          Awesomness_ro {
+               params {
+                    char *myChar;
+               };
+               set {
+                    /*@ Does read only stuff with Awesomness. */
+               };
+          };
+     };
+     methods {
+          lower {
+               /*@ Lower a window object. */
+               return void;
+               legacy evas_object_lower;
+          };
+          resize_object_del {
+               /*@ Delete subobj as a resize object of window */
+               return void;
+               params {
+                    in Evas_Object *subobj;
+               };
+               legacy evas_object_lower;
+          };
+          center {
+               /*@ Center a window on its screen. */
+               params {
+                    out Eina_Bool h;
+                    in Eina_Bool v;
+               };
+          };
+     };
+     implements {
+          Obj_Parent::activate,
+             Obj_Parent::Prop_rw1,
+             Obj_Parent::Prop_wo,
+     };
+     signals {
+          unmaximized;
+          ioerr;
+          indicator,prop,changed;
+          rotation,changed;
+     };
+};

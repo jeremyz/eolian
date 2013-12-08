@@ -1,155 +1,78 @@
-{
-  "name": "Obj_Parent", 
-  "macro": "OBJ_PARENT", 
-  "inherits": [], 
-  "constructors": {}, 
-  "properties": {
-    "Prop_rw1": {
-      "comment_set": "Sets Prop_rw1.", 
-      "comment_get": "Get Prop_rw1.", 
-      "parameters": [
-        [
-          "", 
-          "Eina_Bool", 
-          "myBool", 
-          ""
-        ],
-        [
-          "", 
-          "int", 
-          "myInt", 
-          ""
-        ]
-      ]
-    }, 
-    "Prop_rw2": {
-      "comment_set": "Sets Prop_rw2.", 
-      "comment_get": "Get Prop_rw2.", 
-      "parameters": [
-        [
-          "", 
-          "char*", 
-          "myChar", 
-          ""
-        ]
-        
-      ]
-    }, 
-    "Prop_wo": {
-      "comment": "Does write only stuff with Prop.", 
-      "type": "wo", 
-      "parameters": [
-        [
-          "", 
-          "int", 
-          "myInt", 
-          ""
-        ]
-      ]
-    },
-    "Prop_ro": {
-      "comment": "Does read only stuff with Prop.", 
-      "type": "ro", 
-      "parameters": [
-        [
-          "", 
-          "char*", 
-          "myChar", 
-          ""
-        ]
-      ]
-    }
-  }, 
-  "methods": {
-    "Prop_rw1": {
-      "comment": "Method Prop_rw1.", 
-      "parameters": [
-        [
-          "out", 
-          "",
-          "char*", 
-          "killer", 
-          ""
-        ],
-        [
-          "in",
-          "",
-          "float", 
-          "myFloat", 
-          ""
-        ]
-      ]
-    },
-    "socket_listen": {
-      "comment": "Create a socket to provide the service for Plug widget", 
-      "parameters": [
-        [
-          "in", 
-          "const", 
-          "char*", 
-          "svcname", 
-          ""
-        ], 
-        [
-          "out", 
-          "", 
-          "int", 
-          "svcnum", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "Eina_Bool", 
-          "svcsys", 
-          ""
-        ], 
-        [
-          "out", 
-          "", 
-          "Eina_Bool", 
-          "ret", 
-          ""
-        ]
-      ]
-    }, 
-    "illume_command_send": {
-      "comment": "Send a command to the windowing environment", 
-      "parameters": [
-        [
-          "in", 
-          "", 
-          "Elm_Illume_Command", 
-          "command", 
-          ""
-        ], 
-        [
-          "in", 
-          "", 
-          "void*", 
-          "params", 
-          ""
-        ]
-      ]
-    }, 
-    "activate": {
-      "comment": "Activate a window object.", 
-      "parameters": []
-    }
-  }, 
-  "implements": [],
-  "old_styled_signals": [
-    [
-      "delete,request", 
-      ""
-    ], 
-    [
-      "focus,out", 
-      ""
-    ], 
-    [
-      "focus,in", 
-      ""
-    ]
-  ]
-}
+Obj_Parent {
+     "constructors": {},
+        properties {
+             Prop_rw1 {
+                  params {
+                       Eina_Bool myBool;
+                       int myInt;
+                  };
+                  set {
+                       /*@ Sets Prop_rw1. */
+                  };
+                  get {
+                       /*@ Gets Prop_rw1. */
+                  };
+             };
+             Prop_rw2 {
+                  params {
+                       char *myChar;
+                  };
+                  set {
+                       /*@ Sets Prop_rw2. */
+                  };
+                  get {
+                       /*@ Gets Prop_rw2. */
+                  };
+             };
+             Prop_wo {
+                  params {
+                       int myInt;
+                  };
+                  set {
+                       /*@ Does write only stuff with Prop. */
+                  };
+             };
+             Prop_ro {
+                  params {
+                       char *myChar;
+                  };
+                  get {
+                       /*@ Does read only stuff with Prop. */
+                  };
+             };
+        };
+     methods {
+          Prop_rw1 {
+               /*@ Method Prop_rw1. */
+               return void;
+               params {
+                    out char *killer;
+                    in float myFloat;
+               };
+          };
+          socket_listen {
+               /*@ Create a socket to provide the service for Plug widget. */
+               params {
+                    in const char *svcname;
+                    out int svcnum;
+                    in Eina_Bool svcsys;
+                    out Eina_Bool ret;
+               };
+          };
+          illume_command_send {
+               /*@ Send a command to the windowing environment. */
+               params {
+                    in Elm_Illume_Command command;
+                    in void *params;
+               };
+          };
+          activate {
+               /*@ Activate a window object. */
+          };
+     };
+     signals {
+          delete,request;
+          focus,out;
+          focus,in;
+     };
+};
