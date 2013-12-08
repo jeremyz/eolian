@@ -27,3 +27,15 @@ Issues:
     evas_object_hide(). evas_object_move(), evas_object_resize()
     maybe smth else.
 
+
+Memo:
+  - i changed script, which generates eo files. Now it succesfully finds
+    legacy API. T.e. for class "Evas_Image" legacy name(actually prefix)
+    will be "evas_object_image". So it's not needed to add "legacy evas_object_image_smth;"
+    to each method.
+    There are only one case:
+    if I look for eapi by tokens, I will add wrong legacy for: "Evas_Object" "size" -
+    - this needed to be deleted. Instead of this, I can remove check by tokens.
+    In this case I have to add manually:
+    "Elm_Inwin" legacy "elm_win_inwin_activate" for method "activate";
+
