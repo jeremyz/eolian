@@ -88,6 +88,9 @@ eo_definitions_class_def_free(Eo_Class_Def *kls)
    EINA_LIST_FOREACH(kls->inherits, l, s)
       if (s) eina_stringshare_del(s);
 
+   EINA_LIST_FOREACH(kls->implements, l, s)
+      if (s) eina_stringshare_del(s);
+
    EINA_LIST_FOREACH(kls->signals, l, s)
       if (s) eina_stringshare_del(s);
 

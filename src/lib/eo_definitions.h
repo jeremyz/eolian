@@ -73,6 +73,7 @@ typedef struct _eo_class_def
    const char *name;
    const char *comment;
    Eina_List *inherits;
+   Eina_List *implements;
    Eina_List *signals;
    Eina_List *constructors;
    Eina_List *properties;

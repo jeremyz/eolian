@@ -39,6 +39,7 @@ typedef struct _eo_tokenizer
       Eo_Method_Def *meth;
       Eo_Param_Def *param;
       Eo_Accessor_Def *accessor;
+      Eina_List *class_names;
    } tmp;
 
 } Eo_Tokenizer;

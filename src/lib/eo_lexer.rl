@@ -581,9 +581,19 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       toknz->tmp.kls->comment = _eo_tokenizer_token_get(toknz, fpc-1);
    }
 
-   action end_inherit_name {
+   action end_class_list_name {
       const char *base = _eo_tokenizer_token_get(toknz, fpc);
-      toknz->tmp.kls->inherits = eina_list_append(toknz->tmp.kls->inherits, base);
+      toknz->tmp.class_names = eina_list_append(toknz->tmp.class_names, base);
+   }
+
+   action end_inherits {
+      toknz->tmp.kls->inherits = toknz->tmp.class_names;
+      toknz->tmp.class_names = NULL;
+   }
+
+   action end_implements {
+      toknz->tmp.kls->implements = toknz->tmp.class_names;
+      toknz->tmp.class_names = NULL;
    }
 
    action end_signal_name {
@@ -619,9 +629,10 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       fgoto main;
    }
 
-   inherit_item = ident %end_inherit_name ignore*;
-   inherit_item_next = list_separator ignore* inherit_item;
-   inherits = 'inherits' ignore* begin_def ignore* (inherit_item inherit_item_next*)? end_def;
+   class_name = ident %end_class_list_name ignore*;
+   class_name_next = list_separator ignore* class_name;
+   inherits = 'inherits' ignore* begin_def ignore* (class_name class_name_next*)? end_def;
+   implements = 'implements' ignore* begin_def ignore* (class_name class_name_next*)? end_def;
 
    signal_item = signal %end_signal_name ignore* end_statement ignore*;
    signals = 'signals' ignore* begin_def ignore* signal_item* end_def;
@@ -634,7 +645,8 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       ignore+;       #=> show_ignore;
       eo_comment     => end_class_comment;
       comment        => show_comment;
-      inherits;
+      inherits       => end_inherits;
+      implements     => end_implements;
       signals;
       constructors   => begin_constructors;
       properties     => begin_properties;
@@ -792,6 +804,10 @@ eo_tokenizer_dump(Eo_Tokenizer *toknz)
                kls->name, (kls->comment ? kls->comment : "-"));
         printf("  inherits from :");
         EINA_LIST_FOREACH(kls->inherits, l, s)
+           printf(" %s", s);
+        printf("\n");
+        printf("  implements:");
+        EINA_LIST_FOREACH(kls->implements, l, s)
            printf(" %s", s);
         printf("\n");
         printf("  signals:\n");
