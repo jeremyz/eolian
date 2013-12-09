@@ -281,6 +281,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
    alnum_u           = alnum | '_';
    alpha_u           = alpha | '_';
    ident             = alpha+ >save_fpc (alnum | '_' )+;
+   signal            = alpha+ >save_fpc (alnum | '_' | ',' )+;
 
    eo_comment        = "/*@" ignore* alnum_u >save_fpc ( any | cr @inc_line )* :>> "*/";
    c_comment         = "/*" ( any | cr @inc_line )* :>> "*/";
@@ -585,6 +586,11 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       toknz->tmp.kls->inherits = eina_list_append(toknz->tmp.kls->inherits, base);
    }
 
+   action end_signal_name {
+      const char *base = _eo_tokenizer_token_get(toknz, fpc);
+      toknz->tmp.kls->signals = eina_list_append(toknz->tmp.kls->signals, base);
+   }
+
    action begin_constructors {
       INF("  constructors {");
       toknz->do_constructors = EINA_TRUE;
@@ -617,6 +623,9 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
    inherit_item_next = list_separator ignore* inherit_item;
    inherits = 'inherits' ignore* begin_def ignore* (inherit_item inherit_item_next*)? end_def;
 
+   signal_item = signal %end_signal_name ignore* end_statement ignore*;
+   signals = 'signals' ignore* begin_def ignore* signal_item* end_def;
+
    constructors = 'constructors' ignore* begin_def;
    properties = 'properties' ignore* begin_def;
    methods = 'methods' ignore* begin_def;
@@ -626,6 +635,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       eo_comment     => end_class_comment;
       comment        => show_comment;
       inherits;
+      signals;
       constructors   => begin_constructors;
       properties     => begin_properties;
       methods        => begin_methods;
@@ -784,6 +794,9 @@ eo_tokenizer_dump(Eo_Tokenizer *toknz)
         EINA_LIST_FOREACH(kls->inherits, l, s)
            printf(" %s", s);
         printf("\n");
+        printf("  signals:\n");
+        EINA_LIST_FOREACH(kls->signals, l, s)
+           printf("    %s\n", s);
 
         EINA_LIST_FOREACH(kls->constructors, l, meth)
           {
