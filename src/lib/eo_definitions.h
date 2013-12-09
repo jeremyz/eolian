@@ -57,9 +57,17 @@ typedef struct _eo_property_def
 
 /* METHOD */
 
+typedef enum _eo_method_type {
+     METH_REGULAR,
+     METH_CONSTRUCTOR,
+     METH_DESTRUCTOR,
+     METH_TYPE_LAST
+} Eo_Method_Type;
+
 typedef struct _eo_method_def
 {
    Eo_Ret_Def ret;
+   Eo_Method_Type type;
    const char *name;
    const char *comment;
    Eina_List *params;
@@ -76,6 +84,7 @@ typedef struct _eo_class_def
    Eina_List *implements;
    Eina_List *signals;
    Eina_List *constructors;
+   Eina_List *destructors;
    Eina_List *properties;
    Eina_List *methods;
 } Eo_Class_Def;

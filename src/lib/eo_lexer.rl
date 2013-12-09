@@ -515,13 +515,25 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
    }
 
    action end_method {
+      Eina_List **l;
       if (eina_list_count(toknz->tmp.meth->params) == 0)
         WRN("method '%s' has no parameters.", toknz->tmp.meth->name);
       INF("    }");
-      if (toknz->do_constructors)
-        toknz->tmp.kls->constructors = eina_list_append(toknz->tmp.kls->methods, toknz->tmp.meth);
-      else
-        toknz->tmp.kls->methods = eina_list_append(toknz->tmp.kls->methods, toknz->tmp.meth);
+      switch (toknz->current_methods_type) {
+        case METH_CONSTRUCTOR:
+          l = &toknz->tmp.kls->constructors;
+          break;
+        case METH_DESTRUCTOR:
+          l = &toknz->tmp.kls->destructors;
+          break;
+        case METH_REGULAR:
+          l = &toknz->tmp.kls->methods;
+          break;
+        default:
+          ABORT(toknz, "unknown method type %d", toknz->current_methods_type);
+      }
+      toknz->tmp.meth->type = toknz->current_methods_type;
+      *l = eina_list_append(*l, toknz->tmp.meth);
       toknz->tmp.meth = NULL;
       toknz->current_nesting--;
       fgoto tokenize_methods;
@@ -559,6 +571,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
 
    action end_methods {
       INF("  }");
+      toknz->current_methods_type = METH_TYPE_LAST;
       toknz->current_nesting--;
       fgoto tokenize_class;
    }
@@ -603,7 +616,14 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
 
    action begin_constructors {
       INF("  constructors {");
-      toknz->do_constructors = EINA_TRUE;
+      toknz->current_methods_type = METH_CONSTRUCTOR;
+      toknz->current_nesting++;
+      fgoto tokenize_methods;
+   }
+
+   action begin_destructors {
+      INF("  destructors {");
+      toknz->current_methods_type = METH_DESTRUCTOR;
       toknz->current_nesting++;
       fgoto tokenize_methods;
    }
@@ -616,7 +636,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
 
    action begin_methods {
       INF("  begin methods");
-      toknz->do_constructors = EINA_FALSE;
+      toknz->current_methods_type = METH_REGULAR;
       toknz->current_nesting++;
       fgoto tokenize_methods;
    }
@@ -638,6 +658,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
    signals = 'signals' ignore* begin_def ignore* signal_item* end_def;
 
    constructors = 'constructors' ignore* begin_def;
+   destructors = 'destructors' ignore* begin_def;
    properties = 'properties' ignore* begin_def;
    methods = 'methods' ignore* begin_def;
 
@@ -649,6 +670,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       implements     => end_implements;
       signals;
       constructors   => begin_constructors;
+      destructors    => begin_destructors;
       properties     => begin_properties;
       methods        => begin_methods;
       end_def        => end_class;
@@ -775,6 +797,7 @@ eo_tokenizer_get(void)
    toknz->max_nesting = 10;
    toknz->current_line = 1;
    toknz->current_nesting = 0;
+   toknz->current_methods_type = METH_TYPE_LAST;
    toknz->saved.tok = NULL;
    toknz->saved.line = 0;
    toknz->classes = NULL;
@@ -817,6 +840,19 @@ eo_tokenizer_dump(Eo_Tokenizer *toknz)
         EINA_LIST_FOREACH(kls->constructors, l, meth)
           {
              printf("  constructors: %s\n", meth->name);
+             printf("    return: %s (%s)\n", meth->ret.type, meth->ret.comment);
+             printf("    legacy : %s\n", meth->legacy);
+             EINA_LIST_FOREACH(meth->params, m, param)
+               {
+                  printf("    param: %s %s : %s (%s)\n",
+                         _param_way_str[param->way], param->name,
+                         param->type, param->comment);
+               }
+          }
+
+        EINA_LIST_FOREACH(kls->destructors, l, meth)
+          {
+             printf("  destructors: %s\n", meth->name);
              printf("    return: %s (%s)\n", meth->ret.type, meth->ret.comment);
              printf("    legacy : %s\n", meth->legacy);
              EINA_LIST_FOREACH(meth->params, m, param)
@@ -899,6 +935,18 @@ eo_tokenizer_database_fill(const char *filename)
         EINA_LIST_FOREACH(kls->constructors, l, meth)
           {
              Function_Id foo_id = database_function_new(meth->name, CONSTRUCTOR);
+             database_class_function_add(kls->name, foo_id);
+             database_function_description_set(foo_id, RETURN_COMMENT, meth->ret.comment);
+             database_function_data_set(foo_id, LEGACY, meth->legacy);
+             EINA_LIST_FOREACH(meth->params, m, param)
+               {
+                  database_function_parameter_add(foo_id, (Parameter_Dir)param->way, param->type, param->name, param->comment);
+               }
+          }
+
+        EINA_LIST_FOREACH(kls->destructors, l, meth)
+          {
+             Function_Id foo_id = database_function_new(meth->name, DESTRUCTOR);
              database_class_function_add(kls->name, foo_id);
              database_function_description_set(foo_id, RETURN_COMMENT, meth->ret.comment);
              database_function_data_set(foo_id, LEGACY, meth->legacy);
