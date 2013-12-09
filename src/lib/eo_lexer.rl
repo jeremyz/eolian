@@ -371,20 +371,17 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
    action end_param {
       toknz->tmp.param = _eo_tokenizer_param_get(toknz, fpc);
       INF("        %s : %s", toknz->tmp.param->name, toknz->tmp.param->type);
+      if (toknz->tmp.prop)
+        toknz->tmp.prop->params = eina_list_append(toknz->tmp.prop->params, toknz->tmp.param);
+      else if (toknz->tmp.meth)
+        toknz->tmp.meth->params = eina_list_append(toknz->tmp.meth->params, toknz->tmp.param);
+      else
+        ABORT(toknz, "got a pending param but there is no property nor method waiting for it");
+      toknz->tmp.param = NULL;
    }
 
    action end_params {
       INF("      }");
-      if (toknz->tmp.param != NULL)
-        {
-           if (toknz->tmp.prop)
-             toknz->tmp.prop->params = eina_list_append(toknz->tmp.prop->params, toknz->tmp.param);
-           else if (toknz->tmp.meth)
-             toknz->tmp.meth->params = eina_list_append(toknz->tmp.meth->params, toknz->tmp.param);
-           else
-             ABORT(toknz, "got a pending param but there is no property nor method waiting for it");
-        }
-      toknz->tmp.param = NULL;
       toknz->current_nesting--;
       if (toknz->tmp.prop)
         fgoto tokenize_property;
