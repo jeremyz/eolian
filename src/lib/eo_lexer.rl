@@ -517,7 +517,10 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       if (eina_list_count(toknz->tmp.meth->params) == 0)
         WRN("method '%s' has no parameters.", toknz->tmp.meth->name);
       INF("    }");
-      toknz->tmp.kls->methods = eina_list_append(toknz->tmp.kls->methods, toknz->tmp.meth);
+      if (toknz->do_constructors)
+        toknz->tmp.kls->constructors = eina_list_append(toknz->tmp.kls->methods, toknz->tmp.meth);
+      else
+        toknz->tmp.kls->methods = eina_list_append(toknz->tmp.kls->methods, toknz->tmp.meth);
       toknz->tmp.meth = NULL;
       toknz->current_nesting--;
       fgoto tokenize_methods;
@@ -582,6 +585,13 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
       toknz->tmp.kls->inherits = eina_list_append(toknz->tmp.kls->inherits, base);
    }
 
+   action begin_constructors {
+      INF("  constructors {");
+      toknz->do_constructors = EINA_TRUE;
+      toknz->current_nesting++;
+      fgoto tokenize_methods;
+   }
+
    action begin_properties {
       INF("  properties {");
       toknz->current_nesting++;
@@ -590,6 +600,7 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
 
    action begin_methods {
       INF("  begin methods");
+      toknz->do_constructors = EINA_FALSE;
       toknz->current_nesting++;
       fgoto tokenize_methods;
    }
@@ -606,18 +617,20 @@ _eo_tokenizer_accessor_get(Eo_Tokenizer *toknz, Eo_Accessor_Type type)
    inherit_item_next = list_separator ignore* inherit_item;
    inherits = 'inherits' ignore* begin_def ignore* (inherit_item inherit_item_next*)? end_def;
 
+   constructors = 'constructors' ignore* begin_def;
    properties = 'properties' ignore* begin_def;
    methods = 'methods' ignore* begin_def;
 
    tokenize_class := |*
-      ignore+;    #=> show_ignore;
-      eo_comment  => end_class_comment;
-      comment     => show_comment;
+      ignore+;       #=> show_ignore;
+      eo_comment     => end_class_comment;
+      comment        => show_comment;
       inherits;
-      properties  => begin_properties;
-      methods     => begin_methods;
-      end_def     => end_class;
-      any         => show_error;
+      constructors   => begin_constructors;
+      properties     => begin_properties;
+      methods        => begin_methods;
+      end_def        => end_class;
+      any            => show_error;
       *|;
 
 ###### TOP LEVEL
@@ -772,6 +785,19 @@ eo_tokenizer_dump(Eo_Tokenizer *toknz)
            printf(" %s", s);
         printf("\n");
 
+        EINA_LIST_FOREACH(kls->constructors, l, meth)
+          {
+             printf("  constructors: %s\n", meth->name);
+             printf("    return: %s (%s)\n", meth->ret.type, meth->ret.comment);
+             printf("    legacy : %s\n", meth->legacy);
+             EINA_LIST_FOREACH(meth->params, m, param)
+               {
+                  printf("    param: %s %s : %s (%s)\n",
+                         _param_way_str[param->way], param->name,
+                         param->type, param->comment);
+               }
+          }
+
         EINA_LIST_FOREACH(kls->properties, l, prop)
           {
              printf("  property: %s\n", prop->name);
@@ -840,6 +866,18 @@ eo_tokenizer_database_fill(const char *filename)
 
         EINA_LIST_FOREACH(kls->inherits, l, s)
            database_class_inherit_add(kls->name, s);
+
+        EINA_LIST_FOREACH(kls->constructors, l, meth)
+          {
+             Function_Id foo_id = database_function_new(meth->name, CONSTRUCTOR);
+             database_class_function_add(kls->name, foo_id);
+             database_function_description_set(foo_id, RETURN_COMMENT, meth->ret.comment);
+             database_function_data_set(foo_id, LEGACY, meth->legacy);
+             EINA_LIST_FOREACH(meth->params, m, param)
+               {
+                  database_function_parameter_add(foo_id, (Parameter_Dir)param->way, param->type, param->name, param->comment);
+               }
+          }
 
         EINA_LIST_FOREACH(kls->properties, l, prop)
           {

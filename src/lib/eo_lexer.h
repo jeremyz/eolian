@@ -25,6 +25,7 @@ typedef struct _eo_tokenizer
    int current_line;
    int current_nesting;
    int max_nesting;
+   Eina_Bool do_constructors;
    char buf[BUFSIZE];
    struct {
       char *tok;
